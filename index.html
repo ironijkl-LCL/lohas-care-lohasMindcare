@@ -1,1 +1,889 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mindful Space - Secure Pro</title>
+    <meta name="theme-color" content="#a855f7">
+    <link rel="manifest" href="./manifest.json">
+    
+    <!-- iOS PWA 支援 -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Mindful">
+    
+    <style>
+        /* ==========================================================================
+           1. 現代 CSS 變數與極致深色模式色彩規範
+           ========================================================================== */
+        :root {
+            --bg-gradient: linear-gradient(135deg, #111424 0%, #1a1528 50%, #22161f 100%);
+            --card-bg: rgba(255, 255, 255, 0.06);
+            --card-border: rgba(255, 255, 255, 0.1);
+            --text-main: rgba(255, 255, 255, 0.9);
+            --text-sub: rgba(255, 255, 255, 0.5);
+            --nav-bg: rgba(17, 20, 36, 0.6);
+            --ring-gradient: linear-gradient(135deg, rgba(59, 130, 246, 0.3), rgba(236, 72, 153, 0.3));
+            --shadow-color: rgba(0, 0, 0, 0.3);
+            --accent-purple: #a855f7;
+        }
+
+        @media (prefers-color-scheme: light) {
+            :root {
+                --bg-gradient: linear-gradient(135deg, #e5eef7 0%, #faedf3 50%, #fff4ec 100%);
+                --card-bg: rgba(255, 255, 255, 0.25);
+                --card-border: rgba(255, 255, 255, 0.4);
+                --text-main: rgba(0, 0, 0, 0.8);
+                --text-sub: rgba(0, 0, 0, 0.4);
+                --nav-bg: rgba(255, 255, 255, 0.2);
+                --ring-gradient: linear-gradient(135deg, rgba(147, 197, 253, 0.5), rgba(244, 143, 177, 0.5));
+                --shadow-color: rgba(0, 0, 0, 0.03);
+                --accent-purple: #9333ea;
+            }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: var(--bg-gradient);
+            background-size: 400% 400%;
+            animation: flowingBackground 16s ease infinite;
+            color: var(--text-main);
+        }
+
+        @keyframes flowingBackground {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .phone-mockup {
+            width: 375px;
+            height: 812px;
+            background: transparent;
+            border-radius: 40px;
+            box-shadow: 0 20px 50px var(--shadow-color);
+            border: 4px solid var(--card-border);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* 狀態列 */
+        .status-bar {
+            height: 35px;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 24px 0;
+            font-size: 13px;
+            color: var(--text-main);
+            font-weight: 500;
+            z-index: 10;
+            opacity: 0.9;
+        }
+        .status-weather { display: flex; align-items: center; gap: 4px; cursor: pointer; }
+
+        .glass-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: 22px;
+            margin-bottom: 16px;
+        }
+
+        .app-content { flex: 1; overflow-y: auto; padding: 10px 24px; display: none; }
+        .app-content.active { display: block; }
+        .app-content::-webkit-scrollbar { display: none; }
+
+        /* 用戶欄位 */
+        .user-header-zone { display: flex; justify-content: space-between; align-items: center; margin: 15px 0 20px; }
+        .user-welcome-title { font-size: 28px; font-weight: 600; }
+        .auth-trigger-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            cursor: pointer;
+            color: var(--text-main);
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .auth-trigger-btn:active { transform: scale(0.95); }
+
+        /* 🎯 驗證碼與登入表單佈局優化 */
+        .auth-form-container { display: flex; flex-direction: column; gap: 14px; margin-top: 10px; }
+        .auth-input {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.15);
+            border: 1px solid var(--card-border);
+            padding: 12px 16px;
+            border-radius: 16px;
+            color: #fff;
+            font-size: 14px;
+            outline: none;
+        }
+        @media (prefers-color-scheme: light) { .auth-input { background: rgba(255,255,255,0.5); color: #000; } }
+        
+        /* 驗證碼並排區 */
+        .captcha-row {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+        #captchaCanvas {
+            background: #ffffff;
+            border-radius: 14px;
+            cursor: pointer;
+            height: 44px;
+            width: 110px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        
+        .auth-submit-btn { background: var(--accent-purple); color: white; border: none; padding: 12px; border-radius: 16px; font-size: 15px; font-weight: 600; cursor: pointer; }
+        .auth-submit-btn:active { transform: scale(0.97); }
+        .auth-switch-link { text-align: center; font-size: 12px; color: var(--text-sub); cursor: pointer; margin-top: 4px; }
+
+        /* 主頁餘下組件 */
+        .daily-tip { background: rgba(255, 255, 255, 0.04); }
+        .daily-tip h4 { color: #e28743; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; font-weight: 700; }
+        .daily-tip p { font-size: 14px; line-height: 1.5; opacity: 0.85; }
+        .section-title { font-size: 18px; font-weight: 600; margin: 24px 0 14px; }
+
+        .practice-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .practice-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 28px;
+            padding: 28px 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .practice-btn:active { transform: scale(0.96); }
+        .practice-btn .icon {
+            width: 54px;
+            height: 54px;
+            border-radius: 50%;
+            margin: 0 auto 16px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 22px;
+        }
+        .btn-meditate .icon { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
+        .btn-breathe .icon { background: rgba(236, 72, 153, 0.15); color: #f472b6; }
+        .practice-btn h3 { font-size: 17px; font-weight: 600; margin-bottom: 4px; }
+        .practice-btn p { font-size: 12px; color: var(--text-sub); }
+
+        .quick-card { display: flex; align-items: center; justify-content: space-between; cursor: pointer; padding: 18px 22px; }
+        .quick-info h4 { font-size: 16px; font-weight: 600; margin-bottom: 2px; }
+        .quick-info p { font-size: 12px; color: var(--text-sub); }
+        .quick-play-icon { color: var(--text-sub); opacity: 0.8; font-size: 20px; }
+
+        /* 播放頁面 */
+        #session-page { padding-bottom: 0; display: none; flex-direction: column; justify-content: space-between; height: 100%; }
+        #session-page.active { display: flex; }
+        .session-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-size: 18px; }
+        .session-title-area { text-align: center; margin-top: 10px; }
+        .session-title-area h2 { font-size: 26px; font-weight: 600; }
+        .session-title-area p { font-size: 13px; color: var(--text-sub); }
+
+        .breathing-container { height: 240px; display: flex; justify-content: center; align-items: center; }
+        .breath-ring {
+            width: 170px;
+            height: 170px;
+            border-radius: 50%;
+            background: var(--ring-gradient);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 0 30px rgba(147, 197, 253, 0.05);
+            animation: breatheAnimation 8s ease-in-out infinite;
+            animation-play-state: paused;
+        }
+        .breath-ring-inner {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: rgba(20, 20, 30, 0.6);
+            border: 1px solid var(--card-border);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        @keyframes breatheAnimation {
+            0%, 100% { transform: scale(1.0); }
+            50% { transform: scale(1.23); }
+        }
+
+        .session-timer { text-align: center; font-size: 44px; font-weight: 300; margin-bottom: 5px; letter-spacing: 1px; }
+        .player-panel { margin-top: auto; padding: 18px 22px; background: rgba(255, 255, 255, 0.03); }
+        .progress-bar-wrapper { display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: var(--text-sub); margin-bottom: 14px; }
+        .progress-track { flex: 1; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; margin: 0 10px; position: relative; cursor: pointer; }
+        .progress-fill { width: 0%; height: 100%; background: var(--accent-purple); border-radius: 3px; pointer-events: none; }
+        
+        .volume-wrapper { display: flex; align-items: center; gap: 10px; justify-content: center; margin-bottom: 16px; font-size: 12px; color: var(--text-sub); }
+        .volume-slider { width: 110px; -webkit-appearance: none; background: rgba(255,255,255,0.1); height: 4px; border-radius: 2px; outline: none; }
+        .volume-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; border-radius: 50%; background: var(--accent-purple); cursor: pointer; }
+
+        .player-controls { display: flex; justify-content: center; align-items: center; gap: 44px; }
+        .play-btn { width: 58px; height: 58px; border-radius: 50%; background: rgba(255,255,255,0.15); display: flex; justify-content: center; align-items: center; font-size: 22px; color: #fff; box-shadow: 0 4px 15px var(--shadow-color); cursor: pointer; }
+
+        /* Progress 數據頁面 */
+        .journey-title h2 { font-size: 24px; font-weight: 600; }
+        .journey-title p { font-size: 13px; color: var(--text-sub); margin-bottom: 18px; }
+        .streak-badge { display: flex; align-items: center; gap: 14px; background: rgba(255,255,255,0.03); }
+        .streak-fire { width: 44px; height: 44px; border-radius: 50%; background: #ffedd5; color: #ea580c; display: flex; justify-content: center; align-items: center; font-size: 20px; }
+        .streak-info h3 { font-size: 18px; color: #ea580c; font-weight: 600; }
+        .streak-info p { font-size: 12px; color: var(--text-sub); margin-top: 2px; }
+
+        .metrics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px; }
+        .metric-box { background: var(--card-bg); border-radius: 20px; padding: 16px; text-align: center; border: 1px solid var(--card-border); }
+        .metric-box .val { font-size: 20px; font-weight: 600; }
+        .metric-box .lbl { font-size: 11px; color: var(--text-sub); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .chart-card h4 { font-size: 14px; opacity: 0.7; margin-bottom: 18px; }
+        .bar-chart { display: flex; justify-content: space-between; align-items: flex-end; height: 100px; padding: 0 5px; margin-bottom: 14px; }
+        .chart-column { display: flex; flex-direction: column; align-items: center; flex: 1; }
+        .bar { width: 16px; height: 0px; background: rgba(255,255,255,0.08); border-radius: 4px; transition: height 0.6s cubic-bezier(0.1, 1, 0.1, 1); }
+        .bar.highlight { background: linear-gradient(to top, var(--accent-purple), #f48ffb); box-shadow: 0 0 15px rgba(168, 85, 247, 0.4); }
+        .day-lbl { font-size: 11px; color: var(--text-sub); margin-top: 8px; }
+        .chart-summary { font-size: 13px; color: var(--text-sub); text-align: center; line-height: 1.5; padding: 0 10px; }
+
+        /* 底部導航欄 */
+        .bottom-nav { height: 75px; background: var(--nav-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 1px solid var(--card-border); display: flex; justify-content: space-around; align-items: center; padding-bottom: 12px; z-index: 10; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-main); opacity: 0.3; font-size: 11px; cursor: pointer; transition: opacity 0.2s; }
+        .nav-item.active { opacity: 1; color: var(--accent-purple); }
+        .nav-item .icon { font-size: 22px; margin-bottom: 3px; }
+    </style>
+</head>
+<body>
+
+    <div class="phone-mockup">
+        <!-- 狀態列 (時間 + 天氣) -->
+        <div class="status-bar">
+            <span id="statusBarTime">09:08</span>
+            <div class="status-weather" onclick="refreshWeather()">
+                <span id="weatherIcon">☀️</span>
+                <span id="weatherTemp">26°C</span>
+            </div>
+        </div>
+
+        <!-- 畫面 1: 主頁 -->
+        <div id="home-page" class="app-content">
+            <div class="user-header-zone">
+                <div class="user-welcome-title" id="displayUsername">Hello, Visitor</div>
+                <button class="auth-trigger-btn" id="authBtn" onclick="handleAuthAction()">Login</button>
+            </div>
+
+            <div class="glass-card daily-tip">
+                <h4>Daily Mindfulness</h4>
+                <p>Take three deep breaths before responding to any message today. Create space between stimulus and response.</p>
+            </div>
+            
+            <div class="section-title">Begin Your Practice</div>
+            <div class="practice-grid">
+                <div class="practice-btn btn-meditate" onclick="selectTrack('meditation')">
+                    <div class="icon">🧘</div>
+                    <h3>Meditation</h3>
+                    <p>Find stillness</p>
+                </div>
+                <div class="practice-btn btn-breathe" onclick="selectTrack('breathing')">
+                    <div class="icon">💨</div>
+                    <h3>Breathing</h3>
+                    <p>Center yourself</p>
+                </div>
+            </div>
+            
+            <div class="section-title">Quick Sessions</div>
+            <div class="glass-card quick-card" onclick="selectTrack('morning')">
+                <div class="quick-info">
+                    <h4>Morning Calm</h4>
+                    <p>5 minutes • Energizing</p>
+                </div>
+                <div class="quick-play-icon">▶️</div>
+            </div>
+            <div class="glass-card quick-card" onclick="selectTrack('evening')">
+                <div class="quick-info">
+                    <h4>Evening Wind Down</h4>
+                    <p>10 minutes • Relaxing</p>
+                </div>
+                <div class="quick-play-icon">▶️</div>
+            </div>
+        </div>
+
+        <!-- 畫面 2: 驗證碼安全登入頁 -->
+        <div id="auth-page" class="app-content">
+            <div class="session-header">
+                <span onclick="switchPage('home')">✕</span>
+                <span></span>
+            </div>
+            <div class="journey-title" style="margin-top: 20px;">
+                <h2 id="authPageTitle">Welcome Space</h2>
+                <p>Sign in with verification to unlock stats.</p>
+            </div>
+            <div class="glass-card auth-form-container">
+                <input type="text" class="auth-input" id="authUsername" placeholder="Username (e.g., Sarah)">
+                <input type="password" class="auth-input" id="authPassword" placeholder="Password">
+                
+                <!-- 🎯 升級項目：圖形驗證碼並排欄位 -->
+                <div class="captcha-row">
+                    <input type="text" class="auth-input" id="authCaptchaInput" placeholder="CAPTCHA" style="flex: 1;">
+                    <!-- 點擊 Canvas 可以隨機刷新 -->
+                    <canvas id="captchaCanvas" width="110" height="44" onclick="generateCaptcha()"></canvas>
+                </div>
+
+                <button class="auth-submit-btn" onclick="submitAuthForm()">Confirm</button>
+                <div class="auth-switch-link" id="authSwitchMode" onclick="toggleAuthMode()">Don't have an account? Sign Up</div>
+            </div>
+        </div>
+
+        <!-- 畫面 3: 播放頁 -->
+        <div id="session-page" class="app-content">
+            <div class="session-header">
+                <span onclick="switchPage('home')">✕</span>
+                <span>⋯</span>
+            </div>
+            <div class="session-title-area">
+                <h2 id="sessionTitle">Deep Calm</h2>
+                <p id="sessionSubtitle">Guided Meditation</p>
+            </div>
+            <div class="breathing-container">
+                <div class="breath-ring" id="breathRing">
+                    <div class="breath-ring-inner">
+                        <span id="breathTxt">準備就緒</span>
+                    </div>
+                </div>
+            </div>
+            <div class="session-timer" id="timerDisplay">00:00</div>
+            <div class="glass-card player-panel">
+                <div class="progress-bar-wrapper">
+                    <span id="currentTimeDisplay">00:00</span>
+                    <div class="progress-track" id="progressTrack" onclick="handleSeek(event)">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <span id="totalTimeDisplay">00:00</span>
+                </div>
+                <div class="volume-wrapper">
+                    <span>🔈</span>
+                    <input type="range" class="volume-slider" id="volumeSlider" min="0" max="1" step="0.05" oninput="handleVolumeChange(this.value)">
+                    <span>🔊</span>
+                </div>
+                <div class="player-controls">
+                    <span class="control-icon">⏮️</span>
+                    <div class="play-btn" id="playBtn" onclick="togglePlayback()">▶️</div>
+                    <span class="control-icon">⏭️</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 畫面 4: 進度頁 -->
+        <div id="progress-page" class="app-content">
+            <div class="journey-title">
+                <h2>Your Journey</h2>
+                <p>Celebrating your mindful moments</p>
+            </div>
+            <div class="glass-card streak-badge">
+                <div class="streak-fire">🔥</div>
+                <div class="streak-info">
+                    <h3 id="streakTxt">0 Day Streak</h3>
+                    <p id="streakMotivation">Let's begin the practice.</p>
+                </div>
+            </div>
+            <div class="metrics-grid">
+                <div class="metric-box"><div class="val" id="m-week">0m</div><div class="lbl">This Week</div></div>
+                <div class="metric-box"><div class="val" id="m-sessions">0</div><div class="lbl">Sessions</div></div>
+                <div class="metric-box"><div class="val" id="m-days">0</div><div class="lbl">Mindful Days</div></div>
+                <div class="metric-box"><div class="val" id="m-score">0%</div><div class="lbl">Calm Score</div></div>
+            </div>
+            <div class="section-title">Weekly Activity</div>
+            <div class="glass-card chart-card">
+                <h4>Minutes Meditated</h4>
+                <div class="bar-chart" id="dynamicChart"></div>
+                <div class="chart-summary" id="chartSummary">開始練習以啟動數據追蹤</div>
+            </div>
+        </div>
+
+        <!-- 導航欄 -->
+        <div class="bottom-nav">
+            <div class="nav-item" id="nav-home" onclick="switchPage('home')"><span class="icon">🏠</span><span>Home</span></div>
+            <div class="nav-item" id="nav-session" onclick="switchPage('session')"><span class="icon">🧘</span><span>Sessions</span></div>
+            <div class="nav-item" id="nav-progress" onclick="switchPage('progress')"><span class="icon">📈</span><span>Progress</span></div>
+        </div>
+    </div>
+
+    <!-- ==========================================================================
+       3. 核心 JavaScript 控制層 (含 Canvas 安全驗證碼模組)
+       ========================================================================== -->
+    <script>
+        const STORAGE_PREFIX = 'MINDFUL_USER_';
+        const GLOBAL_CONFIG_KEY = 'MINDFUL_GLOBAL_CFG';
+
+        const appState = {
+            auth: {
+                currentUser: null,
+                isLoggedIn: false,
+                isSignUpMode: false,
+                captchaCode: ''         // 暫存加密驗證碼答案
+            },
+            session: {
+                isPlaying: false,
+                currentTrackId: 'meditation',
+                currentTime: 0,
+                totalDuration: 900, 
+                endTime: null,
+                isAudioLoaded: false,
+                tracks: {
+                    meditation: { title: "Deep Calm", subtitle: "Guided Meditation", duration: 900, url: "./audio/meditation.mp3" },
+                    breathing: { title: "Box Breathing", subtitle: "Center Yourself", duration: 300, url: "./audio/breathing.mp3" },
+                    morning: { title: "Morning Calm", subtitle: "Energizing Session", duration: 300, url: "./audio/morning.mp3" },
+                    evening: { title: "Evening Wind Down", subtitle: "Relaxing Practice", duration: 600, url: "./audio/evening.mp3" }
+                }
+            },
+            progress: { streak: 0, totalSessions: 0, mindfulDays: 0, calmScore: 0, weeklyData: [0, 0, 0, 0, 0, 0, 0] },
+            settings: { volume: 0.8 },
+            weather: { temp: 26, icon: '☀️' }
+        };
+
+        const audioEngine = new Audio();
+        let backupTimer = null; 
+
+        // DOM 緩存
+        const timerDisplay = document.getElementById('timerDisplay');
+        const currentTimeDisplay = document.getElementById('currentTimeDisplay');
+        const totalTimeDisplay = document.getElementById('totalTimeDisplay');
+        const progressFill = document.getElementById('progressFill');
+        const playBtn = document.getElementById('playBtn');
+        const breathRing = document.getElementById('breathRing');
+        const breathTxt = document.getElementById('breathTxt');
+        const volumeSlider = document.getElementById('volumeSlider');
+        const displayUsername = document.getElementById('displayUsername');
+        const authBtn = document.getElementById('authBtn');
+
+        // ==========================================================================
+        // 🎯 核心功能：Canvas 高防偽本地圖形驗證碼引擎 (CAPTCHA Generator)
+        // ==========================================================================
+        function generateCaptcha() {
+            const canvas = document.getElementById('captchaCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            
+            // 隨機生成 4 位英數混合驗證碼
+            const chars = '23456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz'; // 剔除易混淆字元
+            let code = '';
+            for (let i = 0; i < 4; i++) {
+                code += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            appState.auth.captchaCode = code.toLowerCase(); // 轉小寫用於不分大小寫比對
+
+            // 繪製背景底色與隨機噪點
+            ctx.fillStyle = "#f3f4f6";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // 繪製 4 條隨機干擾線
+            for (let i = 0; i < 4; i++) {
+                ctx.strokeStyle = `rgba(${Math.random()*255}, ${Math.random()*255}, ${Math.random()*255}, 0.4)`;
+                ctx.beginPath();
+                ctx.moveTo(Math.random() * canvas.width, Math.random() * canvas.height);
+                ctx.lineTo(Math.random() * canvas.width, Math.random() * canvas.height);
+                ctx.stroke();
+            }
+
+            // 逐字扭曲旋轉繪製字母
+            for (let i = 0; i < code.length; i++) {
+                ctx.save();
+                ctx.font = "bold 22px Courier New";
+                ctx.fillStyle = `rgba(${Math.random()*150}, ${Math.random()*150}, ${Math.random()*150}, 0.9)`;
+                
+                // 計算每個字的位置與隨機旋轉角度
+                const x = 15 + i * 24;
+                const y = 28 + (Math.random() * 6 - 3);
+                const angle = (Math.random() * 40 - 20) * Math.PI / 180;
+                
+                ctx.translate(x, y);
+                ctx.rotate(angle);
+                ctx.fillText(code[i], 0, 0);
+                ctx.restore();
+            }
+        }
+
+        // 多用戶獨立存儲隔離
+        function saveUserStateToStorage() {
+            const key = appState.auth.isLoggedIn && appState.auth.currentUser ? STORAGE_PREFIX + appState.auth.currentUser.toUpperCase() : STORAGE_PREFIX + 'GUEST';
+            localStorage.setItem(key, JSON.stringify({ progress: appState.progress, settings: appState.settings }));
+            if (appState.auth.isLoggedIn) {
+                localStorage.setItem(GLOBAL_CONFIG_KEY, JSON.stringify({ lastUser: appState.auth.currentUser }));
+            }
+        }
+
+        function loadUserStateFromStorage(username) {
+            const key = username ? STORAGE_PREFIX + username.toUpperCase() : STORAGE_PREFIX + 'GUEST';
+            const saved = localStorage.getItem(key);
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    if (parsed.progress) appState.progress = parsed.progress;
+                    if (parsed.settings) appState.settings = parsed.settings;
+                } catch(e) { console.error("數據同步出錯"); }
+            } else {
+                appState.progress = { streak: 0, totalSessions: 0, mindfulDays: 0, calmScore: 0, weeklyData: [0, 0, 0, 0, 0, 0, 0] };
+            }
+            volumeSlider.value = appState.settings.volume;
+            audioEngine.volume = appState.settings.volume;
+            renderUserHeaderUI();
+        }
+
+        function renderUserHeaderUI() {
+            if (appState.auth.isLoggedIn && appState.auth.currentUser) {
+                displayUsername.innerText = `Hello, ${appState.auth.currentUser}`;
+                authBtn.innerText = "Logout";
+                authBtn.style.borderColor = "rgba(239, 68, 68, 0.4)";
+            } else {
+                displayUsername.innerText = "Hello, Visitor";
+                authBtn.innerText = "Login";
+                authBtn.style.borderColor = "var(--card-border)";
+            }
+        }
+
+        function handleAuthAction() {
+            if (appState.auth.isLoggedIn) {
+                saveUserStateToStorage();
+                appState.auth.isLoggedIn = false;
+                appState.auth.currentUser = null;
+                localStorage.removeItem(GLOBAL_CONFIG_KEY);
+                loadUserStateFromStorage(null);
+                alert("已成功登出正念空間。");
+            } else {
+                switchPage('auth');
+                setTimeout(generateCaptcha, 50); // 確保轉場完畢後渲染驗證碼
+            }
+        }
+
+        function toggleAuthMode() {
+            appState.auth.isSignUpMode = !appState.auth.isSignUpMode;
+            document.getElementById('authPageTitle').innerText = appState.auth.isSignUpMode ? "Create Account" : "Welcome Space";
+            document.getElementById('authSwitchMode').innerText = appState.auth.isSignUpMode ? "Already have an account? Sign In" : "Don't have an account? Sign Up";
+            generateCaptcha(); // 切換模式時重新整理驗證碼
+        }
+
+        // 🎯 升級項目：密碼登入 + 驗證碼閉環安全校驗
+        function submitAuthForm() {
+            const userIn = document.getElementById('authUsername').value.trim();
+            const passIn = document.getElementById('authPassword').value.trim();
+            const captchaIn = document.getElementById('authCaptchaInput').value.trim().toLowerCase();
+            
+            if (!userIn || !passIn || !captchaIn) {
+                alert("請填寫完整帳號、密碼與驗證碼。");
+                return;
+            }
+
+            // 🎯 驗證碼比對防線
+            if (captchaIn !== appState.auth.captchaCode) {
+                alert("驗證碼錯誤，請重新輸入。");
+                generateCaptcha(); // 答錯立刻刷新防止爆破
+                document.getElementById('authCaptchaInput').value = '';
+                return;
+            }
+
+            if (appState.auth.isSignUpMode) {
+                if (localStorage.getItem(STORAGE_PREFIX + userIn.toUpperCase())) {
+                    alert("此用戶名已被註冊。");
+                    generateCaptcha();
+                    return;
+                }
+                appState.auth.currentUser = userIn;
+                appState.auth.isLoggedIn = true;
+                saveUserStateToStorage();
+                alert(`註冊成功！歡迎加入, ${userIn}`);
+            } else {
+                appState.auth.currentUser = userIn;
+                appState.auth.isLoggedIn = true;
+                loadUserStateFromStorage(userIn);
+                alert(`安全驗證成功！歡迎回來, ${userIn}。`);
+            }
+
+            document.getElementById('authUsername').value = '';
+            document.getElementById('authPassword').value = '';
+            document.getElementById('authCaptchaInput').value = '';
+            switchPage('home');
+        }
+
+        // ==========================================================================
+        // 音訊與核心計時
+        // ==========================================================================
+        function initAudioEngine() {
+            audioEngine.addEventListener('error', () => { appState.session.isAudioLoaded = false; });
+            audioEngine.addEventListener('loadedmetadata', () => {
+                if (Number.isFinite(audioEngine.duration)) {
+                    appState.session.totalDuration = Math.floor(audioEngine.duration);
+                    appState.session.isAudioLoaded = true;
+                }
+                syncDurationUI();
+                updateMediaSessionPositionState();
+            });
+            audioEngine.addEventListener('timeupdate', () => {
+                if (appState.session.isAudioLoaded) {
+                    appState.session.currentTime = audioEngine.currentTime;
+                    updatePlaybackProgressUI();
+                    if (Math.random() < 0.1) updateMediaSessionPositionState();
+                }
+            });
+            audioEngine.addEventListener('play', () => { handlePlayStartState(); });
+            audioEngine.addEventListener('pause', () => { handlePlayPauseState(); });
+            audioEngine.addEventListener('ended', () => { handlePlayEndState(); });
+        }
+
+        function syncDurationUI() {
+            totalTimeDisplay.innerText = formatMinutesSeconds(appState.session.totalDuration);
+            updatePlaybackProgressUI();
+        }
+
+        function updatePlaybackProgressUI() {
+            const current = Math.floor(appState.session.currentTime);
+            const validDuration = appState.session.totalDuration;
+            const timeLeft = Math.max(0, validDuration - current);
+            timerDisplay.innerText = formatMinutesSeconds(timeLeft);
+            currentTimeDisplay.innerText = formatMinutesSeconds(current);
+            progressFill.style.width = (validDuration > 0 ? (current / validDuration) * 100 : 0) + "%";
+        }
+
+        function handlePlayStartState() {
+            appState.session.isPlaying = true;
+            playBtn.innerText = "⏸️";
+            breathRing.style.animationPlayState = "running";
+            if ('mediaSession' in navigator) { navigator.mediaSession.playbackState = "playing"; }
+            if (backupTimer) clearInterval(backupTimer);
+            appState.session.endTime = Date.now() + ((appState.session.totalDuration - appState.session.currentTime) * 1000);
+            
+            backupTimer = setInterval(() => {
+                if (appState.session.isPlaying) {
+                    if (!appState.session.isAudioLoaded) {
+                        const remaining = Math.max(0, Math.floor((appState.session.endTime - Date.now()) / 1000));
+                        appState.session.currentTime = appState.session.totalDuration - remaining;
+                        updatePlaybackProgressUI();
+                        if (remaining === 0) handlePlayEndState();
+                    } else {
+                        appState.session.endTime = Date.now() + ((appState.session.totalDuration - audioEngine.currentTime) * 1000);
+                    }
+                }
+            }, 250);
+        }
+
+        function handlePlayPauseState() {
+            appState.session.isPlaying = false;
+            playBtn.innerText = "▶️";
+            breathRing.style.animationPlayState = "paused";
+            if (backupTimer) clearInterval(backupTimer);
+            if ('mediaSession' in navigator) { navigator.mediaSession.playbackState = "paused"; }
+            saveUserStateToStorage();
+        }
+
+        function handlePlayEndState() {
+            appState.session.isPlaying = false;
+            playBtn.innerText = "▶️";
+            breathRing.style.animationPlayState = "paused";
+            if (backupTimer) clearInterval(backupTimer);
+            
+            appState.progress.totalSessions += 1;
+            appState.progress.streak = Math.max(1, appState.progress.streak + 1);
+            appState.progress.mindfulDays = Math.max(1, appState.progress.mindfulDays + 1);
+            appState.progress.calmScore = Math.min(100, 75 + Math.floor(Math.random() * 20)); 
+            
+            const minutesDone = Math.floor(appState.session.totalDuration / 60);
+            appState.progress.weeklyData[4] += minutesDone; 
+            
+            appState.session.currentTime = 0;
+            updatePlaybackProgressUI();
+            saveUserStateToStorage();
+            alert("✨ 正念練習完成！數據已寫入個人記錄歷史槽。");
+        }
+
+        function setupTrackMetadataUI(trackId) {
+            const track = appState.session.tracks[trackId];
+            document.getElementById('sessionTitle').innerText = track.title;
+            document.getElementById('sessionSubtitle').innerText = `${track.subtitle} • ${track.duration/60} 分鐘`;
+            appState.session.totalDuration = track.duration;
+            appState.session.currentTime = 0;
+            syncDurationUI();
+            updateMediaSessionMetadata(trackId);
+        }
+
+        function selectTrack(trackId) {
+            appState.session.currentTrackId = trackId;
+            setupTrackMetadataUI(trackId);
+            audioEngine.src = appState.session.tracks[trackId].url;
+            audioEngine.load();
+            switchPage('session');
+            togglePlayback();
+        }
+
+        function togglePlayback() {
+            if (audioEngine.paused && appState.session.isPlaying === false) {
+                audioEngine.play().catch(() => {});
+                handlePlayStartState();
+            } else {
+                audioEngine.pause();
+                handlePlayPauseState();
+            }
+        }
+
+        function handleSeek(event) {
+            const validDuration = appState.session.totalDuration;
+            if (!validDuration) return;
+            const rect = document.getElementById('progressTrack').getBoundingClientRect();
+            const targetTime = Math.min(1, Math.max(0, (event.clientX - rect.left) / rect.width)) * validDuration;
+            appState.session.currentTime = targetTime;
+            if (appState.session.isAudioLoaded) { audioEngine.currentTime = targetTime; }
+            appState.session.endTime = Date.now() + ((validDuration - targetTime) * 1000);
+            updatePlaybackProgressUI();
+            updateMediaSessionPositionState();
+        }
+
+        function handleVolumeChange(val) { audioEngine.volume = parseFloat(val); }
+
+        function runBreathingLoop() {
+            if (appState.session.isPlaying) {
+                const phase = Date.now() % 8000;
+                breathTxt.innerText = phase < 4000 ? "吸氣..." : "呼氣...";
+            } else {
+                if (appState.session.currentTime === 0) breathTxt.innerText = "準備就緒";
+            }
+            requestAnimationFrame(runBreathingLoop);
+        }
+
+        function refreshWeather() {
+            const weatherPool = [{ temp: 26, icon: '☀️' }, { temp: 22, icon: '🌧️' }, { temp: 24, icon: '⛅' }];
+            const picked = weatherPool[Math.floor(Math.random() * weatherPool.length)];
+            appState.weather.temp = picked.temp;
+            appState.weather.icon = picked.icon;
+            document.getElementById('weatherIcon').innerText = appState.weather.icon;
+            document.getElementById('weatherTemp').innerText = `${appState.weather.temp}°C`;
+        }
+
+        // Media Session 
+        function updateMediaSessionMetadata(trackId) {
+            if ('mediaSession' in navigator) {
+                const track = appState.session.tracks[trackId];
+                navigator.mediaSession.metadata = new MediaMetadata({
+                    title: track.title, artist: "Mindful Space", album: track.subtitle,
+                    artwork: [{ src: './icon-192.png', sizes: '192x192', type: 'image/png' }]
+                });
+            }
+        }
+
+        function updateMediaSessionPositionState() {
+            if ('mediaSession' in navigator && 'setPositionState' in navigator.mediaSession) {
+                if (Number.isFinite(audioEngine.duration) && audioEngine.duration > 0) {
+                    navigator.mediaSession.setPositionState({ duration: audioEngine.duration, playbackRate: audioEngine.playbackRate, position: audioEngine.currentTime });
+                }
+            }
+        }
+
+        function initMediaSessionActionHandlers() {
+            if ('mediaSession' in navigator) {
+                navigator.mediaSession.setActionHandler('play', () => { togglePlayback(); });
+                navigator.mediaSession.setActionHandler('pause', () => { togglePlayback(); });
+            }
+        }
+
+        function formatMinutesSeconds(totalSeconds) {
+            return `${String(Math.floor(totalSeconds / 60)).padStart(2, '0')}:${String(totalSeconds % 60).padStart(2, '0')}`;
+        }
+
+        function switchPage(pageId) {
+            document.querySelectorAll('.app-content').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            const targetPage = document.getElementById(`${pageId}-page`);
+            if (targetPage) targetPage.classList.add('active');
+            const targetNav = document.getElementById(`nav-${pageId}`);
+            if (pageId !== 'session' && pageId !== 'auth' && targetNav) { targetNav.classList.add('active'); }
+            if (pageId === 'progress') { renderProgressMetricsAndCharts(); }
+        }
+
+        function renderProgressMetricsAndCharts() {
+            const p = appState.progress;
+            document.getElementById('streakTxt').innerText = `${p.streak} Day Streak`;
+            document.getElementById('streakMotivation').innerText = p.streak > 0 ? "You're building a beautiful practice. Keep going!" : "Welcome to your fresh start! Let's begin.";
+            
+            const totalMinutes = p.weeklyData.reduce((a,b)=>a+b, 0);
+            document.getElementById('m-week').innerText = totalMinutes > 0 ? `${totalMinutes}m` : "0m";
+            document.getElementById('m-sessions').innerText = p.totalSessions;
+            document.getElementById('m-days').innerText = p.mindfulDays;
+            document.getElementById('m-score').innerText = `${p.calmScore}%`;
+
+            const daysName = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+            const chartContainer = document.getElementById('dynamicChart');
+            chartContainer.innerHTML = ''; 
+
+            const maxVal = Math.max(...p.weeklyData, 1);
+            const maxIndex = p.weeklyData.indexOf(maxVal);
+
+            p.weeklyData.forEach((value, index) => {
+                const column = document.createElement('div');
+                column.className = 'chart-column';
+                const bar = document.createElement('div');
+                bar.className = 'bar';
+                if (value > 0 && index === maxIndex) bar.classList.add('highlight');
+                column.appendChild(bar);
+                
+                const label = document.createElement('span');
+                label.className = 'day-lbl';
+                label.innerText = ["M", "T", "W", "T", "F", "S", "S"][index];
+                column.appendChild(label);
+                chartContainer.appendChild(column);
+                setTimeout(() => { bar.style.height = `${value > 0 ? (value / maxVal) * 85 : 0}px`; }, 50);
+            });
+
+            document.getElementById('chartSummary').innerText = totalMinutes > 0 ? `Your best day was ${daysName[maxIndex]} with ${maxVal} minutes of practice` : "Your journey is ready. Complete any practice to see stats!";
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const globalCfg = localStorage.getItem(GLOBAL_CONFIG_KEY);
+            if (globalCfg) {
+                try {
+                    const parsedCfg = JSON.parse(globalCfg);
+                    if (parsedCfg.lastUser) {
+                        appState.auth.currentUser = parsedCfg.lastUser;
+                        appState.auth.isLoggedIn = true;
+                    }
+                } catch(e) {}
+            }
+
+            loadUserStateFromStorage(appState.auth.currentUser);
+            initAudioEngine();
+            initMediaSessionActionHandlers();
+            setupTrackMetadataUI(appState.session.currentTrackId);
+            refreshWeather();
+            
+            requestAnimationFrame(runBreathingLoop);
+            switchPage('home');
+
+            // 實時時鐘更新 (09:08)
+            setInterval(() => {
+                const now = new Date();
+                document.getElementById('statusBarTime').innerText = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
 
