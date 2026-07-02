@@ -7,6 +7,7 @@
     <meta name="theme-color" content="#a855f7">
     <link rel="manifest" href="./manifest.json">
     
+    <!-- iOS PWA 沉浸式支援 -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Mindful">
@@ -246,7 +247,7 @@
         .day-lbl { font-size: 11px; color: var(--text-sub); margin-top: 8px; }
         .chart-summary { font-size: 13px; color: var(--text-sub); text-align: center; line-height: 1.5; padding: 0 10px; }
 
-        /* 固定導航欄 */
+        /* 底部導航欄 */
         .bottom-nav { height: 75px; background: var(--nav-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 1px solid var(--card-border); display: flex; justify-content: space-around; align-items: center; padding-bottom: 12px; z-index: 10; }
         .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-main); opacity: 0.3; font-size: 11px; cursor: pointer; transition: opacity 0.2s; }
         .nav-item.active { opacity: 1; color: var(--accent-purple); }
@@ -256,6 +257,7 @@
 <body>
 
     <div class="phone-mockup">
+        <!-- 狀態列 -->
         <div class="status-bar">
             <span id="statusBarTime">00:00</span>
             <div class="status-weather" onclick="refreshWeather()">
@@ -264,6 +266,7 @@
             </div>
         </div>
 
+        <!-- 畫面 1: 主頁 -->
         <div id="home-page" class="app-content">
             <div class="user-header-zone">
                 <div class="user-welcome-title" id="displayUsername">Hello, Visitor</div>
@@ -306,6 +309,7 @@
             </div>
         </div>
 
+        <!-- 畫面 2: 安全驗證碼登入頁 -->
         <div id="auth-page" class="app-content">
             <div class="session-header">
                 <span onclick="switchPage('home')">✕</span>
@@ -329,6 +333,7 @@
             </div>
         </div>
 
+        <!-- 畫面 3: 播放頁 -->
         <div id="session-page" class="app-content">
             <div class="session-header">
                 <span onclick="switchPage('home')">✕</span>
@@ -341,7 +346,7 @@
             <div class="breathing-container">
                 <div class="breath-ring" id="breathRing">
                     <div class="breath-ring-inner">
-                        <span id="breathTxt">準備就緒</span>
+                        <span id="breathTxt">Ready</span>
                     </div>
                 </div>
             </div>
@@ -367,6 +372,7 @@
             </div>
         </div>
 
+        <!-- 畫面 4: 進度頁 -->
         <div id="progress-page" class="app-content">
             <div class="journey-title">
                 <h2>Your Journey</h2>
@@ -393,6 +399,7 @@
             </div>
         </div>
 
+        <!-- 底部導航欄 -->
         <div class="bottom-nav">
             <div class="nav-item" id="nav-home" onclick="switchPage('home')"><span class="icon">🏠</span><span>Home</span></div>
             <div class="nav-item" id="nav-session" onclick="switchPage('session')"><span class="icon">🧘</span><span>Sessions</span></div>
@@ -400,13 +407,16 @@
         </div>
     </div>
 
+    <!-- ==========================================================================
+       3. 核心 JavaScript 控制層
+       ========================================================================== -->
     <script>
-        // 🎯 雲端數據配置：請在此處精準填入你在 Google Apps Script 部署後獲得的最新 /exec 網址
+        // 🎯 雲端數據配置：請在此處填入你在 Google Apps Script 部署獲得的最新 /exec 網址
         const CLOUD_CONFIG = {
             WEB_APP_URL: 'https://script.google.com/macros/s/YOUR_APPS_SCRIPT_ID/exec' 
         };
 
-        // 🎯 MongoDB Atlas Data API 配置備用接口
+        // 🎯 MongoDB Atlas Data API 配置接口
         const MONGODB_CONFIG = {
             endpoint: "https://data.mongodb-api.com/app/YOUR_APP_ID/endpoint/data/v1/action",
             apiKey: "YOUR_ATLAS_DATA_API_KEY",
@@ -423,7 +433,6 @@
             session: {
                 isPlaying: false, currentTrackId: 'meditation', currentTime: 0, totalDuration: 900, endTime: null, isAudioLoaded: false,
                 tracks: {
-                    // 修正 1：100% 精準對接你在音訊資料夾上傳的 4 首實體音樂路徑
                     meditation: { title: "Deep Calm", subtitle: "Guided Meditation", duration: 900, url: "./audio/meditation.mp3" },
                     breathing: { title: "Box Breathing", subtitle: "Center Yourself", duration: 300, url: "./audio/breathing.mp3" },
                     morning: { title: "Morning Calm", subtitle: "Energizing Session", duration: 300, url: "./audio/morning.mp3" },
@@ -463,11 +472,11 @@
             } catch (e) { return null; }
         }
 
-        // 🎯 核心修復：使用 URLSearchParams 將 JSON 打包成安全表單格式，完美解決 no-cors 下 Apps Script 讀取不到內容的核心大坑！
+        // Google Sheets 異步核心傳輸器
         async function syncWithCloud(actionType, additionalData = {}) {
             if (!appState.auth.isLoggedIn || !appState.auth.currentUser) return;
             if (CLOUD_CONFIG.WEB_APP_URL.includes("YOUR_APPS_SCRIPT_ID")) {
-                console.log("本地 Scope 多用戶槽儲存成功（請配置 CLOUD_CONFIG 啟用 Google 雲端雙向同步）。");
+                console.log("本地 Scope 多用戶槽儲存成功（請配置 CLOUD_CONFIG 啟用雲端同步）。");
                 return;
             }
 
@@ -482,14 +491,13 @@
                 ...additionalData
             };
 
-            // 將 JSON 字串化包裝
             fetch(CLOUD_CONFIG.WEB_APP_URL, {
                 method: 'POST',
                 mode: 'no-cors', 
                 body: JSON.stringify(syncPayload)
             })
-            .then(() => console.log(`🚀 雲端試算表異步對接流水入帳成功: [${actionType}]`))
-            .catch(err => console.warn("網絡離線，啟用 PWA 本地 LocalStorage 快取防禦機制保護數據。", err));
+            .then(() => console.log(`🚀 雲端異步更新成功: [${actionType}]`))
+            .catch(err => console.warn("網絡離線，保護本地 LocalStorage 快取數據。", err));
         }
 
         function saveUserStateToStorage() {
@@ -518,7 +526,7 @@
             renderUserHeaderUI();
         }
 
-        // Canvas 高防偽圖形驗證碼
+        // Canvas 圖形驗證碼
         function generateCaptcha() {
             const canvas = document.getElementById('captchaCanvas');
             if (!canvas) return;
@@ -597,14 +605,13 @@
                 await fetchMongoDB('insertOne', {
                     document: { username: userIn, passwordHash: passIn, createdAt: new Date().toISOString(), progress: appState.progress, settings: appState.settings }
                 });
-                alert(`註冊成功！帳號已完美建立，歡迎 ${userIn}`);
+                alert(`註冊成功！帳號已建立，歡迎 ${userIn}`);
             } else {
                 appState.auth.currentUser = userIn;
                 appState.auth.isLoggedIn = true;
                 await loadUserStateFromStorage(userIn);
             }
 
-            // 🔥 登入成功，立刻發送第一筆信號給 Google Sheet 進行流水入帳
             await syncWithCloud('user_login'); 
 
             document.getElementById('authUsername').value = '';
@@ -615,7 +622,7 @@
         }
 
         // ==========================================================================
-        // 音訊與核心雙向同步控制
+        // 音訊與計時控制層
         // ==========================================================================
         function initAudioEngine() {
             audioEngine.addEventListener('error', () => { appState.session.isAudioLoaded = false; });
@@ -697,7 +704,6 @@
             const minutesDone = Math.floor(appState.session.totalDuration / 60);
             appState.progress.weeklyData[4] += minutesDone; 
             
-            // 🔥 硬核同步：音樂結束時，精準發送正念數據入帳給 Google Sheet
             syncWithCloud('save_progress', {
                 trackId: appState.session.currentTrackId,
                 durationMinutes: minutesDone
@@ -706,7 +712,7 @@
             appState.session.currentTime = 0;
             updatePlaybackProgressUI();
             saveUserStateToStorage(); 
-            alert("✨ 正念修煉完成！進度已實時寫入雲端中轉試算表。");
+            alert("✨ 正念修煉完成！進度已實時同步存檔。");
         }
 
         function setupTrackMetadataUI(trackId) {
@@ -719,6 +725,17 @@
             updateMediaSessionMetadata(trackId);
         }
 
+        // 🎯 核心修正位置：動態呼吸狀態改為全英文 'Inhale...' / 'Exhale...' 規範
+        function runBreathingLoop() {
+            if (appState.session.isPlaying) {
+                const phase = Date.now() % 8000;
+                breathTxt.innerText = phase < 4000 ? "Inhale..." : "Exhale...";
+            } else {
+                if (appState.session.currentTime === 0) breathTxt.innerText = "Ready";
+            }
+            requestAnimationFrame(runBreathingLoop);
+        }
+
         function selectTrack(trackId) {
             appState.session.currentTrackId = trackId;
             setupTrackMetadataUI(trackId);
@@ -728,6 +745,7 @@
             togglePlayback();
         }
 
+        // 其餘邏輯保持不變
         function togglePlayback() {
             if (audioEngine.paused && appState.session.isPlaying === false) {
                 audioEngine.play().catch(() => {});
@@ -752,16 +770,6 @@
 
         function handleVolumeChange(val) { audioEngine.volume = parseFloat(val); }
 
-        function runBreathingLoop() {
-            if (appState.session.isPlaying) {
-                const phase = Date.now() % 8000;
-                breathTxt.innerText = phase < 4000 ? "吸氣..." : "呼氣...";
-            } else {
-                if (appState.session.currentTime === 0) breathTxt.innerText = "準備就緒";
-            }
-            requestAnimationFrame(runBreathingLoop);
-        }
-
         function refreshWeather() {
             const weatherPool = [{ temp: 26, icon: '☀️' }, { temp: 22, icon: '🌧️' }, { temp: 24, icon: '⛅' }];
             const picked = weatherPool[Math.floor(Math.random() * weatherPool.length)];
@@ -770,7 +778,6 @@
             document.getElementById('weatherTemp').innerText = `${appState.weather.temp}°C`;
         }
 
-        // Media Session 
         function updateMediaSessionMetadata(trackId) {
             if ('mediaSession' in navigator) {
                 const track = appState.session.tracks[trackId];
