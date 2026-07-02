@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Mindful Space - Complete Production Ready</title>
+    <title>Mindful Space - Stable Production v1.1</title>
     <meta name="theme-color" content="#a855f7">
     <link rel="manifest" href="./manifest.json">
     
@@ -80,7 +80,6 @@
             position: relative;
         }
 
-        /* 狀態列 */
         .status-bar {
             height: 35px;
             width: 100%;
@@ -110,7 +109,6 @@
         .app-content.active { display: block; }
         .app-content::-webkit-scrollbar { display: none; }
 
-        /* 主頁用戶頂欄 */
         .user-header-zone { display: flex; justify-content: space-between; align-items: center; margin: 15px 0 20px; }
         .user-welcome-title { font-size: 28px; font-weight: 600; }
         .auth-trigger-btn {
@@ -122,10 +120,8 @@
             cursor: pointer;
             color: var(--text-main);
             font-weight: 500;
-            transition: all 0.2s;
         }
 
-        /* 安全驗證碼登入窗 */
         .auth-form-container { display: flex; flex-direction: column; gap: 14px; margin-top: 10px; }
         .auth-input {
             width: 100%;
@@ -143,10 +139,8 @@
         #captchaCanvas { background: #ffffff; border-radius: 14px; cursor: pointer; height: 44px; width: 110px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         
         .auth-submit-btn { background: var(--accent-purple); color: white; border: none; padding: 12px; border-radius: 16px; font-size: 15px; font-weight: 600; cursor: pointer; }
-        .auth-submit-btn:active { transform: scale(0.97); }
         .auth-switch-link { text-align: center; font-size: 12px; color: var(--text-sub); cursor: pointer; margin-top: 4px; }
 
-        /* 其餘功能排版 */
         .daily-tip { background: rgba(255, 255, 255, 0.04); }
         .daily-tip h4 { color: #e28743; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; font-weight: 700; }
         .daily-tip p { font-size: 14px; line-height: 1.5; opacity: 0.85; }
@@ -174,7 +168,6 @@
         .quick-info p { font-size: 12px; color: var(--text-sub); }
         .quick-play-icon { color: var(--text-sub); opacity: 0.8; font-size: 20px; }
 
-        /* 播放面板 */
         #session-page { padding-bottom: 0; display: none; flex-direction: column; justify-content: space-between; height: 100%; }
         #session-page.active { display: flex; }
         .session-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-size: 18px; }
@@ -226,7 +219,6 @@
         .player-controls { display: flex; justify-content: center; align-items: center; gap: 44px; }
         .play-btn { width: 58px; height: 58px; border-radius: 50%; background: rgba(255,255,255,0.15); display: flex; justify-content: center; align-items: center; font-size: 22px; color: #fff; box-shadow: 0 4px 15px var(--shadow-color); cursor: pointer; }
 
-        /* Progress 看板 */
         .journey-title h2 { font-size: 24px; font-weight: 600; }
         .journey-title p { font-size: 13px; color: var(--text-sub); margin-bottom: 18px; }
         .streak-badge { display: flex; align-items: center; gap: 14px; background: rgba(255,255,255,0.03); }
@@ -247,7 +239,6 @@
         .day-lbl { font-size: 11px; color: var(--text-sub); margin-top: 8px; }
         .chart-summary { font-size: 13px; color: var(--text-sub); text-align: center; line-height: 1.5; padding: 0 10px; }
 
-        /* 底部導航欄 */
         .bottom-nav { height: 75px; background: var(--nav-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 1px solid var(--card-border); display: flex; justify-content: space-around; align-items: center; padding-bottom: 12px; z-index: 10; }
         .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-main); opacity: 0.3; font-size: 11px; cursor: pointer; transition: opacity 0.2s; }
         .nav-item.active { opacity: 1; color: var(--accent-purple); }
@@ -399,7 +390,6 @@
             </div>
         </div>
 
-        <!-- 底部導航欄 -->
         <div class="bottom-nav">
             <div class="nav-item" id="nav-home" onclick="switchPage('home')"><span class="icon">🏠</span><span>Home</span></div>
             <div class="nav-item" id="nav-session" onclick="switchPage('session')"><span class="icon">🧘</span><span>Sessions</span></div>
@@ -408,15 +398,14 @@
     </div>
 
     <!-- ==========================================================================
-       3. 核心 JavaScript 控制層
+       3. 核心 JavaScript 控制與真實表單網頁傳輸器
        ========================================================================== -->
     <script>
-        // 🎯 雲端數據配置：請在此處填入你在 Google Apps Script 部署獲得的最新 /exec 網址
+        // 🎯 請在此處精準填入你剛才在第一步部署得到的最新 /exec 網址！
         const CLOUD_CONFIG = {
-            WEB_APP_URL: 'https://script.google.com/macros/s/YOUR_APPS_SCRIPT_ID/exec' 
+            WEB_APP_URL: 'https://script.google.com/macros/s/YOUR_ACTUAL_NEW_DEPLOY_ID/exec' 
         };
 
-        // 🎯 MongoDB Atlas Data API 配置接口
         const MONGODB_CONFIG = {
             endpoint: "https://data.mongodb-api.com/app/YOUR_APP_ID/endpoint/data/v1/action",
             apiKey: "YOUR_ATLAS_DATA_API_KEY",
@@ -447,7 +436,6 @@
         const audioEngine = new Audio();
         let backupTimer = null; 
 
-        // DOM 緩存
         const timerDisplay = document.getElementById('timerDisplay');
         const currentTimeDisplay = document.getElementById('currentTimeDisplay');
         const totalTimeDisplay = document.getElementById('totalTimeDisplay');
@@ -459,7 +447,6 @@
         const displayUsername = document.getElementById('displayUsername');
         const authBtn = document.getElementById('authBtn');
 
-        // MongoDB Atlas 請求器
         async function fetchMongoDB(action, payload) {
             if (MONGODB_CONFIG.apiKey === "YOUR_ATLAS_DATA_API_KEY") return null;
             try {
@@ -472,15 +459,15 @@
             } catch (e) { return null; }
         }
 
-        // Google Sheets 異步核心傳輸器
+        // 🎯 終極修復：改用標準 FormData 進行包裝發送，完美擊穿跨域不對接防線！
         async function syncWithCloud(actionType, additionalData = {}) {
             if (!appState.auth.isLoggedIn || !appState.auth.currentUser) return;
-            if (CLOUD_CONFIG.WEB_APP_URL.includes("YOUR_APPS_SCRIPT_ID")) {
-                console.log("本地 Scope 多用戶槽儲存成功（請配置 CLOUD_CONFIG 啟用雲端同步）。");
+            if (CLOUD_CONFIG.WEB_APP_URL.includes("YOUR_ACTUAL_NEW_DEPLOY_ID")) {
+                console.log("本地已存檔。請填入 WEB_APP_URL 激活實時數據同步。");
                 return;
             }
 
-            const syncPayload = {
+            const payloadObj = {
                 action: actionType,
                 username: appState.auth.currentUser,
                 streak: appState.progress.streak,
@@ -491,13 +478,21 @@
                 ...additionalData
             };
 
-            fetch(CLOUD_CONFIG.WEB_APP_URL, {
-                method: 'POST',
-                mode: 'no-cors', 
-                body: JSON.stringify(syncPayload)
-            })
-            .then(() => console.log(`🚀 雲端異步更新成功: [${actionType}]`))
-            .catch(err => console.warn("網絡離線，保護本地 LocalStorage 快取數據。", err));
+            try {
+                // 使用標準模擬表單將 JSON 字串化壓入
+                const formData = new FormData();
+                formData.append('jsonData', JSON.stringify(payloadObj));
+
+                fetch(CLOUD_CONFIG.WEB_APP_URL, {
+                    method: 'POST',
+                    mode: 'no-cors', // 允許跨域請求安全通過
+                    body: formData
+                })
+                .then(() => console.log(`🚀 表單中轉流發送成功: [${actionType}]`))
+                .catch(err => console.warn("網絡離線，落入本地儲存防線：", err));
+            } catch(e) {
+                console.error("發送引擎建構失敗:", e);
+            }
         }
 
         function saveUserStateToStorage() {
@@ -526,7 +521,6 @@
             renderUserHeaderUI();
         }
 
-        // Canvas 圖形驗證碼
         function generateCaptcha() {
             const canvas = document.getElementById('captchaCanvas');
             if (!canvas) return;
@@ -605,7 +599,7 @@
                 await fetchMongoDB('insertOne', {
                     document: { username: userIn, passwordHash: passIn, createdAt: new Date().toISOString(), progress: appState.progress, settings: appState.settings }
                 });
-                alert(`註冊成功！帳號已建立，歡迎 ${userIn}`);
+                alert(`註冊成功！歡迎加入正念空間，${userIn}`);
             } else {
                 appState.auth.currentUser = userIn;
                 appState.auth.isLoggedIn = true;
@@ -621,9 +615,6 @@
             alert(`安全驗證成功！歡迎回來 ${userIn}。`);
         }
 
-        // ==========================================================================
-        // 音訊與計時控制層
-        // ==========================================================================
         function initAudioEngine() {
             audioEngine.addEventListener('error', () => { appState.session.isAudioLoaded = false; });
             audioEngine.addEventListener('loadedmetadata', () => {
@@ -704,6 +695,7 @@
             const minutesDone = Math.floor(appState.session.totalDuration / 60);
             appState.progress.weeklyData[4] += minutesDone; 
             
+            // 🔥 音樂結束，實時以表單數據推送入帳
             syncWithCloud('save_progress', {
                 trackId: appState.session.currentTrackId,
                 durationMinutes: minutesDone
@@ -725,7 +717,6 @@
             updateMediaSessionMetadata(trackId);
         }
 
-        // 🎯 核心修正位置：動態呼吸狀態改為全英文 'Inhale...' / 'Exhale...' 規範
         function runBreathingLoop() {
             if (appState.session.isPlaying) {
                 const phase = Date.now() % 8000;
@@ -745,7 +736,6 @@
             togglePlayback();
         }
 
-        // 其餘邏輯保持不變
         function togglePlayback() {
             if (audioEngine.paused && appState.session.isPlaying === false) {
                 audioEngine.play().catch(() => {});
@@ -869,7 +859,6 @@
             requestAnimationFrame(runBreathingLoop);
             switchPage('home');
 
-            // 實時時鐘即時同步
             setInterval(() => {
                 const now = new Date();
                 document.getElementById('statusBarTime').innerText = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
