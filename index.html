@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Mindful Space - Stable Production v1.1</title>
+    <title>Mindful Space - Stable Production v1.2</title>
     <meta name="theme-color" content="#a855f7">
     <link rel="manifest" href="./manifest.json">
     
@@ -248,7 +248,6 @@
 <body>
 
     <div class="phone-mockup">
-        <!-- 狀態列 -->
         <div class="status-bar">
             <span id="statusBarTime">00:00</span>
             <div class="status-weather" onclick="refreshWeather()">
@@ -398,10 +397,10 @@
     </div>
 
     <!-- ==========================================================================
-       3. 核心 JavaScript 控制與真實表單網頁傳輸器
+       3. 核心 JavaScript 控制層
        ========================================================================== -->
     <script>
-        // 🎯 請在此處精準填入你剛才在第一步部署得到的最新 /exec 網址！
+        // 🎯 請在此處精準填入你在 步驟一 部署得到的最新 /exec 網址！
         const CLOUD_CONFIG = {
             WEB_APP_URL: 'https://script.google.com/macros/s/YOUR_ACTUAL_NEW_DEPLOY_ID/exec' 
         };
@@ -459,11 +458,11 @@
             } catch (e) { return null; }
         }
 
-        // 🎯 終極修復：改用標準 FormData 進行包裝發送，完美擊穿跨域不對接防線！
+        // 🎯 核心修正：將資料還原為純 JSON 字串發送，徹底適配新版 Apps Script 網關安全攔截器
         async function syncWithCloud(actionType, additionalData = {}) {
             if (!appState.auth.isLoggedIn || !appState.auth.currentUser) return;
             if (CLOUD_CONFIG.WEB_APP_URL.includes("YOUR_ACTUAL_NEW_DEPLOY_ID")) {
-                console.log("本地已存檔。請填入 WEB_APP_URL 激活實時數據同步。");
+                console.log("本地已存檔。");
                 return;
             }
 
@@ -478,21 +477,13 @@
                 ...additionalData
             };
 
-            try {
-                // 使用標準模擬表單將 JSON 字串化壓入
-                const formData = new FormData();
-                formData.append('jsonData', JSON.stringify(payloadObj));
-
-                fetch(CLOUD_CONFIG.WEB_APP_URL, {
-                    method: 'POST',
-                    mode: 'no-cors', // 允許跨域請求安全通過
-                    body: formData
-                })
-                .then(() => console.log(`🚀 表單中轉流發送成功: [${actionType}]`))
-                .catch(err => console.warn("網絡離線，落入本地儲存防線：", err));
-            } catch(e) {
-                console.error("發送引擎建構失敗:", e);
-            }
+            fetch(CLOUD_CONFIG.WEB_APP_URL, {
+                method: 'POST',
+                mode: 'no-cors', 
+                body: JSON.stringify(payloadObj)
+            })
+            .then(() => console.log(`🚀 雲端傳輸完成: [${actionType}]`))
+            .catch(err => console.warn("網絡離線保護機制啟用：", err));
         }
 
         function saveUserStateToStorage() {
@@ -592,14 +583,12 @@
                 if (checkCloud && checkCloud.document) {
                     alert("此用戶名已被註冊。"); generateCaptcha(); return;
                 }
-                
                 appState.auth.currentUser = userIn;
                 appState.auth.isLoggedIn = true;
-                
                 await fetchMongoDB('insertOne', {
                     document: { username: userIn, passwordHash: passIn, createdAt: new Date().toISOString(), progress: appState.progress, settings: appState.settings }
                 });
-                alert(`註冊成功！歡迎加入正念空間，${userIn}`);
+                alert(`註冊成功！歡迎加入，${userIn}`);
             } else {
                 appState.auth.currentUser = userIn;
                 appState.auth.isLoggedIn = true;
@@ -695,7 +684,6 @@
             const minutesDone = Math.floor(appState.session.totalDuration / 60);
             appState.progress.weeklyData[4] += minutesDone; 
             
-            // 🔥 音樂結束，實時以表單數據推送入帳
             syncWithCloud('save_progress', {
                 trackId: appState.session.currentTrackId,
                 durationMinutes: minutesDone
@@ -704,7 +692,7 @@
             appState.session.currentTime = 0;
             updatePlaybackProgressUI();
             saveUserStateToStorage(); 
-            alert("✨ 正念修煉完成！進度已實時同步存檔。");
+            alert("✨ 正念修煉完成！進度已實時同步。");
         }
 
         function setupTrackMetadataUI(trackId) {
