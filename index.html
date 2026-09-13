@@ -4,13 +4,18 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="mobile-web-app-capable" content="yes">
-<title>Mindful Space - v2.1.1</title>
+<title>Mindful Space - v2.1.2</title>
 <meta name="theme-color" content="#a855f7">
-<link rel="manifest" href="./manifest.json">
-<link rel="apple-touch-icon" href="./icon-192.png">
+
+<!-- 破除圖標與配置的強快取 -->
+<link rel="manifest" href="./manifest.json?v=2.3">
+<link rel="apple-touch-icon" href="./icon-192.png?v=2.3">
+<link rel="icon" type="image/png" href="./icon-192.png?v=2.3">
+
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Mindful">
+
 <style>
 :root {
   --bg-gradient: linear-gradient(135deg, #111424 0%, #1a1528 50%, #22161f 100%);
@@ -117,7 +122,7 @@ body { display: flex; justify-content: center; align-items: center;
     background: var(--ring-gradient); display: flex;
     justify-content: center; align-items: center;
     box-shadow: 0 0 30px rgba(147, 197, 253, 0.05);
-    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+    transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1); }
 .breath-ring-inner { width: 150px; height: 150px; border-radius: 50%;
     background: rgba(20, 20, 30, 0.6); border: 1px solid var(--card-border);
     display: flex; justify-content: center; align-items: center;
@@ -417,6 +422,7 @@ function getWeekKey() {
     monday.setDate(today.getDate() - ((today.getDay() + 6) % 7));
     return monday.toISOString().slice(0, 10);
 }
+
 function ensureWeeklyReset() {
     const weekKey = getWeekKey();
     if (appState.progress.weekStartDate !== weekKey) {
@@ -459,13 +465,11 @@ function recordSession(minutes) {
     appState.progress.calmScore = calculateCalmScore();
 }
 
-// ===== 天氣：GPS → IP fallback =====
 async function refreshWeather() {
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
             (pos) => fetchWeatherByCoords(pos.coords.latitude, pos.coords.longitude),
             () => {
-                console.warn("GPS 失敗，改用 IP 定位");
                 fetchWeatherByIP();
             },
             { timeout: 6000, enableHighAccuracy: false }
@@ -478,6 +482,7 @@ async function refreshWeather() {
 async function fetchWeatherByIP() {
     try {
         const res = await fetch('https://ipapi.co/json/');
+        if (!res.ok) throw new Error("HTTP " + res.status);
         const data = await res.json();
         if (data && data.latitude && data.longitude) {
             await fetchWeatherByCoords(data.latitude, data.longitude);
@@ -485,7 +490,6 @@ async function fetchWeatherByIP() {
             throw new Error("IP 定位失敗");
         }
     } catch (e) {
-        console.warn("IP 定位失敗：", e);
         document.getElementById('weatherTemp').innerText = '--°C';
     }
 }
@@ -507,7 +511,6 @@ async function fetchWeatherByCoords(lat, lon) {
         else if (icon === '🌧️' || icon === '⛈️') tipEl.innerText = `今日 ${temp}°C 有雨 — 聆聽雨聲，做 10 分鐘靜觀冥想。`;
         else tipEl.innerText = `今日 ${temp}°C — 適合做 3 分鐘深呼吸。`;
     } catch (e) {
-        console.warn("天氣 API 失敗：", e);
         document.getElementById('weatherTemp').innerText = '--°C';
     }
 }
@@ -841,13 +844,20 @@ function runBreathingCycle() {
         { name: 'Exhale', duration: pattern.exhale, scale: 1.0,  vibrate: [20, 60, 20] },
         { name: 'Hold',   duration: pattern.hold2,  scale: 1.0,  vibrate: [15] }
     ].filter(p => p.duration > 0);
+    
     let idx = 0;
     function step() {
         if (!appState.session.isPlaying) return;
         const phase = phases[idx];
         breathTxt.innerText = phase.name + ' ' + (phase.duration / 1000) + 's';
+        
+        const transitionDuration = phase.name === 'Hold' ? 0.2 : (phase.duration / 1000);
+        breathRing.style.transition = `transform ${transitionDuration}s cubic-bezier(0.4, 0, 0.2, 1)`;
         breathRing.style.transform = `scale(${phase.scale})`;
-        if ('vibrate' in navigator && phase.vibrate) navigator.vibrate(phase.vibrate);
+
+        if ('vibrate' in navigator && phase.vibrate) {
+            try { navigator.vibrate(phase.vibrate); } catch(e) {}
+        }
         idx = (idx + 1) % phases.length;
         breathPhaseTimeout = setTimeout(step, phase.duration);
     }
@@ -856,6 +866,7 @@ function runBreathingCycle() {
 
 function stopBreathingCycle() {
     if (breathPhaseTimeout) clearTimeout(breathPhaseTimeout);
+    breathRing.style.transition = 'transform 0.4s ease-out';
     breathRing.style.transform = 'scale(1.0)';
     if (appState.session.currentTime === 0) breathTxt.innerText = "Ready";
 }
@@ -919,10 +930,11 @@ function updateMediaSessionMetadata(trackId) {
             title: track.title,
             artist: "Mindful Space",
             album: track.subtitle,
-            artwork: [{ src: './icon-192.png', sizes: '192x192', type: 'image/png' }]
+            artwork: [{ src: './icon-192.png?v=2.3', sizes: '192x192', type: 'image/png' }]
         });
     }
 }
+
 function updateMediaSessionPositionState() {
     if ('mediaSession' in navigator && 'setPositionState' in navigator.mediaSession) {
         if (Number.isFinite(audioEngine.duration) && audioEngine.duration > 0) {
@@ -934,6 +946,7 @@ function updateMediaSessionPositionState() {
         }
     }
 }
+
 function initMediaSessionActionHandlers() {
     if ('mediaSession' in navigator) {
         navigator.mediaSession.setActionHandler('play', () => togglePlayback());
@@ -1004,8 +1017,11 @@ document.addEventListener('visibilitychange', () => {
 
 document.addEventListener("DOMContentLoaded", () => {
     if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('./sw.js')
-            .then(reg => console.log('SW Registered:', reg.scope))
+        navigator.serviceWorker.register('./sw.js?v=2.3')
+            .then(reg => {
+                console.log('SW Registered:', reg.scope);
+                reg.update();
+            })
             .catch(err => console.warn('SW Register Failed:', err));
     }
     const globalCfg = localStorage.getItem(GLOBAL_CONFIG_KEY);
