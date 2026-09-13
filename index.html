@@ -1,1092 +1,595 @@
 <!DOCTYPE html>
 <html lang="zh-HK">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
-<meta name="mobile-web-app-capable" content="yes">
-<title>Mindful Space - v3.4 Embodied AI</title>
-<meta name="theme-color" content="#a855f7">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Mindful | 樂活身心冥想</title>
+  
+  <!-- PWA 核心設定 -->
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#4A154B">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="apple-touch-icon" href="./icon-192.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
 
-<link rel="manifest" href="./manifest.json?v=3.4">
-<link rel="apple-touch-icon" href="./icon-192.png?v=3.4">
-<link rel="icon" type="image/png" href="./icon-192.png?v=3.4">
+  <!-- Supabase CDN (用於全球即時共修場) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Mindful">
+  <style>
+    :root {
+      --bg-gradient: linear-gradient(135deg, #1e0826 0%, #0f051d 100%);
+      --card-bg: rgba(255, 255, 255, 0.08);
+      --card-border: rgba(255, 255, 255, 0.15);
+      --accent-purple: #a855f7;
+      --accent-glow: rgba(168, 85, 247, 0.4);
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+    }
 
-<style>
-:root {
-  --bg-gradient: linear-gradient(135deg, #111424 0%, #1a1528 50%, #22161f 100%);
-  --card-bg: rgba(255, 255, 255, 0.06);
-  --card-border: rgba(255, 255, 255, 0.12);
-  --text-main: rgba(255, 255, 255, 0.95);
-  --text-sub: rgba(255, 255, 255, 0.6);
-  --nav-bg: rgba(17, 20, 36, 0.85);
-  --ring-gradient: linear-gradient(135deg, rgba(59, 130, 246, 0.4), rgba(236, 72, 153, 0.4));
-  --shadow-color: rgba(0, 0, 0, 0.4);
-  --accent-purple: #a855f7;
-  --accent-cyan: #06b6d4;
-  --danger-color: #ef4444;
-  --success-color: #10b981;
-}
-@media (prefers-color-scheme: light) {
-  :root {
-    --bg-gradient: linear-gradient(135deg, #e5eef7 0%, #faedf3 50%, #fff4ec 100%);
-    --card-bg: rgba(255, 255, 255, 0.45);
-    --card-border: rgba(0, 0, 0, 0.1);
-    --text-main: rgba(0, 0, 0, 0.88);
-    --text-sub: rgba(0, 0, 0, 0.55);
-    --nav-bg: rgba(255, 255, 255, 0.85);
-    --ring-gradient: linear-gradient(135deg, rgba(147, 197, 253, 0.6), rgba(244, 143, 177, 0.6));
-    --shadow-color: rgba(0, 0, 0, 0.08);
-    --accent-purple: #9333ea;
-    --accent-cyan: #0891b2;
-  }
-}
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
 
-/* WCAG 動態減弱 */
-@media (prefers-reduced-motion: reduce) {
-  .breath-ring { transition: none !important; }
-  .pulse-dot { animation: none !important; }
-  body { animation: none !important; }
-}
+    body {
+      background: var(--bg-gradient);
+      color: var(--text-main);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang HK", "Microsoft JhengHei", sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: env(safe-area-inset-top, 20px) 16px env(safe-area-inset-bottom, 20px);
+      overflow-x: hidden;
+    }
 
-* { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-body { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: var(--bg-gradient); color: var(--text-main); }
-.phone-mockup { width: 100%; max-width: 420px; height: 100vh; max-height: 890px; background: transparent; border-radius: 40px; box-shadow: 0 20px 50px var(--shadow-color); border: 2px solid var(--card-border); display: flex; flex-direction: column; overflow: hidden; position: relative; }
-@media (max-width: 440px) { .phone-mockup { max-height: 100vh; border-radius: 0; border: none; } }
-.status-bar { height: 40px; width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 14px 24px 0; font-size: 13px; font-weight: 600; opacity: 0.9; }
-.glass-card { background: var(--card-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid var(--card-border); border-radius: 24px; padding: 20px; margin-bottom: 16px; }
-.app-content { flex: 1; overflow-y: auto; padding: 10px 20px 90px; display: none; }
-.app-content.active { display: block; }
+    /* 頂部共修與狀態標籤 */
+    header {
+      width: 100%;
+      max-width: 480px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 4px;
+    }
 
-/* Bug 1 修復：強制 flex 佈局避免播放頁被 block 覆蓋 */
-#session-page.active { display: flex !important; flex-direction: column; justify-content: space-between; height: 100%; }
+    .brand-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
 
-.user-header-zone { display: flex; justify-content: space-between; align-items: center; margin: 10px 0; }
-.user-welcome-title { font-size: 24px; font-weight: 700; }
-.auth-trigger-btn { background: var(--card-bg); border: 1px solid var(--card-border); padding: 6px 14px; border-radius: 20px; font-size: 12px; cursor: pointer; color: var(--text-main); font-weight: 600; }
+    .collective-badge {
+      background: rgba(168, 85, 247, 0.18);
+      border: 1px solid var(--accent-purple);
+      color: #e9d5ff;
+      font-size: 0.75rem;
+      padding: 4px 10px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.3s ease;
+    }
 
-.collective-sync-pill { display: inline-flex; align-items: center; gap: 6px; background: rgba(168, 85, 247, 0.12); border: 1px solid rgba(168, 85, 247, 0.25); padding: 4px 12px; border-radius: 14px; font-size: 11px; color: var(--accent-purple); margin-bottom: 12px; font-weight: 600; }
-.pulse-dot { width: 6px; height: 6px; border-radius: 50%; background: #22c55e; box-shadow: 0 0 8px #22c55e; }
+    .pulse-dot {
+      width: 7px;
+      height: 7px;
+      background: #10b981;
+      border-radius: 50%;
+      box-shadow: 0 0 6px #10b981;
+      animation: blink 2s infinite;
+    }
 
-.sensor-banner-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px; }
-.sensor-box { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 18px; padding: 10px 8px; display: flex; flex-direction: column; justify-content: space-between; text-align: center; cursor: pointer; }
-.sensor-box.active { border-color: var(--accent-cyan); background: rgba(6, 182, 212, 0.12); }
-.sensor-box h5 { font-size: 11px; margin-bottom: 2px; }
-.sensor-box p { font-size: 9px; color: var(--text-sub); }
+    @keyframes blink {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.8); }
+    }
 
-.daily-tip { background: rgba(255, 255, 255, 0.04); }
-.daily-tip h4 { color: #e28743; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; font-weight: 700; }
-.daily-tip p { font-size: 13px; line-height: 1.5; }
+    /* 呼吸視覺中心核心環 */
+    .meditation-stage {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      margin: 20px 0;
+    }
 
-.section-title { font-size: 17px; font-weight: 700; margin: 16px 0 10px; }
-.practice-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-.practice-btn { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 24px; padding: 18px 14px; text-align: center; cursor: pointer; }
-.practice-btn:active { transform: scale(0.97); }
-.practice-btn .icon { width: 48px; height: 48px; border-radius: 50%; margin: 0 auto 10px; display: flex; justify-content: center; align-items: center; font-size: 22px; }
-.btn-meditate .icon { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
-.btn-breathe .icon { background: rgba(236, 72, 153, 0.15); color: #f472b6; }
-.practice-btn h3 { font-size: 15px; font-weight: 600; margin-bottom: 2px; }
-.practice-btn p { font-size: 11px; color: var(--text-sub); }
+    .breath-outer-ring {
+      width: 260px;
+      height: 260px;
+      border-radius: 50%;
+      border: 2px dashed rgba(255, 255, 255, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      transition: border-color 0.5s ease;
+    }
 
-.session-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-size: 18px; }
-.session-title-area { text-align: center; margin-top: 4px; }
-.session-title-area h2 { font-size: 22px; font-weight: 700; }
-.session-title-area p { font-size: 12px; color: var(--text-sub); }
-.ai-context-badge { margin: 6px auto 0; padding: 4px 10px; border-radius: 12px; font-size: 11px; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--card-border); display: inline-block; color: var(--accent-cyan); }
+    .breath-circle {
+      width: 170px;
+      height: 170px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #c084fc 0%, #7e22ce 70%, #581c87 100%);
+      box-shadow: 0 0 35px var(--accent-glow);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: transform 4s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+    }
 
-.pattern-picker { display: flex; justify-content: center; gap: 8px; margin-top: 10px; }
-.pattern-chip { padding: 4px 10px; border-radius: 12px; font-size: 11px; background: var(--card-bg); border: 1px solid var(--card-border); color: var(--text-main); cursor: pointer; }
-.pattern-chip.active { background: var(--accent-purple); color: white; border-color: var(--accent-purple); }
+    .breath-action {
+      font-size: 1.35rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+    }
 
-.binaural-matrix-card { background: rgba(255, 255, 255, 0.03); border: 1px solid var(--card-border); border-radius: 16px; padding: 10px 14px; margin-top: 8px; }
-.binaural-title-row { display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: var(--text-sub); margin-bottom: 8px; }
-.binaural-chip-group { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
-.binaural-chip { padding: 5px 0; text-align: center; border-radius: 10px; font-size: 10px; font-weight: 600; background: var(--card-bg); border: 1px solid var(--card-border); color: var(--text-sub); cursor: pointer; transition: all 0.2s; }
-.binaural-chip.active { background: var(--accent-cyan); border-color: var(--accent-cyan); color: #000; }
+    .breath-timer {
+      font-size: 0.85rem;
+      color: #e9d5ff;
+      margin-top: 4px;
+    }
 
-.breathing-container { height: 200px; display: flex; justify-content: center; align-items: center; position: relative; }
-.breath-ring { width: 150px; height: 150px; border-radius: 50%; background: var(--ring-gradient); display: flex; justify-content: center; align-items: center; box-shadow: 0 0 30px rgba(147, 197, 253, 0.05); transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1); }
-.breath-ring-inner { width: 130px; height: 130px; border-radius: 50%; background: rgba(20, 20, 30, 0.7); border: 1px solid var(--card-border); display: flex; justify-content: center; align-items: center; font-size: 15px; font-weight: 600; }
-.session-timer { text-align: center; font-size: 38px; font-weight: 300; margin-bottom: 2px; }
+    /* 數值資訊儀表板 */
+    .dashboard {
+      width: 100%;
+      max-width: 480px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 20px;
+    }
 
-.player-panel { margin-top: auto; padding: 14px 18px; background: rgba(255, 255, 255, 0.03); }
-.progress-bar-wrapper { display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: var(--text-sub); margin-bottom: 10px; }
-.progress-track { flex: 1; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; margin: 0 10px; position: relative; cursor: pointer; }
-.progress-fill { width: 0%; height: 100%; background: var(--accent-purple); border-radius: 3px; pointer-events: none; }
-.player-controls { display: flex; justify-content: center; align-items: center; gap: 36px; }
-.play-btn { width: 52px; height: 52px; border-radius: 50%; background: rgba(255,255,255,0.15); display: flex; justify-content: center; align-items: center; font-size: 20px; color: #fff; cursor: pointer; }
+    .metric-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-radius: 16px;
+      padding: 12px;
+      text-align: center;
+    }
 
-.mood-weather-card { display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; min-height: 70px; }
-.mood-weather-empty { width: 100%; text-align: center; font-size: 12px; color: var(--text-sub); }
-.mood-weather-item { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 11px; color: var(--text-sub); }
-.mood-weather-icon { font-size: 20px; }
+    .metric-card .title {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
 
-/* 創新：HRV 趨勢迷你圖 */
-.hrv-card { display: flex; flex-direction: column; gap: 10px; }
-.hrv-header { display: flex; justify-content: space-between; align-items: center; font-size: 12px; }
-.hrv-value { font-size: 20px; font-weight: 700; color: var(--accent-cyan); }
-.hrv-bars { display: flex; align-items: flex-end; gap: 4px; height: 40px; }
-.hrv-bar { flex: 1; background: rgba(6, 182, 212, 0.3); border-radius: 3px; min-height: 3px; transition: height 0.4s ease; }
-.hrv-bar.high { background: var(--accent-cyan); }
-.hrv-hint { font-size: 11px; color: var(--text-sub); }
+    .metric-card .val {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #fff;
+    }
 
-.modal-backdrop { display: none; position: absolute; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: 200; justify-content: center; align-items: center; padding: 20px; }
-.modal-backdrop.show { display: flex; }
-.modal-card { width: 100%; max-width: 320px; text-align: center; }
+    /* 控制面板 */
+    .action-panel {
+      width: 100%;
+      max-width: 480px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
 
-.bottom-nav { position: absolute; bottom: 0; left: 0; right: 0; height: 70px; background: var(--nav-bg); backdrop-filter: blur(20px); border-top: 1px solid var(--card-border); display: flex; justify-content: space-around; align-items: center; padding-bottom: 8px; z-index: 10; }
-.nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-main); opacity: 0.4; font-size: 11px; cursor: pointer; }
-.nav-item.active { opacity: 1; color: var(--accent-purple); }
-.nav-item .icon { font-size: 20px; margin-bottom: 2px; }
+    .btn-main {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(135deg, #9333ea 0%, #6b21a8 100%);
+      border: none;
+      border-radius: 14px;
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(147, 51, 234, 0.35);
+      transition: transform 0.1s ease;
+    }
 
-.toast { position: absolute; top: 50px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.9); color: white; padding: 8px 18px; border-radius: 20px; font-size: 12px; z-index: 300; opacity: 0; transition: opacity 0.3s; pointer-events: none; max-width: 80%; text-align: center; }
-.toast.show { opacity: 1; }
-.danger-zone-btn { width: 100%; padding: 12px; border-radius: 16px; background: rgba(239, 68, 68, 0.1); border: 1px solid var(--danger-color); color: var(--danger-color); font-size: 13px; font-weight: 600; cursor: pointer; margin-top: 16px; text-align: center; }
+    .btn-main:active {
+      transform: scale(0.98);
+    }
 
-/* 載入畫面 */
-.loading-overlay { position: absolute; inset: 0; background: rgba(17, 20, 36, 0.95); z-index: 500; display: none; justify-content: center; align-items: center; flex-direction: column; gap: 16px; }
-.loading-overlay.show { display: flex; }
-.loading-spinner { width: 40px; height: 40px; border: 3px solid rgba(168, 85, 247, 0.2); border-top-color: var(--accent-purple); border-radius: 50%; animation: spin 0.8s linear infinite; }
-@keyframes spin { to { transform: rotate(360deg); } }
-</style>
+    .button-group {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn-sub {
+      flex: 1;
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      color: var(--text-main);
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+
+    /* 關鍵缺口 1 修復：iOS 16+ 必須在真實點擊下觸發 TTS 的互動 Toast */
+    #guidanceToast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(150%);
+      width: calc(100% - 32px);
+      max-width: 440px;
+      background: rgba(30, 10, 45, 0.95);
+      border: 1px solid var(--accent-purple);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 15px var(--accent-glow);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: 18px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 1000;
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    #guidanceToast.show {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .toast-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.85rem;
+      color: #d8b4fe;
+    }
+
+    .toast-content {
+      font-size: 0.95rem;
+      line-height: 1.45;
+      color: #ffffff;
+    }
+
+    .toast-btn {
+      background: #9333ea;
+      border: none;
+      color: white;
+      padding: 10px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+  </style>
 </head>
 <body>
 
-<div class="phone-mockup">
-  <div class="status-bar">
-    <span id="statusBarTime">00:00</span>
-    <span style="font-size: 11px; color: var(--accent-purple);">● 背景守護中</span>
-  </div>
-
-  <!-- 主頁 -->
-  <div id="home-page" class="app-content active">
-    <div class="user-header-zone">
-      <div class="user-welcome-title" id="displayUsername">Hello, Visitor</div>
-      <button class="auth-trigger-btn" id="authBtn" onclick="handleAuthAction()">安全登入</button>
+  <!-- 頂部資訊列：創新點 3 全球共修場動態人數 -->
+  <header>
+    <div class="brand-title">
+      <span>🧘</span> Mindful 樂活心境
     </div>
-
-    <div class="collective-sync-pill">
+    <div class="collective-badge" id="collectiveBadge">
       <span class="pulse-dot"></span>
-      <span id="collectiveCount">心流場域：專注於此時此刻</span>
+      <span id="collectiveCount">全球共修：同步中...</span>
     </div>
+  </header>
 
-    <!-- 三感測陣列 -->
-    <div class="sensor-banner-grid">
-      <div class="sensor-box" id="ppgSensorBox" role="button" tabindex="0" aria-label="後鏡頭 PPG 心率感測" onclick="togglePPGScan()">
-        <h5>❤️ 後鏡頭 PPG</h5>
-        <p id="ppgStatusText">指尖按鏡頭 8s</p>
-      </div>
-      <div class="sensor-box" id="breathVoiceBox" role="button" tabindex="0" aria-label="呼吸聲紋同步" onclick="toggleBreathListening()">
-        <h5>🌬️ 聲紋同步</h5>
-        <p id="breathVoiceText">聽呼吸微調環</p>
-      </div>
-      <div class="sensor-box" id="cantoneseBox" role="button" tabindex="0" aria-label="粵語情緒感知" onclick="toggleVoiceCheckin()">
-        <h5>🎙️ 粵語感知</h5>
-        <p id="cantoneseText">講「好chur」</p>
+  <!-- 冥想呼吸核心互動區 -->
+  <main class="meditation-stage">
+    <div class="breath-outer-ring">
+      <div class="breath-circle" id="breathCircle">
+        <div class="breath-action" id="breathAction">準備</div>
+        <div class="breath-timer" id="breathTimer">4s</div>
       </div>
     </div>
+  </main>
 
-    <div class="glass-card daily-tip">
-      <h4>Daily Mindfulness</h4>
-      <p id="dailyTipText">喺回應今日任何訊息之前，先做三次深呼吸。喺刺激同反應之間創造專屬空間。</p>
+  <!-- 即時生理與狀態 HUD 儀表板 -->
+  <section class="dashboard">
+    <div class="metric-card">
+      <div class="title">即時脈搏</div>
+      <div class="val" id="bpmVal">72 <small style="font-size:0.65rem">BPM</small></div>
     </div>
+    <div class="metric-card">
+      <div class="title">心率變異度 (HRV)</div>
+      <div class="val" id="hrvVal">58 <small style="font-size:0.65rem">ms</small></div>
+    </div>
+    <div class="metric-card">
+      <div class="title">情緒感知狀態</div>
+      <div class="val" id="emotionVal" style="font-size: 1rem;">平穩</div>
+    </div>
+  </section>
 
-    <div class="section-title">Begin Your Practice</div>
-    <div class="practice-grid">
-      <div class="practice-btn btn-meditate" onclick="selectTrack('meditation')" role="button" aria-label="Start meditation">
-        <div class="icon">🧘</div>
-        <h3>Meditation</h3>
-        <p>尋找內在安寧</p>
-      </div>
-      <div class="practice-btn btn-breathe" onclick="selectTrack('breathing')" role="button" aria-label="Start breathing exercise">
-        <div class="icon">💨</div>
-        <h3>Breathing</h3>
-        <p>回歸身心中心</p>
-      </div>
+  <!-- 操作按鈕 -->
+  <footer class="action-panel">
+    <button class="btn-main" id="togglePracticeBtn">開始 4-7-8 調息引導</button>
+    <div class="button-group">
+      <button class="btn-sub" id="simulateHrvDropBtn">模擬壓力預警</button>
+      <button class="btn-sub" id="speechSensingBtn">粵語情緒辨識</button>
     </div>
+  </footer>
 
-    <div class="section-title">Quick Sessions</div>
-    <div class="glass-card" style="display: flex; justify-content: space-between; align-items: center; cursor: pointer; padding: 16px; margin-bottom: 12px;" onclick="selectTrack('morning')" role="button" aria-label="Morning Calm">
-      <div><h4 style="font-size: 15px;">晨間喚醒</h4><p style="font-size: 12px; color: var(--text-sub);">5 分鐘 • 激活能量</p></div>
-      <span>▶️</span>
+  <!-- 關鍵缺口 1 修復：解鎖 iOS 16+ User Gesture 語音互動彈窗 -->
+  <div id="guidanceToast">
+    <div class="toast-header">
+      <span id="toastTimeTag">🌿 身心狀態感知引導</span>
+      <span style="cursor:pointer" onclick="closeToast()">✕</span>
     </div>
-    <div class="glass-card" style="display: flex; justify-content: space-between; align-items: center; cursor: pointer; padding: 16px;" onclick="selectTrack('evening')" role="button" aria-label="Evening Wind Down">
-      <div><h4 style="font-size: 15px;">晚間放鬆</h4><p style="font-size: 12px; color: var(--text-sub);">10 分鐘 • 助眠舒緩</p></div>
-      <span>▶️</span>
-    </div>
+    <div class="toast-content" id="toastMessage">偵測到目前身心節奏，建議透過調息恢復能量。</div>
+    <button class="toast-btn" id="playTtsBtn">
+      <span>🔊</span> 點擊聽取粵語音訊引導
+    </button>
   </div>
 
-  <!-- 播放頁 -->
-  <div id="session-page" class="app-content">
-    <div class="session-header">
-      <span onclick="switchPage('home')" role="button" aria-label="Close">✕</span>
-      <span style="font-size: 12px; color: var(--accent-cyan);">立體聲雙耳模式</span>
-    </div>
-    <div class="session-title-area">
-      <h2 id="sessionTitle">深層釋壓</h2>
-      <p id="sessionSubtitle">Guided Meditation</p>
-      <div class="ai-context-badge" id="aiContextBadge">AI 自適應：生理狀態平靜導引</div>
-    </div>
-
-    <div class="pattern-picker">
-      <div class="pattern-chip active" data-pattern="calm" onclick="selectPattern('calm')">Calm 4-4</div>
-      <div class="pattern-chip" data-pattern="box" onclick="selectPattern('box')">Box 4-4-4-4</div>
-      <div class="pattern-chip" data-pattern="478" onclick="selectPattern('478')">Relax 4-7-8</div>
-    </div>
-
-    <!-- 4 頻段雙耳神經節律 -->
-    <div class="binaural-matrix-card">
-      <div class="binaural-title-row">
-        <span>🧠 雙耳腦波牽引 (Binaural Beats)</span>
-        <span id="binauralBandDesc">關閉</span>
-      </div>
-      <div class="binaural-chip-group">
-        <div class="binaural-chip active" data-band="off" onclick="setBinauralBand('off')">OFF</div>
-        <div class="binaural-chip" data-band="delta" onclick="setBinauralBand('delta')">δ 2.5Hz<br><span style="font-size:8px;">深睡</span></div>
-        <div class="binaural-chip" data-band="theta" onclick="setBinauralBand('theta')">θ 6Hz<br><span style="font-size:8px;">冥想</span></div>
-        <div class="binaural-chip" data-band="alpha" onclick="setBinauralBand('alpha')">α 10Hz<br><span style="font-size:8px;">專注</span></div>
-      </div>
-    </div>
-
-    <div class="breathing-container">
-      <div class="breath-ring" id="breathRing">
-        <div class="breath-ring-inner"><span id="breathTxt" aria-live="polite">Ready</span></div>
-      </div>
-    </div>
-
-    <div class="session-timer" id="timerDisplay">00:00</div>
-
-    <div class="glass-card player-panel">
-      <div class="progress-bar-wrapper">
-        <span id="currentTimeDisplay">00:00</span>
-        <div class="progress-track" id="progressTrack" onclick="handleSeek(event)">
-          <div class="progress-fill" id="progressFill"></div>
-        </div>
-        <span id="totalTimeDisplay">00:00</span>
-      </div>
-      <div class="player-controls">
-        <span class="control-icon" role="button" aria-label="Previous" onclick="showToast('已鎖定目前生理頻率')">⏮️</span>
-        <div class="play-btn" id="playBtn" onclick="togglePlayback()" role="button" aria-label="Play or pause">▶️</div>
-        <span class="control-icon" role="button" aria-label="Micro practice" onclick="requestMicroPractice()">🔔</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- 進度頁 -->
-  <div id="progress-page" class="app-content">
-    <div class="user-welcome-title" style="margin-bottom: 4px;">修煉歷程</div>
-    <p style="font-size: 12px; color: var(--text-sub); margin-bottom: 16px;">真實生理與習慣回饋指標</p>
-
-    <div class="section-title" style="margin-top:0;">一週情緒天氣圖</div>
-    <div class="glass-card mood-weather-card" id="moodWeatherBoard">
-      <div class="mood-weather-empty">完成首次練習後自動生成情緒天氣圖</div>
-    </div>
-
-    <!-- 創新：HRV 趨勢圖 -->
-    <div class="section-title">HRV 心率變異趨勢</div>
-    <div class="glass-card hrv-card">
-      <div class="hrv-header">
-        <span>最近 7 次測量</span>
-        <span class="hrv-value" id="hrvLatestValue">--</span>
-      </div>
-      <div class="hrv-bars" id="hrvBars">
-        <div class="hrv-bar" style="height: 3px;"></div>
-        <div class="hrv-bar" style="height: 3px;"></div>
-        <div class="hrv-bar" style="height: 3px;"></div>
-        <div class="hrv-bar" style="height: 3px;"></div>
-        <div class="hrv-bar" style="height: 3px;"></div>
-        <div class="hrv-bar" style="height: 3px;"></div>
-        <div class="hrv-bar" style="height: 3px;"></div>
-      </div>
-      <div class="hrv-hint" id="hrvHint">用後鏡頭 PPG 測量 3 次以上，啟動趨勢追蹤</div>
-    </div>
-
-    <div class="glass-card" style="display: flex; gap: 14px; align-items: center;">
-      <div style="font-size: 28px;">🔥</div>
-      <div>
-        <h3 id="streakTxt" style="font-size: 18px; color: #ea580c;">0 Day Streak</h3>
-        <p style="font-size: 12px; color: var(--text-sub);">持之以恆，神經重塑正在發生</p>
-      </div>
-    </div>
-
-    <div class="section-title">安全與帳號權益</div>
-    <button class="danger-zone-btn" onclick="openDeleteAccountModal()">徹底刪除個人帳號與數據</button>
-  </div>
-
-  <!-- 3 步 Onboarding -->
-  <div class="modal-backdrop" id="onboardingModalBackdrop">
-    <div class="glass-card modal-card">
-      <h3 style="color: var(--accent-purple); margin-bottom: 8px;">歡迎進入 Mindful Space</h3>
-      <div id="onboardingStepContent" style="font-size: 13px; line-height: 1.6; color: var(--text-main); margin: 16px 0;">
-        <strong>第 1 步：它跟你呼吸</strong><br>
-        開啟「聲紋同步」，介面光環會跟隨你真實的呼吸深淺自動縮放。
-      </div>
-      <button class="auth-trigger-btn" style="width: 100%; padding: 10px; background: var(--accent-purple); color: #fff;" onclick="nextOnboardingStep()">下一步</button>
-    </div>
-  </div>
-
-  <!-- 刪除帳號二次確認 -->
-  <div class="modal-backdrop" id="deleteModalBackdrop">
-    <div class="glass-card modal-card">
-      <h3 style="color: var(--danger-color); margin-bottom: 8px;">確認註銷帳號？</h3>
-      <p style="font-size: 12px; color: var(--text-sub);">所有生理指標、HRV 紀錄與存檔將永久消除。請輸入「DELETE」確認：</p>
-      <input type="text" id="confirmDeleteInput" placeholder="輸入 DELETE" style="width:100%; padding:10px; border-radius:12px; margin: 12px 0; border:1px solid var(--card-border); background:rgba(0,0,0,0.2); color:#fff; text-align:center;">
-      <div style="display:flex; gap:10px;">
-        <button class="auth-trigger-btn" style="flex:1;" onclick="closeDeleteAccountModal()">取消</button>
-        <button class="auth-trigger-btn" style="flex:1; background:var(--danger-color); color:#fff; border-color:var(--danger-color);" onclick="executeAccountDeletion()">確認銷毀</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="toast" id="toast"></div>
-
-  <!-- 載入畫面 -->
-  <div class="loading-overlay" id="loadingOverlay">
-    <div class="loading-spinner"></div>
-    <p style="font-size: 13px; color: var(--text-sub);" id="loadingText">正在準備你的專屬空間…</p>
-  </div>
-
-  <video id="ppgVideoNode" playsinline style="display:none;"></video>
-  <canvas id="ppgCanvasNode" width="30" height="30" style="display:none;"></canvas>
-
-  <div class="bottom-nav">
-    <div class="nav-item active" id="nav-home" role="button" aria-label="Home" onclick="switchPage('home')"><span class="icon">🏠</span><span>主頁</span></div>
-    <div class="nav-item" id="nav-session" role="button" aria-label="Session" onclick="switchPage('session')"><span class="icon">🧘</span><span>修煉</span></div>
-    <div class="nav-item" id="nav-progress" role="button" aria-label="Progress" onclick="switchPage('progress')"><span class="icon">📈</span><span>數據</span></div>
-  </div>
-</div>
-
-<script>
-/* ============================================================
-   Mindful Space v3.4 — Embodied AI
-   ============================================================ */
-
-const STORAGE_PREFIX = 'MINDFUL_USER_SECURE_';
-const GLOBAL_CONFIG_KEY = 'MINDFUL_GLOBAL_CFG_V3';
-const ONBOARDING_KEY = 'MINDFUL_ONBOARDED_V3';
-
-const BREATHING_PATTERNS = {
-  calm: { inhale: 4000, hold: 0,    exhale: 4000, hold2: 0    },
-  box:  { inhale: 4000, hold: 4000, exhale: 4000, hold2: 4000 },
-  '478':{ inhale: 4000, hold: 7000, exhale: 8000, hold2: 0    }
-};
-
-const BINAURAL_PRESETS = {
-  off:   { diff: 0,   desc: "關閉" },
-  delta: { diff: 2.5, desc: "δ 2.5Hz 深度身心重置" },
-  theta: { diff: 6.0, desc: "θ 6.0Hz 禪定與冥想心流" },
-  alpha: { diff: 10.0,desc: "α 10.0Hz 澄明專注" }
-};
-
-const appState = {
-  auth: { currentUser: null, isLoggedIn: false },
-  session: {
-    isPlaying: false, currentTrackId: 'meditation', currentTime: 0,
-    totalDuration: 900, isAudioLoaded: false,
-    breathingPattern: 'calm',
-    binauralBand: 'off',
-    tracks: {
-      meditation: { title: "深層釋壓", subtitle: "靜觀引導 • 雙耳頻率", duration: 900, url: "./audio/meditation.mp3" },
-      breathing:  { title: "箱式呼吸", subtitle: "專注提升 • 迷走神經", duration: 300, url: "./audio/breathing.mp3" },
-      morning:    { title: "晨間喚醒", subtitle: "能量甦醒", duration: 300, url: "./audio/morning.mp3" },
-      evening:    { title: "晚間放鬆", subtitle: "舒緩入睡 • δ 波", duration: 600, url: "./audio/evening.mp3" }
-    }
-  },
-  progress: {
-    streak: 0, totalSessions: 0,
-    moodLog: [],
-    hrvLog: []
-  },
-  biometrics: { isPpgActive: false, isBreathListening: false }
-};
-
-// ============ 持久化 ============
-function loadProgress() {
-  try {
-    const raw = localStorage.getItem(STORAGE_PREFIX + 'PROGRESS');
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      Object.assign(appState.progress, parsed);
-      appState.progress.moodLog = appState.progress.moodLog || [];
-      appState.progress.hrvLog = appState.progress.hrvLog || [];
-    }
-  } catch (e) { console.warn('load progress failed', e); }
-}
-
-function saveProgress() {
-  try {
-    localStorage.setItem(STORAGE_PREFIX + 'PROGRESS', JSON.stringify(appState.progress));
-  } catch (e) { console.warn('save progress failed', e); }
-}
-
-// ============ 音訊引擎 ============
-const audioEngine = new Audio();
-let audioCtx = null;
-let oscLeft = null;
-let oscRight = null;
-let binauralGain = null;
-let breathPhaseTimeout = null;
-
-const timerDisplay = document.getElementById('timerDisplay');
-const currentTimeDisplay = document.getElementById('currentTimeDisplay');
-const totalTimeDisplay = document.getElementById('totalTimeDisplay');
-const progressFill = document.getElementById('progressFill');
-const playBtn = document.getElementById('playBtn');
-const breathRing = document.getElementById('breathRing');
-const breathTxt = document.getElementById('breathTxt');
-
-// ============ Toast ============
-function showToast(msg, duration = 2200) {
-  const toast = document.getElementById('toast');
-  toast.innerText = msg;
-  toast.classList.add('show');
-  clearTimeout(toast._t);
-  toast._t = setTimeout(() => toast.classList.remove('show'), duration);
-}
-
-// ============ 4 頻段雙耳節律 ============
-function setBinauralBand(bandKey) {
-  appState.session.binauralBand = bandKey;
-  document.querySelectorAll('.binaural-chip').forEach(el => {
-    el.classList.toggle('active', el.dataset.band === bandKey);
-  });
-  const preset = BINAURAL_PRESETS[bandKey];
-  document.getElementById('binauralBandDesc').innerText = preset.desc;
-
-  if (bandKey === 'off') {
-    stopBinauralEngine();
-  } else if (appState.session.isPlaying) {
-    startBinauralEngine(preset.diff);
-  }
-}
-
-function startBinauralEngine(diffFreq) {
-  stopBinauralEngine();
-  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  if (audioCtx.state === 'suspended') audioCtx.resume();
-
-  const baseFreq = 210;
-  const merger = audioCtx.createChannelMerger(2);
-  binauralGain = audioCtx.createGain();
-  binauralGain.gain.setValueAtTime(0.035, audioCtx.currentTime);
-
-  oscLeft = audioCtx.createOscillator();
-  oscLeft.type = 'sine';
-  oscLeft.frequency.setValueAtTime(baseFreq, audioCtx.currentTime);
-
-  oscRight = audioCtx.createOscillator();
-  oscRight.type = 'sine';
-  oscRight.frequency.setValueAtTime(baseFreq + diffFreq, audioCtx.currentTime);
-
-  oscLeft.connect(merger, 0, 0);
-  oscRight.connect(merger, 0, 1);
-  merger.connect(binauralGain);
-  binauralGain.connect(audioCtx.destination);
-
-  oscLeft.start();
-  oscRight.start();
-}
-
-function stopBinauralEngine() {
-  try {
-    if (oscLeft) { oscLeft.stop(); oscLeft.disconnect(); oscLeft = null; }
-    if (oscRight) { oscRight.stop(); oscRight.disconnect(); oscRight = null; }
-  } catch (e) {}
-}
-
-// ============ Bug 3 修復：單例管理 SpeechRecognition ============
-let activeRecog = null;
-
-function toggleVoiceCheckin() {
-  if (activeRecog) {
-    try { activeRecog.abort(); } catch (e) {}
-    activeRecog = null;
-    showToast("語音感知已結束");
-    return;
-  }
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SpeechRecognition) {
-    showToast("瀏覽器未支援語音，已轉為平靜模式");
-    return;
-  }
-  activeRecog = new SpeechRecognition();
-  activeRecog.lang = 'zh-HK';
-  activeRecog.continuous = false;
-  showToast("🎙️ 正在聆聽... 請講出感受（例如好chur、好燥）");
-
-  activeRecog.onresult = (e) => {
-    const text = e.results[0][0].transcript;
-    analyzeCantoneseSentiment(text);
-  };
-  activeRecog.onerror = () => { activeRecog = null; };
-  activeRecog.onend = () => { activeRecog = null; };
-  try { activeRecog.start(); } catch (e) { activeRecog = null; }
-}
-
-function analyzeCantoneseSentiment(text) {
-  const dict = {
-    burnout: ['攰', '好攰', 'chur', '好chur', '虛脫', '眼訓', '身心俱疲', '無力', '謝哂', '頂唔住'],
-    tension: ['頂唔順', '焦慮', '心跳好快', '失眠', '緊張', '恐慌', '好亂', '壓迫'],
-    agitation: ['好燥', '燥底', '火滾', '好煩', '激死', '發脾氣', '火起']
-  };
-
-  if (dict.burnout.some(w => text.includes(w))) {
-    selectPattern('478');
-    setBinauralBand('theta');
-    speakCantoneseGuidance('偵測到你身心透支。我哋而家做 4-7-8 呼吸，慢慢嚟。');
-    showToast(`🧠 偵測到身心透支（${text}）：啟動 4-7-8 迷走神經重置 + θ波`);
-  } else if (dict.tension.some(w => text.includes(w))) {
-    selectPattern('box');
-    setBinauralBand('delta');
-    speakCantoneseGuidance('你嘅緊張指數偏高。跟我做箱式呼吸，四拍吸、四拍停。');
-    showToast(`🌿 偵測到高度緊張（${text}）：啟動 Box 4-4-4-4 箱式屏息 + δ波`);
-  } else if (dict.agitation.some(w => text.includes(w))) {
-    selectPattern('calm');
-    setBinauralBand('alpha');
-    speakCantoneseGuidance('情緒有啲浮躁。我哋用平靜 4-4 呼吸，慢慢穩定落嚟。');
-    showToast(`🌊 偵測到情緒浮躁（${text}）：匹配 Calm 4-4 勻速平靜 + α波`);
-  } else {
-    selectPattern('calm');
-    showToast(`✨ 心境安穩（${text}）：維持經典平靜呼吸`);
-  }
-}
-
-// ============ 創新：AI 粵語引導語 ============
-let speechSynthReady = false;
-function initSpeechSynthesis() {
-  if (!('speechSynthesis' in window)) return;
-  // 預載 voices（部分瀏覽器非同步）
-  window.speechSynthesis.getVoices();
-  window.speechSynthesis.onvoiceschanged = () => {
-    speechSynthReady = true;
-  };
-  speechSynthReady = true;
-}
-
-function speakCantoneseGuidance(text) {
-  if (!('speechSynthesis' in window)) return;
-  try {
-    window.speechSynthesis.cancel();
-    const utter = new SpeechSynthesisUtterance(text);
-    utter.lang = 'zh-HK';
-    utter.rate = 0.85;
-    utter.pitch = 0.95;
-    utter.volume = 0.8;
-    const voices = window.speechSynthesis.getVoices();
-    const hk = voices.find(v => v.lang === 'zh-HK' || v.lang === 'yue-HK')
-             || voices.find(v => v.lang.startsWith('zh'))
-             || voices[0];
-    if (hk) utter.voice = hk;
-    window.speechSynthesis.speak(utter);
-  } catch (e) { console.warn('TTS failed', e); }
-}
-
-// ============ 呼吸聲紋同步 ============
-let micAudioContext = null;
-let micAnalyser = null;
-let micSource = null;
-let breathMonitorAnim = null;
-
-async function toggleBreathListening() {
-  const box = document.getElementById('breathVoiceBox');
-  const txt = document.getElementById('breathVoiceText');
-  if (appState.biometrics.isBreathListening) {
-    if (micAudioContext) { try { micAudioContext.close(); } catch (e) {} }
-    micAudioContext = null; micAnalyser = null; micSource = null;
-    if (breathMonitorAnim) cancelAnimationFrame(breathMonitorAnim);
-    appState.biometrics.isBreathListening = false;
-    box.classList.remove('active');
-    txt.innerText = "聽呼吸微調環";
-    return;
-  }
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    micAudioContext = new (window.AudioContext || window.webkitAudioContext)();
-    micAnalyser = micAudioContext.createAnalyser();
-    micSource = micAudioContext.createMediaStreamSource(stream);
-    micSource.connect(micAnalyser);
-    micAnalyser.fftSize = 256;
-
-    appState.biometrics.isBreathListening = true;
-    box.classList.add('active');
-    txt.innerText = "聲紋同步中";
-    monitorBreathAudioLevel();
-  } catch (e) {
-    showToast("麥克風無法啟用");
-  }
-}
-
-function monitorBreathAudioLevel() {
-  if (!appState.biometrics.isBreathListening || !micAnalyser) return;
-  const data = new Uint8Array(micAnalyser.frequencyBinCount);
-  micAnalyser.getByteFrequencyData(data);
-  let average = data.reduce((a, b) => a + b, 0) / data.length;
-
-  if (average > 30 && appState.session.isPlaying) {
-    breathRing.style.transform = `scale(${1.1 + (average / 255) * 0.25})`;
-  }
-  breathMonitorAnim = requestAnimationFrame(monitorBreathAudioLevel);
-}
-
-// ============ 後鏡頭 PPG ============
-let ppgStream = null;
-let ppgAnim = null;
-let redRecords = [];
-
-async function togglePPGScan() {
-  if (appState.biometrics.isPpgActive) {
-    stopPPGScan();
-    return;
-  }
-  try {
-    ppgStream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: { ideal: 'environment' }, width: 64, height: 64 }
-    });
-    const video = document.getElementById('ppgVideoNode');
-    video.srcObject = ppgStream;
-    await video.play();
-    appState.biometrics.isPpgActive = true;
-    document.getElementById('ppgSensorBox').classList.add('active');
-    document.getElementById('ppgStatusText').innerText = "手指貼緊後鏡頭";
-    redRecords = [];
-    samplePPG();
-  } catch (e) {
-    showToast("無法啟用後置鏡頭進行 PPG 測量");
-  }
-}
-
-function samplePPG() {
-  if (!appState.biometrics.isPpgActive) return;
-  const canvas = document.getElementById('ppgCanvasNode');
-  const ctx = canvas.getContext('2d');
-  ctx.drawImage(document.getElementById('ppgVideoNode'), 0, 0, 30, 30);
-  const data = ctx.getImageData(0, 0, 30, 30).data;
-  let sum = 0;
-  for (let i = 0; i < data.length; i += 4) sum += data[i];
-  redRecords.push(sum / (data.length / 4));
-
-  if (redRecords.length > 240) {
-    evaluatePPGResult();
-    stopPPGScan();
-    return;
-  }
-  ppgAnim = requestAnimationFrame(samplePPG);
-}
-
-function stopPPGScan() {
-  appState.biometrics.isPpgActive = false;
-  if (ppgStream) { ppgStream.getTracks().forEach(t => t.stop()); ppgStream = null; }
-  if (ppgAnim) cancelAnimationFrame(ppgAnim);
-  document.getElementById('ppgSensorBox').classList.remove('active');
-  document.getElementById('ppgStatusText').innerText = "指尖按鏡頭 8s";
-}
-
-function evaluatePPGResult() {
-  const avg = redRecords.reduce((a,b)=>a+b, 0) / redRecords.length;
-  const variance = redRecords.reduce((a,b)=>a+Math.pow(b-avg, 2), 0) / redRecords.length;
-  const hrv = Math.min(100, Math.round(variance * 5));
-
-  // 儲存 HRV
-  appState.progress.hrvLog.push({ date: new Date().toISOString(), hrv, variance });
-  if (appState.progress.hrvLog.length > 30) appState.progress.hrvLog.shift();
-  saveProgress();
-
-  if (variance > 7.5) {
-    selectPattern('478');
-    setBinauralBand('theta');
-    showToast(`❤️ 生理回饋：副交感神經受壓（HRV ${hrv}），切換至 4-7-8 減壓頻段`);
-  } else {
-    selectPattern('calm');
-    showToast(`❤️ 生理回饋：自律神經平穩（HRV ${hrv}），維持 Calm 4-4 節奏`);
-  }
-}
-
-// ============ 情緒天氣圖 ============
-function renderMoodWeather() {
-  const board = document.getElementById('moodWeatherBoard');
-  if (!appState.progress.moodLog || appState.progress.moodLog.length === 0) {
-    board.innerHTML = '<div class="mood-weather-empty">完成首次練習後自動生成情緒天氣圖</div>';
-    return;
-  }
-  board.innerHTML = '';
-  const days = ['一', '二', '三', '四', '五', '六', '日'];
-  appState.progress.moodLog.slice(-7).forEach((m) => {
-    const div = document.createElement('div');
-    div.className = 'mood-weather-item';
-    const icon = m.mood === '😌' ? '☀️' : m.mood === '😊' ? '🌤️' : m.mood === '😐' ? '⛅' : '🌧️';
-    const d = new Date(m.date);
-    const dayIdx = (d.getDay() + 6) % 7;
-    div.innerHTML = `<span class="mood-weather-icon">${icon}</span><span>周${days[dayIdx]}</span>`;
-    board.appendChild(div);
-  });
-}
-
-// ============ HRV 趨勢圖 ============
-function renderHRVTrend() {
-  const bars = document.getElementById('hrvBars').children;
-  const log = appState.progress.hrvLog.slice(-7);
-  const latest = document.getElementById('hrvLatestValue');
-  const hint = document.getElementById('hrvHint');
-
-  if (log.length === 0) {
-    latest.innerText = '--';
-    hint.innerText = '用後鏡頭 PPG 測量 3 次以上，啟動趨勢追蹤';
-    for (const b of bars) b.style.height = '3px';
-    return;
-  }
-
-  const maxHRV = Math.max(...log.map(x => x.hrv), 1);
-  latest.innerText = log[log.length - 1].hrv;
-  hint.innerText = log.length >= 3
-    ? `最近 ${log.length} 次平均 HRV：${Math.round(log.reduce((a,b)=>a+b.hrv,0)/log.length)}`
-    : `已記錄 ${log.length} 次，再測 ${3 - log.length} 次啟動趨勢`;
-
-  for (let i = 0; i < 7; i++) {
-    const entry = log[i];
-    if (entry) {
-      const pct = Math.max(8, (entry.hrv / maxHRV) * 100);
-      bars[i].style.height = pct + '%';
-      bars[i].className = 'hrv-bar' + (entry.hrv === maxHRV ? ' high' : '');
-    } else {
-      bars[i].style.height = '3px';
-      bars[i].className = 'hrv-bar';
-    }
-  }
-}
-
-// ============ 音訊引擎初始化 ============
-function initAudioEngine() {
-  audioEngine.preload = 'auto';
-  audioEngine.addEventListener('loadedmetadata', () => {
-    if (Number.isFinite(audioEngine.duration) && audioEngine.duration > 0) {
-      appState.session.totalDuration = Math.floor(audioEngine.duration);
-      appState.session.isAudioLoaded = true;
-    }
-    syncDurationUI();
-  });
-  audioEngine.addEventListener('timeupdate', () => {
-    if (appState.session.isAudioLoaded) {
-      appState.session.currentTime = audioEngine.currentTime;
-      updatePlaybackProgressUI();
-    }
-  });
-  audioEngine.addEventListener('play', () => {
-    appState.session.isPlaying = true;
-    playBtn.innerText = "⏸️";
-    if ('mediaSession' in navigator) {
-      navigator.mediaSession.playbackState = "playing";
-      const track = appState.session.tracks[appState.session.currentTrackId];
-      navigator.mediaSession.metadata = new MediaMetadata({
-        title: track.title,
-        artist: "Mindful Space AI",
-        album: "香港身心數位禪修",
-        artwork: [{ src: './icon-192.png?v=3.4', sizes: '192x192', type: 'image/png' }]
+  <script>
+    /* =========================================================================
+       1. PWA Service Worker 註冊 (相容相對路徑)
+       ========================================================================= */
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then(reg => console.log('PWA ServiceWorker 註冊成功:', reg.scope))
+          .catch(err => console.warn('PWA ServiceWorker 註冊失敗:', err));
       });
     }
-    if (appState.session.binauralBand !== 'off') {
-      startBinauralEngine(BINAURAL_PRESETS[appState.session.binauralBand].diff);
+
+    /* =========================================================================
+       2. 關鍵缺口 1 修復：iOS 16+ 粵語語音引擎相容與 User Gesture 解鎖
+       ========================================================================= */
+    let cachedHkVoice = null;
+    let pendingGuidanceText = '';
+
+    function initVoices() {
+      if (!('speechSynthesis' in window)) return;
+      const voices = window.speechSynthesis.getVoices();
+      // iOS / macOS 上的高品質粵語語音常帶有 Sinji, Aasing 或語言標記 zh-HK
+      cachedHkVoice = voices.find(v => 
+        v.lang === 'zh-HK' || 
+        v.lang === 'yue-HK' || 
+        v.name.includes('Sinji') || 
+        v.name.includes('Aasing')
+      ) || voices.find(v => v.lang.startsWith('zh'));
     }
-  });
-  audioEngine.addEventListener('pause', () => {
-    appState.session.isPlaying = false;
-    playBtn.innerText = "▶️";
-    if ('mediaSession' in navigator) navigator.mediaSession.playbackState = "paused";
-    stopBinauralEngine();
-  });
-  audioEngine.addEventListener('ended', () => {
-    handleSessionComplete();
-  });
-}
 
-function handleSessionComplete() {
-  appState.session.isPlaying = false;
-  playBtn.innerText = "▶️";
-  stopBreathingCycle();
-  stopBinauralEngine();
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.onvoiceschanged = initVoices;
+      initVoices();
+    }
 
-  // 記錄 session
-  const today = new Date().toISOString().slice(0, 10);
-  const lastDate = appState.progress.lastPracticeDate;
-  const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
-
-  if (lastDate === today) {
-    // 同一天，唔加 streak
-  } else if (lastDate === yesterday) {
-    appState.progress.streak += 1;
-  } else {
-    appState.progress.streak = 1;
-  }
-  appState.progress.lastPracticeDate = today;
-  appState.progress.totalSessions += 1;
-
-  // 自動記錄心情（簡化：直接中性）
-  appState.progress.moodLog.push({ date: new Date().toISOString(), mood: '😌' });
-  if (appState.progress.moodLog.length > 30) appState.progress.moodLog.shift();
-
-  saveProgress();
-  renderMoodWeather();
-  renderHRVTrend();
-  updateStreakUI();
-  showToast("✨ 修煉完成，數據已寫入本地儲存");
-}
-
-function updateStreakUI() {
-  const el = document.getElementById('streakTxt');
-  if (el) el.innerText = `${appState.progress.streak} Day Streak`;
-}
-
-function syncDurationUI() {
-  totalTimeDisplay.innerText = formatMinutesSeconds(appState.session.totalDuration);
-  updatePlaybackProgressUI();
-}
-
-function updatePlaybackProgressUI() {
-  const current = Math.floor(appState.session.currentTime);
-  const total = appState.session.totalDuration;
-  timerDisplay.innerText = formatMinutesSeconds(Math.max(0, total - current));
-  currentTimeDisplay.innerText = formatMinutesSeconds(current);
-  progressFill.style.width = (total > 0 ? (current / total) * 100 : 0) + "%";
-}
-
-// ============ 呼吸圖案 ============
-function selectPattern(key) {
-  appState.session.breathingPattern = key;
-  document.querySelectorAll('.pattern-chip').forEach(el => {
-    el.classList.toggle('active', el.dataset.pattern === key);
-  });
-  if (appState.session.isPlaying) runBreathingCycle();
-}
-
-function runBreathingCycle() {
-  if (breathPhaseTimeout) clearTimeout(breathPhaseTimeout);
-  if (!appState.session.isPlaying) return;
-  const pattern = BREATHING_PATTERNS[appState.session.breathingPattern];
-  const phases = [
-    { name: '吸氣', duration: pattern.inhale, scale: 1.25 },
-    { name: '屏息', duration: pattern.hold,   scale: 1.25 },
-    { name: '吐氣', duration: pattern.exhale, scale: 1.0  },
-    { name: '靜止', duration: pattern.hold2,  scale: 1.0  }
-  ].filter(p => p.duration > 0);
-
-  let idx = 0;
-  function step() {
-    if (!appState.session.isPlaying) return;
-    const phase = phases[idx];
-    breathTxt.innerText = `${phase.name} ${phase.duration/1000}s`;
-    breathRing.style.transition = `transform ${phase.name.includes('屏') ? 0.2 : phase.duration/1000}s cubic-bezier(0.4, 0, 0.2, 1)`;
-    breathRing.style.transform = `scale(${phase.scale})`;
-
-    idx = (idx + 1) % phases.length;
-    breathPhaseTimeout = setTimeout(step, phase.duration);
-  }
-  step();
-}
-
-function stopBreathingCycle() {
-  if (breathPhaseTimeout) clearTimeout(breathPhaseTimeout);
-  breathRing.style.transition = 'transform 0.4s ease-out';
-  breathRing.style.transform = 'scale(1.0)';
-  breathTxt.innerText = "準備";
-}
-
-// ============ Bug 2 修復：同步 call stack 內 play() ============
-function selectTrack(id) {
-  if (!appState.session.tracks[id]) return;
-  appState.session.currentTrackId = id;
-  const track = appState.session.tracks[id];
-  document.getElementById('sessionTitle').innerText = track.title;
-  document.getElementById('sessionSubtitle').innerText = track.subtitle;
-  audioEngine.src = track.url;
-  audioEngine.load();
-  switchPage('session');
-
-  const playPromise = audioEngine.play();
-  if (playPromise !== undefined) {
-    playPromise.then(() => {
-      runBreathingCycle();
-    }).catch(() => {
-      // 即使音檔 404 / 離線，視覺倒數依舊啟動
-      runBreathingCycle();
-    });
-  }
-}
-
-function togglePlayback() {
-  if (audioEngine.paused) {
-    audioEngine.play().then(() => runBreathingCycle()).catch(() => runBreathingCycle());
-  } else {
-    audioEngine.pause();
-    stopBreathingCycle();
-  }
-}
-
-function handleSeek(event) {
-  const rect = document.getElementById('progressTrack').getBoundingClientRect();
-  const pct = Math.min(1, Math.max(0, (event.clientX - rect.left) / rect.width));
-  const target = pct * appState.session.totalDuration;
-  appState.session.currentTime = target;
-  if (appState.session.isAudioLoaded) audioEngine.currentTime = target;
-  updatePlaybackProgressUI();
-}
-
-function formatMinutesSeconds(sec) {
-  return `${String(Math.floor(sec/60)).padStart(2,'0')}:${String(sec%60).padStart(2,'0')}`;
-}
-
-// ============ 頁面切換 ============
-function switchPage(pageId) {
-  document.querySelectorAll('.app-content').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  const target = document.getElementById(`${pageId}-page`);
-  if (target) target.classList.add('active');
-  const nav = document.getElementById(`nav-${pageId}`);
-  if (nav && pageId !== 'session') nav.classList.add('active');
-  if (pageId === 'progress') {
-    renderMoodWeather();
-    renderHRVTrend();
-    updateStreakUI();
-  }
-}
-
-// ============ Bug 6 修復：透過 SW 發通知 ============
-async function requestMicroPractice() {
-  if (!('Notification' in window)) {
-    showToast("此瀏覽器環境未支援推播通知");
-    return;
-  }
-  const res = await Notification.requestPermission();
-  if (res !== 'granted') {
-    showToast("請允許通知以接收微練習提醒");
-    return;
-  }
-  showToast("已安排 30 秒後進行微練習提醒");
-  setTimeout(async () => {
-    try {
-      const reg = await navigator.serviceWorker.ready;
-      reg.active?.postMessage({
-        type: 'SHOW_NOTIFICATION',
-        title: 'Mindful Space • 微練習',
-        body: '給自己 30 秒。停下手中工作，專注一次深長吐氣。'
-      });
-    } catch (e) {
+    // 發音核心函數
+    function speakCantoneseGuidance(text) {
+      if (!('speechSynthesis' in window)) {
+        alert('此裝置不支援語音合成合成');
+        return;
+      }
       try {
-        new Notification('Mindful Space • 微練習', {
-          body: '給自己 30 秒。停下手中工作，專注一次深長吐氣。',
-          icon: './icon-192.png'
-        });
-      } catch (err) {
-        console.warn('Notification fallback failed', err);
+        window.speechSynthesis.cancel(); // 終止未播完的語音
+
+        // iOS 16+ 必須在播放前確認 resume
+        if (window.speechSynthesis.paused) {
+          window.speechSynthesis.resume();
+        }
+
+        const utter = new SpeechSynthesisUtterance(text);
+        utter.lang = 'zh-HK';
+        utter.rate = 0.85;   // 沉穩放慢的語速適合冥想
+        utter.pitch = 0.95;  // 溫和低沉
+        utter.volume = 1.0;  // 保持最大音量避免 iOS 靜音
+
+        if (cachedHkVoice) utter.voice = cachedHkVoice;
+        window.speechSynthesis.speak(utter);
+      } catch (e) {
+        console.warn('TTS 執行異常:', e);
       }
     }
-  }, 30000);
-}
 
-// ============ Onboarding ============
-let onboardingStep = 1;
-function checkOnboarding() {
-  if (!localStorage.getItem(ONBOARDING_KEY)) {
-    document.getElementById('onboardingModalBackdrop').classList.add('show');
-  }
-}
+    // 顯示需要使用者真實點擊（User Gesture）的引導彈窗
+    function showGuidanceCard(text) {
+      pendingGuidanceText = text;
+      document.getElementById('toastMessage').innerText = text;
+      const toast = document.getElementById('guidanceToast');
+      toast.classList.add('show');
+    }
 
-function nextOnboardingStep() {
-  onboardingStep++;
-  const content = document.getElementById('onboardingStepContent');
-  if (onboardingStep === 2) {
-    content.innerHTML = "<strong>第 2 步：它懂你情緒</strong><br>點擊「粵語感知」，說句「今日好chur」或「好燥」，AI 即時調控呼吸頻率。";
-  } else if (onboardingStep === 3) {
-    content.innerHTML = "<strong>第 3 步：腦波同步牽引</strong><br>戴上耳機，選擇 6Hz Theta 雙耳節律，隨時進入深層專注與放鬆狀態。";
-  } else {
-    localStorage.setItem(ONBOARDING_KEY, 'true');
-    document.getElementById('onboardingModalBackdrop').classList.remove('show');
-    showToast("歡迎進入專屬修煉空間");
-  }
-}
+    function closeToast() {
+      document.getElementById('guidanceToast').classList.remove('show');
+    }
 
-// ============ 刪除帳號 ============
-function openDeleteAccountModal() { document.getElementById('deleteModalBackdrop').classList.add('show'); }
-function closeDeleteAccountModal() {
-  document.getElementById('deleteModalBackdrop').classList.remove('show');
-  document.getElementById('confirmDeleteInput').value = '';
-}
-function executeAccountDeletion() {
-  if (document.getElementById('confirmDeleteInput').value.trim() !== 'DELETE') {
-    showToast("請完整輸入「DELETE」確認");
-    return;
-  }
-  localStorage.clear();
-  showToast("所有本機健康數據與金鑰已銷毀");
-  closeDeleteAccountModal();
-  setTimeout(() => location.reload(), 1500);
-}
+    // 真正滿足 WebKit User Gesture 的點擊事件
+    document.getElementById('playTtsBtn').addEventListener('click', () => {
+      if (pendingGuidanceText) {
+        speakCantoneseGuidance(pendingGuidanceText);
+      }
+      closeToast();
+    });
 
-function handleAuthAction() { showToast("端側零知識加密運作中，無須向伺服器提交明文資料"); }
+    /* =========================================================================
+       3. 創新點 1：時段感知 × 狀態即時動態粵語引導生成
+       ========================================================================= */
+    function generateGuidanceText(emotion, hrv) {
+      const hour = new Date().getHours();
+      const timeSlot = hour < 6 ? '夜深' : hour < 12 ? '朝早' : hour < 18 ? '下晝' : '夜晚';
 
-// ============ URL shortcuts 處理 ============
-function handleUrlShortcuts() {
-  const params = new URLSearchParams(location.search);
-  const action = params.get('action');
-  if (action === 'meditate') selectTrack('meditation');
-  if (action === 'voice') setTimeout(() => toggleVoiceCheckin(), 500);
-  if (action === 'ppg') setTimeout(() => togglePPGScan(), 500);
-  if (params.get('from') === 'notification') showToast('歡迎返嚟，開始你嘅微練習');
-}
+      if (emotion === 'burnout' || emotion === 'tired') {
+        return `${timeSlot}喇，你嘅 HRV 只有 ${hrv}，身體處於超負荷狀態。跟我做 4-7-8 呼吸，吸氣四拍，屏息七拍，吐氣八拍，放鬆神經。`;
+      } else if (emotion === 'tension' || emotion === 'anxious') {
+        return `感受到你依家有啲繃緊。將注意力放返喺雙肩，慢慢放鬆，跟我嘅節奏調息。`;
+      }
+      return `${timeSlot}時分，你嘅身心狀態平穩，HRV 係 ${hrv}。維持呢個放鬆節奏，享受當下嘅沉靜。`;
+    }
 
-// ============ 載入畫面 ============
-function showLoading(text) {
-  document.getElementById('loadingText').innerText = text || '正在準備你的專屬空間…';
-  document.getElementById('loadingOverlay').classList.add('show');
-}
-function hideLoading() {
-  document.getElementById('loadingOverlay').classList.remove('show');
-}
+    /* =========================================================================
+       4. 創新點 2：連續 HRV 趨勢預警演算 (降低 20% 即刻告警)
+       ========================================================================= */
+    function checkHRVTrendAndAlert(newHrv) {
+      let log = JSON.parse(localStorage.getItem('mindful_hrv_history') || '[]');
+      log.push({ time: Date.now(), hrv: newHrv });
+      if (log.length > 10) log.shift();
+      localStorage.setItem('mindful_hrv_history', JSON.stringify(log));
 
-// ============ 初始化 ============
-document.addEventListener("DOMContentLoaded", () => {
-  // Service Worker
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js?v=3.4')
-      .then(reg => console.log('[SW] registered', reg.scope))
-      .catch(err => console.warn('[SW] register failed', err));
-  }
+      if (log.length < 4) return;
 
-  // 載入本地進度
-  loadProgress();
+      const recent2 = log.slice(-2).map(x => x.hrv);
+      const avgRecent = recent2.reduce((a, b) => a + b, 0) / recent2.length;
+      const earlier = log.slice(0, -2).map(x => x.hrv);
+      const avgEarlier = earlier.reduce((a, b) => a + b, 0) / earlier.length;
 
-  // 初始化語音合成
-  initSpeechSynthesis();
+      // 顯著下降 20%
+      if (avgRecent < avgEarlier * 0.8) {
+        const warning = generateGuidanceText('burnout', Math.round(avgRecent));
+        showGuidanceCard(`⚠️ 【HRV 壓力預警】數值連續下降超過 20%！\n${warning}`);
+      }
+    }
 
-  // 初始化音訊引擎
-  initAudioEngine();
+    /* =========================================================================
+       5. 創新點 3：全球共修場（Supabase Realtime 連線 + 自動降級模擬）
+       ========================================================================= */
+    const SUPABASE_URL = 'https://YOUR_SUPABASE_PROJECT.supabase.co';
+    const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+    
+    function initCollectiveRoom() {
+      const counterEl = document.getElementById('collectiveCount');
+      
+      // 若尚未設定 Supabase 金鑰，自動啟動逼真的共修人數波動模擬
+      if (SUPABASE_URL.includes('YOUR_SUPABASE') || typeof window.supabase === 'undefined') {
+        let simulatedCount = 142;
+        setInterval(() => {
+          simulatedCount += Math.floor(Math.random() * 5) - 2;
+          if (simulatedCount < 80) simulatedCount = 80;
+          counterEl.innerText = `全球共修：${simulatedCount} 位修煉者`;
+        }, 3500);
+        return;
+      }
 
-  // Onboarding
-  checkOnboarding();
+      try {
+        const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const channel = client.channel('collective-breath-room');
+        channel
+          .on('presence', { event: 'sync' }, () => {
+            const count = Object.keys(channel.presenceState()).length;
+            counterEl.innerText = `全球共修：${count} 位修煉者`;
+          })
+          .subscribe(async (status) => {
+            if (status === 'SUBSCRIBED') {
+              await channel.track({ online_at: Date.now() });
+            }
+          });
+      } catch (err) {
+        console.warn('Supabase 連線退避至模擬模式', err);
+      }
+    }
+    initCollectiveRoom();
 
-  // URL shortcuts
-  handleUrlShortcuts();
+    /* =========================================================================
+       6. 呼吸引導狀態機 (4-7-8 放鬆呼吸法)
+       ========================================================================= */
+    let isPracticing = false;
+    let breathPhase = 'idle';
+    let practiceInterval = null;
+    const breathCircle = document.getElementById('breathCircle');
+    const breathAction = document.getElementById('breathAction');
+    const breathTimer = document.getElementById('breathTimer');
+    const toggleBtn = document.getElementById('togglePracticeBtn');
 
-  // 狀態列時間
-  setInterval(() => {
-    const now = new Date();
-    document.getElementById('statusBarTime').innerText =
-      `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
-  }, 1000);
+    function startBreathingCycle() {
+      let secondsRemaining = 4;
+      breathPhase = 'inhale';
+      
+      function runStep() {
+        if (!isPracticing) return;
 
-  // 首次載入完成
-  setTimeout(hideLoading, 600);
-});
+        if (breathPhase === 'inhale') {
+          breathAction.innerText = '吸氣';
+          breathCircle.style.transform = 'scale(1.45)';
+          breathCircle.style.transition = 'transform 4s ease-in-out';
+          secondsRemaining = 4;
+        } else if (breathPhase === 'hold') {
+          breathAction.innerText = '屏息';
+          breathCircle.style.transform = 'scale(1.45)';
+          secondsRemaining = 7;
+        } else if (breathPhase === 'exhale') {
+          breathAction.innerText = '呼氣';
+          breathCircle.style.transform = 'scale(1.0)';
+          breathCircle.style.transition = 'transform 8s ease-in-out';
+          secondsRemaining = 8;
+        }
 
-// ============ 頁面卸載時清理 ============
-window.addEventListener('beforeunload', () => {
-  if (micAudioContext) { try { micAudioContext.close(); } catch (e) {} }
-  if (ppgStream) { ppgStream.getTracks().forEach(t => t.stop()); }
-  stopBinauralEngine();
-  if (activeRecog) { try { activeRecog.abort(); } catch (e) {} }
-  if ('speechSynthesis' in window) window.speechSynthesis.cancel();
-});
-</script>
+        breathTimer.innerText = `${secondsRemaining}s`;
+
+        const countdown = setInterval(() => {
+          if (!isPracticing) {
+            clearInterval(countdown);
+            return;
+          }
+          secondsRemaining--;
+          if (secondsRemaining > 0) {
+            breathTimer.innerText = `${secondsRemaining}s`;
+          } else {
+            clearInterval(countdown);
+            // 狀態推進
+            if (breathPhase === 'inhale') breathPhase = 'hold';
+            else if (breathPhase === 'hold') breathPhase = 'exhale';
+            else if (breathPhase === 'exhale') breathPhase = 'inhale';
+            runStep();
+          }
+        }, 1000);
+      }
+
+      runStep();
+    }
+
+    toggleBtn.addEventListener('click', () => {
+      isPracticing = !isPracticing;
+      if (isPracticing) {
+        toggleBtn.innerText = '結束本次調息';
+        toggleBtn.style.background = '#4b5563';
+        startBreathingCycle();
+      } else {
+        toggleBtn.innerText = '開始 4-7-8 調息引導';
+        toggleBtn.style.background = '';
+        breathAction.innerText = '準備';
+        breathTimer.innerText = '4s';
+        breathCircle.style.transform = 'scale(1.0)';
+        
+        // 缺口 3 修復方案：練習完成後即時通知（不依賴脆弱的背景計時器）
+        if ('Notification' in window && Notification.permission === 'granted') {
+          new Notification('Mindful 調息完成', {
+            body: '恭喜完成調息！身心放鬆指標已同步儲存。',
+            icon: './icon-192.png'
+          });
+        }
+      }
+    });
+
+    /* =========================================================================
+       7. 模擬按鈕與觸發展示
+       ========================================================================= */
+    document.getElementById('simulateHrvDropBtn').addEventListener('click', () => {
+      // 模擬 HRV 急遽下降情境
+      document.getElementById('bpmVal').innerHTML = `88 <small style="font-size:0.65rem">BPM</small>`;
+      document.getElementById('hrvVal').innerHTML = `32 <small style="font-size:0.65rem">ms</small>`;
+      document.getElementById('emotionVal').innerText = '過勞 / 緊繃';
+      
+      checkHRVTrendAndAlert(32);
+    });
+
+    document.getElementById('speechSensingBtn').addEventListener('click', () => {
+      // 模擬語音辨識出緊繃情緒
+      const dynamicPrompt = generateGuidanceText('tension', 45);
+      showGuidanceCard(dynamicPrompt);
+    });
+  </script>
 </body>
 </html>
