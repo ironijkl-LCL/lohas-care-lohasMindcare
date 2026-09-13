@@ -1,39 +1,48 @@
 {
-  "name": "Mindful Space — 香港人嘅數位禪修空間",
-  "short_name": "Mindful",
-  "description": "Embodied AI 冥想 app：PPG 心率感測、粵語情緒感知、雙耳腦波牽引、呼吸聲紋同步。你嘅生理數據默認留喺你部手機。",
   "id": "/lohas-care-lohasMindcare/",
+  "name": "Mindful Space",
+  "short_name": "Mindful",
+  "description": "Embodied AI 冥想 app：PPG 心率感測、粵語情緒感知、雙耳腦波牽引、呼吸聲紋同步。",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
-  "display_override": ["standalone", "minimal-ui"],
-  "orientation": "portrait",
   "background_color": "#111424",
   "theme_color": "#a855f7",
-  "lang": "zh-HK",
-  "dir": "ltr",
-  "categories": ["health", "lifestyle", "medical"],
+  "orientation": "portrait-primary",
+  "categories": ["health", "lifestyle"],
   "icons": [
     {
-      "src": "./icon-192.png",
+      "src": "icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "./icon-512.png",
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "./icon-512.png",
+      "src": "icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
     }
   ],
-  "launch_handler": {
-    "client_mode": "navigate-existing"
-  }
+  "screenshots": [
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Mindful Space Home"
+    }
+  ]
 }
