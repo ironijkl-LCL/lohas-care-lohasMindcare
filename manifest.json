@@ -1,4 +1,3 @@
-cat > manifest.json << 'EOF'
 {
   "name": "Mindful Space — 香港人嘅數位禪修空間",
   "short_name": "Mindful",
@@ -38,4 +37,3 @@ cat > manifest.json << 'EOF'
     "client_mode": "navigate-existing"
   }
 }
-EOF
