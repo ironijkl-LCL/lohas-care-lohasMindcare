@@ -1,3 +1,4 @@
+cat > manifest.json << 'EOF'
 {
   "name": "Mindful Space — 香港人嘅數位禪修空間",
   "short_name": "Mindful",
@@ -12,8 +13,7 @@
   "theme_color": "#a855f7",
   "lang": "zh-HK",
   "dir": "ltr",
-  "categories": ["health", "lifestyle", "medical", "fitness"],
-  "prefer_related_applications": false,
+  "categories": ["health", "lifestyle", "medical"],
   "icons": [
     {
       "src": "./icon-192.png",
@@ -34,27 +34,8 @@
       "purpose": "maskable"
     }
   ],
-  "shortcuts": [
-    {
-      "name": "開始冥想",
-      "short_name": "冥想",
-      "description": "直接進入深層釋壓引導",
-      "url": "./index.html?action=meditate",
-      "icons": [
-        { "src": "./icon-192.png", "sizes": "192x192", "type": "image/png" }
-      ]
-    },
-    {
-      "name": "粵語情緒感知",
-      "short_name": "語音",
-      "description": "講句「好chur」即時調控呼吸",
-      "url": "./index.html?action=voice",
-      "icons": [
-        { "src": "./icon-192.png", "sizes": "192x192", "type": "image/png" }
-      ]
-    }
-  ],
   "launch_handler": {
     "client_mode": "navigate-existing"
   }
 }
+EOF
