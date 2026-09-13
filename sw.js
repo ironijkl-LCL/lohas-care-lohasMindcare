@@ -1,5 +1,5 @@
 // Mindful Space Service Worker v2.1
-const CACHE_NAME = 'mindful-space-v2.1';
+const CACHE_NAME = 'mindful-space-v2.2';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
