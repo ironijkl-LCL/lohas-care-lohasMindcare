@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="mobile-web-app-capable" content="yes">
-<title>Mindful Space - v3.0 AI-Native</title>
+<title>Mindful Space - v3.0.1</title>
 <meta name="theme-color" content="#a855f7">
 
 <link rel="manifest" href="./manifest.json?v=3.0">
@@ -63,10 +63,9 @@ body { display: flex; justify-content: center; align-items: center;
     body { padding: 0; }
     .phone-mockup { width: 100vw; height: 100vh; border-radius: 0; border: none; }
 }
-.status-bar { height: 35px; width: 100%; display: flex; justify-content: space-between;
+.status-bar { height: 35px; width: 100%; display: flex; justify-content: flex-start;
     align-items: center; padding: 14px 24px 0; font-size: 13px;
     color: var(--text-main); font-weight: 500; z-index: 10; opacity: 0.9; }
-.status-weather { display: flex; align-items: center; gap: 4px; cursor: pointer; }
 .glass-card { background: var(--card-bg); backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px); border: 1px solid var(--card-border);
     border-radius: 24px; padding: 22px; margin-bottom: 16px; }
@@ -80,7 +79,6 @@ body { display: flex; justify-content: center; align-items: center;
     padding: 6px 14px; border-radius: 20px; font-size: 12px;
     cursor: pointer; color: var(--text-main); font-weight: 500; }
 
-/* 創新點 3: 靜默共修即時狀態列 */
 .collective-sync-pill {
     display: inline-flex; align-items: center; gap: 6px;
     background: rgba(168, 85, 247, 0.12); border: 1px solid rgba(168, 85, 247, 0.25);
@@ -96,7 +94,6 @@ body { display: flex; justify-content: center; align-items: center;
     50% { opacity: 1; transform: scale(1.2); }
 }
 
-/* 創新點 1: AI 聲學情感快速感知器 */
 .bio-checkin-banner {
     display: flex; align-items: center; justify-content: space-between;
     background: linear-gradient(135deg, rgba(6, 182, 212, 0.1), rgba(168, 85, 247, 0.1));
@@ -140,7 +137,6 @@ body { display: flex; justify-content: center; align-items: center;
 .session-title-area h2 { font-size: 24px; font-weight: 600; }
 .session-title-area p { font-size: 12px; color: var(--text-sub); }
 
-/* 創新點 2: 生成式情境微引導標籤 */
 .ai-context-badge {
     margin: 8px auto 0; padding: 4px 12px; border-radius: 12px; font-size: 11px;
     background: rgba(255, 255, 255, 0.05); border: 1px solid var(--card-border);
@@ -165,7 +161,6 @@ body { display: flex; justify-content: center; align-items: center;
     font-size: 16px; font-weight: 500; }
 .session-timer { text-align: center; font-size: 40px; font-weight: 300; margin-bottom: 4px; letter-spacing: 1px; }
 
-/* 創新點 4: 神經聲學雙耳節律切換開關 */
 .neuro-acoustic-bar {
     display: flex; align-items: center; justify-content: space-between;
     padding: 6px 14px; margin-bottom: 10px; border-radius: 12px;
@@ -248,10 +243,6 @@ body { display: flex; justify-content: center; align-items: center;
 <div class="phone-mockup">
     <div class="status-bar">
         <span id="statusBarTime">00:00</span>
-        <div class="status-weather" onclick="refreshWeather()" role="button" aria-label="Refresh weather">
-            <span id="weatherIcon">⛅</span>
-            <span id="weatherTemp">--°C</span>
-        </div>
     </div>
 
     <!-- 主頁 -->
@@ -261,13 +252,11 @@ body { display: flex; justify-content: center; align-items: center;
             <button class="auth-trigger-btn" id="authBtn" onclick="handleAuthAction()">Login</button>
         </div>
 
-        <!-- 創新點 3: 靜默共修膠囊 -->
         <div class="collective-sync-pill">
             <span class="pulse-dot"></span>
             <span id="collectiveCount">1,428 人正在同你一起呼吸共修</span>
         </div>
 
-        <!-- 創新點 1: AI 情感聲學 Check-in -->
         <div class="bio-checkin-banner">
             <div class="bio-checkin-info">
                 <h5 id="aiStressTitle">AI 聲學情緒感知</h5>
@@ -278,7 +267,7 @@ body { display: flex; justify-content: center; align-items: center;
 
         <div class="glass-card daily-tip">
             <h4>Daily Mindfulness</h4>
-            <p id="dailyTipText">Take three deep breaths before responding to any message today.</p>
+            <p id="dailyTipText">Take three deep breaths before responding to any message today. Create space between stimulus and response.</p>
         </div>
 
         <div class="section-title">Begin Your Practice</div>
@@ -341,7 +330,6 @@ body { display: flex; justify-content: center; align-items: center;
         <div class="session-title-area">
             <h2 id="sessionTitle">Deep Calm</h2>
             <p id="sessionSubtitle">Guided Meditation</p>
-            <!-- 創新點 2: Zero-UI 動態生成提示語 -->
             <div class="ai-context-badge" id="aiContextBadge">AI 自適應：當前平靜導引已就緒</div>
         </div>
 
@@ -359,7 +347,6 @@ body { display: flex; justify-content: center; align-items: center;
 
         <div class="session-timer" id="timerDisplay">00:00</div>
 
-        <!-- 創新點 4: 神經聲學雙耳 Theta 波混音 -->
         <div class="neuro-acoustic-bar">
             <span>🧠 6Hz Theta 雙耳神經節律</span>
             <div class="neuro-toggle" id="neuroToggle" onclick="toggleBinauralTheta()">啟用疊加</div>
@@ -479,8 +466,7 @@ const appState = {
         mindfulDates: [],
         moodLog: []
     },
-    settings: { volume: 0.8 },
-    weather: { temp: null, icon: '⛅' }
+    settings: { volume: 0.8 }
 };
 
 const audioEngine = new Audio();
@@ -488,7 +474,6 @@ let backupTimer = null;
 let saveDebounce = null;
 let breathPhaseTimeout = null;
 
-// Web Audio API 神經聲學合成器
 let audioCtx = null;
 let oscLeft = null;
 let oscRight = null;
@@ -513,7 +498,6 @@ function showToast(msg, duration = 2000) {
     toast._t = setTimeout(() => toast.classList.remove('show'), duration);
 }
 
-// 創新點 1: 聲學情緒感知 (Web Speech API + 語義壓力映射)
 let speechRecognizer = null;
 let isRecognizing = false;
 
@@ -591,16 +575,13 @@ function analyzeStressAndAdapt(text) {
     }
 }
 
-// 創新點 2: Zero-UI 動態生成式微引導語境
 function updateAIGenerativeContext() {
     const hour = new Date().getHours();
-    const temp = appState.weather.temp ?? 24;
     const timeDesc = hour < 6 ? "子夜凝思" : hour < 12 ? "晨光甦醒" : hour < 18 ? "午間定心" : "靜夜放鬆";
-    const prompt = `當前：${timeDesc} • ${temp}°C • 專屬平靜音頻已自動合成`;
+    const prompt = `當前：${timeDesc} • 專屬平靜導引已自動適配`;
     document.getElementById('aiContextBadge').innerText = prompt;
 }
 
-// 創新點 3: 靜默共修脈動
 function startCollectiveSyncSimulation() {
     setInterval(() => {
         const base = 1420;
@@ -609,7 +590,6 @@ function startCollectiveSyncSimulation() {
     }, 4000);
 }
 
-// 創新點 4: 神經聲學雙耳 Theta 波即時合成 (200Hz + 206Hz = 6Hz Theta 波)
 function toggleBinauralTheta() {
     appState.session.binauralThetaActive = !appState.session.binauralThetaActive;
     const btn = document.getElementById('neuroToggle');
@@ -636,15 +616,15 @@ function startBinauralOscillators() {
 
     const merger = audioCtx.createChannelMerger(2);
     binauralGain = audioCtx.createGain();
-    binauralGain.gain.setValueAtTime(0.04, audioCtx.currentTime); // 柔和底音，不壓過主音樂
+    binauralGain.gain.setValueAtTime(0.04, audioCtx.currentTime);
 
     oscLeft = audioCtx.createOscillator();
     oscLeft.type = 'sine';
-    oscLeft.frequency.setValueAtTime(200, audioCtx.currentTime); // 左耳 200Hz
+    oscLeft.frequency.setValueAtTime(200, audioCtx.currentTime);
 
     oscRight = audioCtx.createOscillator();
     oscRight.type = 'sine';
-    oscRight.frequency.setValueAtTime(206, audioCtx.currentTime); // 右耳 206Hz (差值 6Hz Theta)
+    oscRight.frequency.setValueAtTime(206, audioCtx.currentTime);
 
     oscLeft.connect(merger, 0, 0);
     oscRight.connect(merger, 0, 1);
@@ -719,55 +699,6 @@ function recordSession(minutes) {
     const dayIdx = (new Date().getDay() + 6) % 7;
     appState.progress.weeklyData[dayIdx] += minutes;
     appState.progress.calmScore = calculateCalmScore();
-}
-
-async function refreshWeather() {
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-            (pos) => fetchWeatherByCoords(pos.coords.latitude, pos.coords.longitude),
-            () => fetchWeatherByIP(),
-            { timeout: 6000, enableHighAccuracy: false }
-        );
-    } else {
-        fetchWeatherByIP();
-    }
-}
-
-async function fetchWeatherByIP() {
-    try {
-        const res = await fetch('https://ipapi.co/json/');
-        if (!res.ok) throw new Error("HTTP " + res.status);
-        const data = await res.json();
-        if (data && data.latitude && data.longitude) {
-            await fetchWeatherByCoords(data.latitude, data.longitude);
-        } else {
-            throw new Error("IP 定位失敗");
-        }
-    } catch (e) {
-        document.getElementById('weatherTemp').innerText = '--°C';
-    }
-}
-
-async function fetchWeatherByCoords(lat, lon) {
-    try {
-        const res = await fetch(
-            `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code`
-        );
-        const data = await res.json();
-        const temp = Math.round(data.current.temperature_2m);
-        const code = data.current.weather_code;
-        const icon = code === 0 ? '☀️' : code < 4 ? '⛅' : code < 70 ? '🌧️' : code < 80 ? '❄️' : '⛈️';
-        appState.weather = { temp, icon };
-        document.getElementById('weatherIcon').innerText = icon;
-        document.getElementById('weatherTemp').innerText = `${temp}°C`;
-        const tipEl = document.getElementById('dailyTipText');
-        if (icon === '☀️') tipEl.innerText = `今日 ${temp}°C 天晴 — 適合喺窗邊做 5 分鐘呼吸練習。`;
-        else if (icon === '🌧️' || icon === '⛈️') tipEl.innerText = `今日 ${temp}°C 有雨 — 聆聽雨聲，做 10 分鐘靜觀冥想。`;
-        else tipEl.innerText = `今日 ${temp}°C — 適合做 3 分鐘深呼吸。`;
-        updateAIGenerativeContext();
-    } catch (e) {
-        document.getElementById('weatherTemp').innerText = '--°C';
-    }
 }
 
 async function fetchMongoDB(action, payload) {
@@ -1300,7 +1231,6 @@ document.addEventListener("DOMContentLoaded", () => {
     initAudioEngine();
     initMediaSessionActionHandlers();
     setupTrackMetadataUI(appState.session.currentTrackId);
-    refreshWeather();
     startCollectiveSyncSimulation();
     switchPage('home');
     setInterval(() => {
