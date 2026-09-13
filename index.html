@@ -1,1074 +1,1011 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
+<!DOCTYPE html>
+<html lang="zh-HK">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <meta http-equiv="Content-Style-Type" content="text/css">
-  <title></title>
-  <meta name="Generator" content="Cocoa HTML Writer">
-  <meta name="CocoaVersion" content="2685.7">
-  <style type="text/css">
-    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px '.SF NS'; color: #ffffff; color: rgba(255, 255, 255, 0.9); -webkit-text-stroke: rgba(255, 255, 255, 0.9)}
-    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px '.SF NS'; color: #ffffff; color: rgba(255, 255, 255, 0.9); -webkit-text-stroke: rgba(255, 255, 255, 0.9); min-height: 16.0px}
-    span.s1 {font-kerning: none}
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Mindful Space - v2.1</title>
+<meta name="theme-color" content="#a855f7">
+<link rel="manifest" href="./manifest.json">
+<link rel="apple-touch-icon" href="./icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Mindful">
+<style>
+:root {
+  --bg-gradient: linear-gradient(135deg, #111424 0%, #1a1528 50%, #22161f 100%);
+  --card-bg: rgba(255, 255, 255, 0.06);
+  --card-border: rgba(255, 255, 255, 0.1);
+  --text-main: rgba(255, 255, 255, 0.9);
+  --text-sub: rgba(255, 255, 255, 0.5);
+  --nav-bg: rgba(17, 20, 36, 0.6);
+  --ring-gradient: linear-gradient(135deg, rgba(59, 130, 246, 0.3), rgba(236, 72, 153, 0.3));
+  --shadow-color: rgba(0, 0, 0, 0.3);
+  --accent-purple: #a855f7;
+  --danger-color: #ef4444;
+}
+@media (prefers-color-scheme: light) {
+  :root {
+    --bg-gradient: linear-gradient(135deg, #e5eef7 0%, #faedf3 50%, #fff4ec 100%);
+    --card-bg: rgba(255, 255, 255, 0.25);
+    --card-border: rgba(255, 255, 255, 0.4);
+    --text-main: rgba(0, 0, 0, 0.8);
+    --text-sub: rgba(0, 0, 0, 0.4);
+    --nav-bg: rgba(255, 255, 255, 0.2);
+    --ring-gradient: linear-gradient(135deg, rgba(147, 197, 253, 0.5), rgba(244, 143, 177, 0.5));
+    --shadow-color: rgba(0, 0, 0, 0.03);
+    --accent-purple: #9333ea;
+  }
+}
+* { margin: 0; padding: 0; box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    -webkit-tap-highlight-color: transparent; }
+body { display: flex; justify-content: center; align-items: center;
+    min-height: 100vh; background: var(--bg-gradient);
+    background-size: 400% 400%; animation: flowingBackground 16s ease infinite;
+    color: var(--text-main); }
+@keyframes flowingBackground {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+.phone-mockup { width: 375px; height: 812px; background: transparent;
+    border-radius: 40px; box-shadow: 0 20px 50px var(--shadow-color);
+    border: 4px solid var(--card-border); display: flex; flex-direction: column;
+    overflow: hidden; position: relative; }
+@media (max-width: 420px) {
+    body { padding: 0; }
+    .phone-mockup { width: 100vw; height: 100vh; border-radius: 0; border: none; }
+}
+.status-bar { height: 35px; width: 100%; display: flex; justify-content: space-between;
+    align-items: center; padding: 14px 24px 0; font-size: 13px;
+    color: var(--text-main); font-weight: 500; z-index: 10; opacity: 0.9; }
+.status-weather { display: flex; align-items: center; gap: 4px; cursor: pointer; }
+.glass-card { background: var(--card-bg); backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px); border: 1px solid var(--card-border);
+    border-radius: 24px; padding: 22px; margin-bottom: 16px; }
+.app-content { flex: 1; overflow-y: auto; padding: 10px 24px 90px; display: none; }
+.app-content.active { display: block; }
+.app-content::-webkit-scrollbar { display: none; }
+.user-header-zone { display: flex; justify-content: space-between; align-items: center; margin: 15px 0 20px; }
+.user-welcome-title { font-size: 28px; font-weight: 600; }
+.auth-trigger-btn { background: var(--card-bg); border: 1px solid var(--card-border);
+    padding: 6px 14px; border-radius: 20px; font-size: 12px;
+    cursor: pointer; color: var(--text-main); font-weight: 500; }
+.auth-form-container { display: flex; flex-direction: column; gap: 14px; margin-top: 10px; }
+.auth-input { width: 100%; background: rgba(0, 0, 0, 0.15); border: 1px solid var(--card-border);
+    padding: 12px 16px; border-radius: 16px; color: #fff; font-size: 14px; outline: none; }
+@media (prefers-color-scheme: light) { .auth-input { background: rgba(255,255,255,0.5); color: #000; } }
+.captcha-row { display: flex; gap: 12px; align-items: center; }
+#captchaCanvas { background: #ffffff; border-radius: 14px; cursor: pointer; height: 44px; width: 110px; }
+.auth-submit-btn { background: var(--accent-purple); color: white; border: none; padding: 12px;
+    border-radius: 16px; font-size: 15px; font-weight: 600; cursor: pointer; }
+.auth-switch-link { text-align: center; font-size: 12px; color: var(--text-sub); cursor: pointer; margin-top: 4px; }
+.legal-link { text-align: center; font-size: 11px; color: var(--text-sub); margin-top: 16px; line-height: 1.6; }
+.legal-link a { color: var(--accent-purple); text-decoration: none; }
+.daily-tip { background: rgba(255, 255, 255, 0.04); }
+.daily-tip h4 { color: #e28743; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; font-weight: 700; }
+.daily-tip p { font-size: 14px; line-height: 1.5; opacity: 0.85; }
+.section-title { font-size: 18px; font-weight: 600; margin: 24px 0 14px; }
+.practice-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.practice-btn { background: var(--card-bg); border: 1px solid var(--card-border);
+    border-radius: 28px; padding: 28px 16px; text-align: center;
+    cursor: pointer; transition: transform 0.2s; }
+.practice-btn:active { transform: scale(0.96); }
+.practice-btn .icon { width: 54px; height: 54px; border-radius: 50%; margin: 0 auto 16px; display: flex; justify-content: center; align-items: center; font-size: 22px; }
+.btn-meditate .icon { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
+.btn-breathe .icon { background: rgba(236, 72, 153, 0.15); color: #f472b6; }
+.practice-btn h3 { font-size: 17px; font-weight: 600; margin-bottom: 4px; }
+.practice-btn p { font-size: 12px; color: var(--text-sub); }
+.quick-card { display: flex; align-items: center; justify-content: space-between; cursor: pointer; padding: 18px 22px; }
+.quick-info h4 { font-size: 16px; font-weight: 600; margin-bottom: 2px; }
+.quick-info p { font-size: 12px; color: var(--text-sub); }
+.quick-play-icon { color: var(--text-sub); opacity: 0.8; font-size: 20px; }
+#session-page { padding-bottom: 0; display: none; flex-direction: column; justify-content: space-between; height: 100%; }
+#session-page.active { display: flex; }
+.session-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-size: 18px; }
+.session-title-area { text-align: center; margin-top: 10px; }
+.session-title-area h2 { font-size: 26px; font-weight: 600; }
+.session-title-area p { font-size: 13px; color: var(--text-sub); }
+.pattern-picker { display: flex; justify-content: center; gap: 8px; margin-top: 14px; }
+.pattern-chip { padding: 6px 14px; border-radius: 14px; font-size: 11px;
+    background: var(--card-bg); border: 1px solid var(--card-border);
+    color: var(--text-main); cursor: pointer; transition: all 0.2s; }
+.pattern-chip.active { background: var(--accent-purple); color: white; border-color: var(--accent-purple); }
+.breathing-container { height: 240px; display: flex; justify-content: center; align-items: center; }
+.breath-ring { width: 170px; height: 170px; border-radius: 50%;
+    background: var(--ring-gradient); display: flex;
+    justify-content: center; align-items: center;
+    box-shadow: 0 0 30px rgba(147, 197, 253, 0.05);
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+.breath-ring-inner { width: 150px; height: 150px; border-radius: 50%;
+    background: rgba(20, 20, 30, 0.6); border: 1px solid var(--card-border);
+    display: flex; justify-content: center; align-items: center;
+    font-size: 16px; font-weight: 500; }
+.session-timer { text-align: center; font-size: 44px; font-weight: 300; margin-bottom: 5px; letter-spacing: 1px; }
+.player-panel { margin-top: auto; padding: 18px 22px; background: rgba(255, 255, 255, 0.03); }
+.progress-bar-wrapper { display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: var(--text-sub); margin-bottom: 14px; }
+.progress-track { flex: 1; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; margin: 0 10px; position: relative; cursor: pointer; }
+.progress-fill { width: 0%; height: 100%; background: var(--accent-purple); border-radius: 3px; pointer-events: none; }
+.volume-wrapper { display: flex; align-items: center; gap: 10px; justify-content: center; margin-bottom: 16px; font-size: 12px; color: var(--text-sub); }
+.volume-slider { width: 110px; -webkit-appearance: none; background: rgba(255,255,255,0.1); height: 4px; border-radius: 2px; outline: none; }
+.volume-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; border-radius: 50%; background: var(--accent-purple); cursor: pointer; }
+.player-controls { display: flex; justify-content: center; align-items: center; gap: 44px; }
+.play-btn { width: 58px; height: 58px; border-radius: 50%; background: rgba(255,255,255,0.15); display: flex; justify-content: center; align-items: center; font-size: 22px; color: #fff; box-shadow: 0 4px 15px var(--shadow-color); cursor: pointer; }
+.mood-modal { display: none; position: absolute; inset: 0; background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(10px); z-index: 50; flex-direction: column;
+    justify-content: center; align-items: center; padding: 24px; text-align: center; }
+.mood-modal.active { display: flex; }
+.mood-row { display: flex; gap: 14px; margin: 20px 0; }
+.mood-btn { font-size: 30px; background: transparent; border: none; cursor: pointer; transition: transform 0.2s; }
+.mood-btn:active { transform: scale(1.2); }
+.journey-title h2 { font-size: 24px; font-weight: 600; }
+.journey-title p { font-size: 13px; color: var(--text-sub); margin-bottom: 18px; }
+.streak-badge { display: flex; align-items: center; gap: 14px; background: rgba(255,255,255,0.03); }
+.streak-fire { width: 44px; height: 44px; border-radius: 50%; background: #ffedd5; color: #ea580c; display: flex; justify-content: center; align-items: center; font-size: 20px; }
+.streak-info h3 { font-size: 18px; color: #ea580c; font-weight: 600; }
+.streak-info p { font-size: 12px; color: var(--text-sub); margin-top: 2px; }
+.metrics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px; }
+.metric-box { background: var(--card-bg); border-radius: 20px; padding: 16px; text-align: center; border: 1px solid var(--card-border); }
+.metric-box .val { font-size: 20px; font-weight: 600; }
+.metric-box .lbl { font-size: 11px; color: var(--text-sub); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+.chart-card h4 { font-size: 14px; opacity: 0.7; margin-bottom: 18px; }
+.bar-chart { display: flex; justify-content: space-between; align-items: flex-end; height: 100px; padding: 0 5px; margin-bottom: 14px; }
+.chart-column { display: flex; flex-direction: column; align-items: center; flex: 1; cursor: pointer; }
+.bar { width: 16px; height: 0px; background: rgba(255,255,255,0.08); border-radius: 4px; transition: height 0.6s cubic-bezier(0.1, 1, 0.1, 1); }
+.bar.highlight { background: linear-gradient(to top, var(--accent-purple), #f48ffb); box-shadow: 0 0 15px rgba(168, 85, 247, 0.4); }
+.day-lbl { font-size: 11px; color: var(--text-sub); margin-top: 8px; }
+.chart-summary { font-size: 13px; color: var(--text-sub); text-align: center; line-height: 1.5; padding: 0 10px; }
+.danger-zone-btn { width: 100%; padding: 14px; border-radius: 16px; background: rgba(239, 68, 68, 0.1);
+    border: 1px solid var(--danger-color); color: var(--danger-color); font-size: 13px;
+    font-weight: 600; cursor: pointer; margin-top: 20px; text-align: center; }
+.bottom-nav { position: absolute; bottom: 0; left: 0; right: 0; height: 75px;
+    background: var(--nav-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid var(--card-border); display: flex;
+    justify-content: space-around; align-items: center; padding-bottom: 12px; z-index: 10; }
+.nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-main); opacity: 0.3; font-size: 11px; cursor: pointer; transition: opacity 0.2s; }
+.nav-item.active { opacity: 1; color: var(--accent-purple); }
+.nav-item .icon { font-size: 22px; margin-bottom: 3px; }
+.toast { position: absolute; top: 60px; left: 50%; transform: translateX(-50%);
+    background: rgba(0,0,0,0.85); color: white; padding: 10px 20px;
+    border-radius: 20px; font-size: 13px; z-index: 100;
+    opacity: 0; transition: opacity 0.3s; pointer-events: none; }
+.toast.show { opacity: 1; }
+</style>
 </head>
 <body>
-<p class="p1"><span class="s1">&lt;!DOCTYPE html&gt;</span></p>
-<p class="p1"><span class="s1">&lt;html lang="zh-HK"&gt;</span></p>
-<p class="p1"><span class="s1">&lt;head&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;meta charset="UTF-8"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;title&gt;Mindful Space - v2.1&lt;/title&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;meta name="theme-color" content="#a855f7"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;link rel="manifest" href="./manifest.json"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;link rel="apple-touch-icon" href="./icon-192.png"&gt;</span></p>
-<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;meta name="apple-mobile-web-app-capable" content="yes"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;meta name="apple-mobile-web-app-title" content="Mindful"&gt;</span></p>
-<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;style&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>:root {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>--bg-gradient: linear-gradient(135deg, #111424 0%, #1a1528 50%, #22161f 100%);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>--card-bg: rgba(255, 255, 255, 0.06);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>--card-border: rgba(255, 255, 255, 0.1);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>--text-main: rgba(255, 255, 255, 0.9);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>--text-sub: rgba(255, 255, 255, 0.5);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>--nav-bg: rgba(17, 20, 36, 0.6);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>--ring-gradient: linear-gradient(135deg, rgba(59, 130, 246, 0.3), rgba(236, 72, 153, 0.3));</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>--shadow-color: rgba(0, 0, 0, 0.3);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>--accent-purple: #a855f7;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>--danger-color: #ef4444;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>--success-color: #10b981;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>@media (prefers-color-scheme: light) {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>:root {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>--bg-gradient: linear-gradient(135deg, #e5eef7 0%, #faedf3 50%, #fff4ec 100%);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>--card-bg: rgba(255, 255, 255, 0.25);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>--card-border: rgba(255, 255, 255, 0.4);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>--text-main: rgba(0, 0, 0, 0.8);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>--text-sub: rgba(0, 0, 0, 0.4);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>--nav-bg: rgba(255, 255, 255, 0.2);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>--ring-gradient: linear-gradient(135deg, rgba(147, 197, 253, 0.5), rgba(244, 143, 177, 0.5));</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>--shadow-color: rgba(0, 0, 0, 0.03);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>--accent-purple: #9333ea;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>* { margin: 0; padding: 0; box-sizing: border-box;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>-webkit-tap-highlight-color: transparent; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>body { display: flex; justify-content: center; align-items: center;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>min-height: 100vh; background: var(--bg-gradient);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>background-size: 400% 400%; animation: flowingBackground 16s ease infinite;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>color: var(--text-main); }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>@keyframes flowingBackground {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>0% { background-position: 0% 50%; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>50% { background-position: 100% 50%; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>100% { background-position: 0% 50%; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.phone-mockup { width: 375px; height: 812px; background: transparent;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>border-radius: 40px; box-shadow: 0 20px 50px var(--shadow-color);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>border: 4px solid var(--card-border); display: flex; flex-direction: column;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>overflow: hidden; position: relative; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>@media (max-width: 420px) {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>body { padding: 0; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>.phone-mockup { width: 100vw; height: 100vh; border-radius: 0; border: none; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.status-bar { height: 35px; width: 100%; display: flex; justify-content: space-between;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>align-items: center; padding: 14px 24px 0; font-size: 13px;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>color: var(--text-main); font-weight: 500; z-index: 10; opacity: 0.9; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.status-weather { display: flex; align-items: center; gap: 4px; cursor: pointer; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.glass-card { background: var(--card-bg); backdrop-filter: blur(20px);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>-webkit-backdrop-filter: blur(20px); border: 1px solid var(--card-border);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>border-radius: 24px; padding: 22px; margin-bottom: 16px; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.app-content { flex: 1; overflow-y: auto; padding: 10px 24px 90px; display: none; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.app-content.active { display: block; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.app-content::-webkit-scrollbar { display: none; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.user-header-zone { display: flex; justify-content: space-between; align-items: center; margin: 15px 0 20px; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.user-welcome-title { font-size: 28px; font-weight: 600; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.auth-trigger-btn { background: var(--card-bg); border: 1px solid var(--card-border);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>padding: 6px 14px; border-radius: 20px; font-size: 12px;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>cursor: pointer; color: var(--text-main); font-weight: 500; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.auth-form-container { display: flex; flex-direction: column; gap: 14px; margin-top: 10px; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.auth-input { width: 100%; background: rgba(0, 0, 0, 0.15); border: 1px solid var(--card-border);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>padding: 12px 16px; border-radius: 16px; color: #fff; font-size: 14px; outline: none; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>@media (prefers-color-scheme: light) { .auth-input { background: rgba(255,255,255,0.5); color: #000; } }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.captcha-row { display: flex; gap: 12px; align-items: center; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>#captchaCanvas { background: #ffffff; border-radius: 14px; cursor: pointer; height: 44px; width: 110px; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.auth-submit-btn { background: var(--accent-purple); color: white; border: none; padding: 12px;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>border-radius: 16px; font-size: 15px; font-weight: 600; cursor: pointer; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.auth-switch-link { text-align: center; font-size: 12px; color: var(--text-sub); cursor: pointer; margin-top: 4px; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.legal-link { text-align: center; font-size: 11px; color: var(--text-sub); margin-top: 16px; line-height: 1.6; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.legal-link a { color: var(--accent-purple); text-decoration: none; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.daily-tip { background: rgba(255, 255, 255, 0.04); }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.daily-tip h4 { color: #e28743; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; font-weight: 700; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.daily-tip p { font-size: 14px; line-height: 1.5; opacity: 0.85; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.section-title { font-size: 18px; font-weight: 600; margin: 24px 0 14px; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.practice-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.practice-btn { background: var(--card-bg); border: 1px solid var(--card-border);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>border-radius: 28px; padding: 28px 16px; text-align: center;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>cursor: pointer; transition: transform 0.2s; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.practice-btn:active { transform: scale(0.96); }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.practice-btn .icon { width: 54px; height: 54px; border-radius: 50%; margin: 0 auto 16px; display: flex; justify-content: center; align-items: center; font-size: 22px; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.btn-meditate .icon { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.btn-breathe .icon { background: rgba(236, 72, 153, 0.15); color: #f472b6; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.practice-btn h3 { font-size: 17px; font-weight: 600; margin-bottom: 4px; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.practice-btn p { font-size: 12px; color: var(--text-sub); }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.quick-card { display: flex; align-items: center; justify-content: space-between; cursor: pointer; padding: 18px 22px; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.quick-info h4 { font-size: 16px; font-weight: 600; margin-bottom: 2px; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.quick-info p { font-size: 12px; color: var(--text-sub); }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.quick-play-icon { color: var(--text-sub); opacity: 0.8; font-size: 20px; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>#session-page { padding-bottom: 0; display: none; flex-direction: column; justify-content: space-between; height: 100%; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>#session-page.active { display: flex; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.session-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-size: 18px; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.session-title-area { text-align: center; margin-top: 10px; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.session-title-area h2 { font-size: 26px; font-weight: 600; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.session-title-area p { font-size: 13px; color: var(--text-sub); }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.pattern-picker { display: flex; justify-content: center; gap: 8px; margin-top: 14px; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.pattern-chip { padding: 6px 14px; border-radius: 14px; font-size: 11px;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>background: var(--card-bg); border: 1px solid var(--card-border);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>color: var(--text-main); cursor: pointer; transition: all 0.2s; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.pattern-chip.active { background: var(--accent-purple); color: white; border-color: var(--accent-purple); }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.breathing-container { height: 240px; display: flex; justify-content: center; align-items: center; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.breath-ring { width: 170px; height: 170px; border-radius: 50%;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>background: var(--ring-gradient); display: flex;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>justify-content: center; align-items: center;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>box-shadow: 0 0 30px rgba(147, 197, 253, 0.05);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>animation-play-state: paused; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.breath-ring-inner { width: 150px; height: 150px; border-radius: 50%;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>background: rgba(20, 20, 30, 0.6); border: 1px solid var(--card-border);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>display: flex; justify-content: center; align-items: center;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>font-size: 16px; font-weight: 500; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.session-timer { text-align: center; font-size: 44px; font-weight: 300; margin-bottom: 5px; letter-spacing: 1px; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.player-panel { margin-top: auto; padding: 18px 22px; background: rgba(255, 255, 255, 0.03); }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.progress-bar-wrapper { display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: var(--text-sub); margin-bottom: 14px; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.progress-track { flex: 1; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; margin: 0 10px; position: relative; cursor: pointer; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.progress-fill { width: 0%; height: 100%; background: var(--accent-purple); border-radius: 3px; pointer-events: none; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.volume-wrapper { display: flex; align-items: center; gap: 10px; justify-content: center; margin-bottom: 16px; font-size: 12px; color: var(--text-sub); }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.volume-slider { width: 110px; -webkit-appearance: none; background: rgba(255,255,255,0.1); height: 4px; border-radius: 2px; outline: none; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.volume-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; border-radius: 50%; background: var(--accent-purple); cursor: pointer; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.player-controls { display: flex; justify-content: center; align-items: center; gap: 44px; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.play-btn { width: 58px; height: 58px; border-radius: 50%; background: rgba(255,255,255,0.15); display: flex; justify-content: center; align-items: center; font-size: 22px; color: #fff; box-shadow: 0 4px 15px var(--shadow-color); cursor: pointer; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.mood-modal { display: none; position: absolute; inset: 0; background: rgba(0, 0, 0, 0.7);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>backdrop-filter: blur(10px); z-index: 50; flex-direction: column;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>justify-content: center; align-items: center; padding: 24px; text-align: center; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.mood-modal.active { display: flex; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.mood-row { display: flex; gap: 14px; margin: 20px 0; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.mood-btn { font-size: 30px; background: transparent; border: none; cursor: pointer; transition: transform 0.2s; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.mood-btn:active { transform: scale(1.2); }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.journey-title h2 { font-size: 24px; font-weight: 600; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.journey-title p { font-size: 13px; color: var(--text-sub); margin-bottom: 18px; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.streak-badge { display: flex; align-items: center; gap: 14px; background: rgba(255,255,255,0.03); }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.streak-fire { width: 44px; height: 44px; border-radius: 50%; background: #ffedd5; color: #ea580c; display: flex; justify-content: center; align-items: center; font-size: 20px; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.streak-info h3 { font-size: 18px; color: #ea580c; font-weight: 600; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.streak-info p { font-size: 12px; color: var(--text-sub); margin-top: 2px; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.metrics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.metric-box { background: var(--card-bg); border-radius: 20px; padding: 16px; text-align: center; border: 1px solid var(--card-border); }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.metric-box .val { font-size: 20px; font-weight: 600; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.metric-box .lbl { font-size: 11px; color: var(--text-sub); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.chart-card h4 { font-size: 14px; opacity: 0.7; margin-bottom: 18px; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.bar-chart { display: flex; justify-content: space-between; align-items: flex-end; height: 100px; padding: 0 5px; margin-bottom: 14px; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.chart-column { display: flex; flex-direction: column; align-items: center; flex: 1; cursor: pointer; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.bar { width: 16px; height: 0px; background: rgba(255,255,255,0.08); border-radius: 4px; transition: height 0.6s cubic-bezier(0.1, 1, 0.1, 1); }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.bar.highlight { background: linear-gradient(to top, var(--accent-purple), #f48ffb); box-shadow: 0 0 15px rgba(168, 85, 247, 0.4); }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.day-lbl { font-size: 11px; color: var(--text-sub); margin-top: 8px; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.chart-summary { font-size: 13px; color: var(--text-sub); text-align: center; line-height: 1.5; padding: 0 10px; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.danger-zone-btn { width: 100%; padding: 14px; border-radius: 16px; background: rgba(239, 68, 68, 0.1);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>border: 1px solid var(--danger-color); color: var(--danger-color); font-size: 13px;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>font-weight: 600; cursor: pointer; margin-top: 20px; text-align: center; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.bottom-nav { position: absolute; bottom: 0; left: 0; right: 0; height: 75px;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>background: var(--nav-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>border-top: 1px solid var(--card-border); display: flex;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>justify-content: space-around; align-items: center; padding-bottom: 12px; z-index: 10; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-main); opacity: 0.3; font-size: 11px; cursor: pointer; transition: opacity 0.2s; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.nav-item.active { opacity: 1; color: var(--accent-purple); }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.nav-item .icon { font-size: 22px; margin-bottom: 3px; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.toast { position: absolute; top: 60px; left: 50%; transform: translateX(-50%);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>background: rgba(0,0,0,0.85); color: white; padding: 10px 20px;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>border-radius: 20px; font-size: 13px; z-index: 100;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>opacity: 0; transition: opacity 0.3s; pointer-events: none; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.toast.show { opacity: 1; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;/style&gt;</span></p>
-<p class="p1"><span class="s1">&lt;/head&gt;</span></p>
-<p class="p1"><span class="s1">&lt;body&gt;</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">&lt;div class="phone-mockup"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;div class="status-bar"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;span id="statusBarTime"&gt;00:00&lt;/span&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="status-weather" onclick="refreshWeather()" role="button" aria-label="Refresh weather"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;span id="weatherIcon"&gt;⛅&lt;/span&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;span id="weatherTemp"&gt;--°C&lt;/span&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;!-- 主頁 --&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;div id="home-page" class="app-content"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="user-header-zone"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div class="user-welcome-title" id="displayUsername"&gt;Hello, Visitor&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;button class="auth-trigger-btn" id="authBtn" onclick="handleAuthAction()"&gt;Login&lt;/button&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="glass-card daily-tip"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;h4&gt;Daily Mindfulness&lt;/h4&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;p id="dailyTipText"&gt;Take three deep breaths before responding to any message today.&lt;/p&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="section-title"&gt;Begin Your Practice&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="practice-grid"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div class="practice-btn btn-meditate" onclick="selectTrack('meditation')" role="button" aria-label="Start meditation"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;div class="icon"&gt;🧘&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;h3&gt;Meditation&lt;/h3&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;p&gt;Find stillness&lt;/p&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div class="practice-btn btn-breathe" onclick="selectTrack('breathing')" role="button" aria-label="Start breathing exercise"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;div class="icon"&gt;💨&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;h3&gt;Breathing&lt;/h3&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;p&gt;Center yourself&lt;/p&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="section-title"&gt;Quick Sessions&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="glass-card quick-card" onclick="selectTrack('morning')"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div class="quick-info"&gt;&lt;h4&gt;Morning Calm&lt;/h4&gt;&lt;p&gt;5 minutes • Energizing&lt;/p&gt;&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div class="quick-play-icon"&gt;▶️&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="glass-card quick-card" onclick="selectTrack('evening')"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div class="quick-info"&gt;&lt;h4&gt;Evening Wind Down&lt;/h4&gt;&lt;p&gt;10 minutes • Relaxing&lt;/p&gt;&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div class="quick-play-icon"&gt;▶️&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;!-- 登入頁 --&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;div id="auth-page" class="app-content"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="session-header"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;span onclick="switchPage('home')" role="button" aria-label="Close"&gt;✕&lt;/span&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;span&gt;&lt;/span&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="journey-title" style="margin-top: 20px;"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;h2 id="authPageTitle"&gt;Welcome Space&lt;/h2&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;p&gt;Sign in with verification to unlock cloud syncing.&lt;/p&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="glass-card auth-form-container"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;input type="text" class="auth-input" id="authUsername" placeholder="Username (e.g., Sarah)" autocomplete="username"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;input type="password" class="auth-input" id="authPassword" placeholder="Password" autocomplete="current-password"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div class="captcha-row"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;input type="text" class="auth-input" id="authCaptchaInput" placeholder="CAPTCHA" style="flex: 1;" autocomplete="off"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;canvas id="captchaCanvas" width="110" height="44" onclick="generateCaptcha()" role="button" aria-label="Refresh CAPTCHA"&gt;&lt;/canvas&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;button class="auth-submit-btn" onclick="submitAuthForm()"&gt;Confirm&lt;/button&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div class="auth-switch-link" id="authSwitchMode" onclick="toggleAuthMode()"&gt;Don't have an account? Sign Up&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div class="legal-link"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>By continuing, you agree to our&lt;br&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;a href="./privacy-policy.html"&gt;Privacy Policy&lt;/a&gt; &amp;amp; &lt;a href="./terms.html"&gt;Terms of Service&lt;/a&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;!-- 播放頁 --&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;div id="session-page" class="app-content"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="session-header"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;span onclick="switchPage('home')" role="button" aria-label="Close"&gt;✕&lt;/span&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;span&gt;⋯&lt;/span&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="session-title-area"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;h2 id="sessionTitle"&gt;Deep Calm&lt;/h2&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;p id="sessionSubtitle"&gt;Guided Meditation&lt;/p&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="pattern-picker" id="patternPicker"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div class="pattern-chip active" data-pattern="calm" onclick="selectPattern('calm')"&gt;Calm 4-4&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div class="pattern-chip" data-pattern="box" onclick="selectPattern('box')"&gt;Box 4-4-4-4&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div class="pattern-chip" data-pattern="478" onclick="selectPattern('478')"&gt;Relax 4-7-8&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="breathing-container"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div class="breath-ring" id="breathRing"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;div class="breath-ring-inner"&gt;&lt;span id="breathTxt"&gt;Ready&lt;/span&gt;&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="session-timer" id="timerDisplay"&gt;00:00&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="glass-card player-panel"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div class="progress-bar-wrapper"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;span id="currentTimeDisplay"&gt;00:00&lt;/span&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;div class="progress-track" id="progressTrack" onclick="handleSeek(event)"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;div class="progress-fill" id="progressFill"&gt;&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;span id="totalTimeDisplay"&gt;00:00&lt;/span&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div class="volume-wrapper"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;span&gt;🔈&lt;/span&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;input type="range" class="volume-slider" id="volumeSlider" min="0" max="1" step="0.05" oninput="handleVolumeChange(this.value)" aria-label="Volume"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;span&gt;🔊&lt;/span&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div class="player-controls"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;span class="control-icon" role="button" aria-label="Previous"&gt;⏮️&lt;/span&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;div class="play-btn" id="playBtn" onclick="togglePlayback()" role="button" aria-label="Play or pause"&gt;▶️&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;span class="control-icon" role="button" aria-label="Next"&gt;⏭️&lt;/span&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;!-- 進度頁 --&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;div id="progress-page" class="app-content"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="journey-title"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;h2&gt;Your Journey&lt;/h2&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;p&gt;Celebrating your mindful moments&lt;/p&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="glass-card streak-badge"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div class="streak-fire"&gt;🔥&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div class="streak-info"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;h3 id="streakTxt"&gt;0 Day Streak&lt;/h3&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;p id="streakMotivation"&gt;Let's begin the practice.&lt;/p&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="metrics-grid"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div class="metric-box"&gt;&lt;div class="val" id="m-week"&gt;0m&lt;/div&gt;&lt;div class="lbl"&gt;This Week&lt;/div&gt;&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div class="metric-box"&gt;&lt;div class="val" id="m-sessions"&gt;0&lt;/div&gt;&lt;div class="lbl"&gt;Sessions&lt;/div&gt;&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div class="metric-box"&gt;&lt;div class="val" id="m-days"&gt;0&lt;/div&gt;&lt;div class="lbl"&gt;Mindful Days&lt;/div&gt;&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div class="metric-box"&gt;&lt;div class="val" id="m-score"&gt;0%&lt;/div&gt;&lt;div class="lbl"&gt;Calm Score&lt;/div&gt;&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="section-title"&gt;Weekly Activity&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="glass-card chart-card"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;h4&gt;Minutes Meditated&lt;/h4&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div class="bar-chart" id="dynamicChart"&gt;&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div class="chart-summary" id="chartSummary"&gt;開始練習以啟動數據追蹤&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div id="deleteAccountSection" style="display: none;"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;button class="danger-zone-btn" onclick="deleteAccount()"&gt;Delete My Account&lt;/button&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;!-- 心情彈窗 --&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;div class="mood-modal" id="moodModal" role="dialog" aria-label="Mood feedback"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;h3&gt;練習完成，現在感覺如何？&lt;/h3&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="mood-row"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;button class="mood-btn" aria-label="Feeling calm" onclick="recordMood('😌')"&gt;😌&lt;/button&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;button class="mood-btn" aria-label="Feeling good" onclick="recordMood('😊')"&gt;😊&lt;/button&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;button class="mood-btn" aria-label="Feeling neutral" onclick="recordMood('😐')"&gt;😐&lt;/button&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;button class="mood-btn" aria-label="Feeling low" onclick="recordMood('😔')"&gt;😔&lt;/button&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;button class="mood-btn" aria-label="Feeling anxious" onclick="recordMood('😰')"&gt;😰&lt;/button&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;div class="toast" id="toast"&gt;&lt;/div&gt;</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;div class="bottom-nav"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="nav-item" id="nav-home" onclick="switchPage('home')" role="button" aria-label="Home"&gt;&lt;span class="icon"&gt;🏠&lt;/span&gt;&lt;span&gt;Home&lt;/span&gt;&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="nav-item" id="nav-session" onclick="switchPage('session')" role="button" aria-label="Sessions"&gt;&lt;span class="icon"&gt;🧘&lt;/span&gt;&lt;span&gt;Sessions&lt;/span&gt;&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="nav-item" id="nav-progress" onclick="switchPage('progress')" role="button" aria-label="Progress"&gt;&lt;span class="icon"&gt;📈&lt;/span&gt;&lt;span&gt;Progress&lt;/span&gt;&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1">&lt;/div&gt;</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">&lt;script&gt;</span></p>
-<p class="p1"><span class="s1">// ========== 配置 ==========</span></p>
-<p class="p1"><span class="s1">const CLOUD_CONFIG = {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>WEB_APP_URL: 'https://script.google.com/macros/s/YOUR_ACTUAL_NEW_DEPLOY_ID/exec'</span></p>
-<p class="p1"><span class="s1">};</span></p>
-<p class="p1"><span class="s1">const MONGODB_CONFIG = {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>endpoint: "https://data.mongodb-api.com/app/YOUR_APP_ID/endpoint/data/v1/action",</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>apiKey: "YOUR_ATLAS_DATA_API_KEY",</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>dataSource: "Cluster0",</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>database: "Object",</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>collection: "users"</span></p>
-<p class="p1"><span class="s1">};</span></p>
-<p class="p1"><span class="s1">const STORAGE_PREFIX = 'MINDFUL_USER_';</span></p>
-<p class="p1"><span class="s1">const GLOBAL_CONFIG_KEY = 'MINDFUL_GLOBAL_CFG';</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">// ========== 呼吸模式 ==========</span></p>
-<p class="p1"><span class="s1">const BREATHING_PATTERNS = {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>calm: { inhale: 4000, hold: 0,<span class="Apple-converted-space">    </span>exhale: 4000, hold2: 0<span class="Apple-converted-space">    </span>}, // 4-4</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>box:<span class="Apple-converted-space">  </span>{ inhale: 4000, hold: 4000, exhale: 4000, hold2: 4000 }, // 4-4-4-4</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>'478':{ inhale: 4000, hold: 7000, exhale: 8000, hold2: 0<span class="Apple-converted-space">    </span>}<span class="Apple-converted-space">  </span>// 4-7-8</span></p>
-<p class="p1"><span class="s1">};</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">// ========== State ==========</span></p>
-<p class="p1"><span class="s1">const appState = {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>auth: { currentUser: null, isLoggedIn: false, isSignUpMode: false, captchaCode: '' },</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>session: {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>isPlaying: false, currentTrackId: 'meditation', currentTime: 0,</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>totalDuration: 900, endTime: null, isAudioLoaded: false,</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>breathingPattern: 'calm',</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>tracks: {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>meditation: { title: "Deep Calm", subtitle: "Guided Meditation", duration: 900, url: "./audio/meditation.mp3" },</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>breathing:<span class="Apple-converted-space">  </span>{ title: "Box Breathing", subtitle: "Center Yourself", duration: 300, url: "./audio/breathing.mp3" },</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>morning:<span class="Apple-converted-space">    </span>{ title: "Morning Calm", subtitle: "Energizing Session", duration: 300, url: "./audio/morning.mp3" },</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>evening:<span class="Apple-converted-space">    </span>{ title: "Evening Wind Down", subtitle: "Relaxing Practice", duration: 600, url: "./audio/evening.mp3" }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>},</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>progress: {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>streak: 0, totalSessions: 0, mindfulDays: 0, calmScore: 0,</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>weeklyData: [0, 0, 0, 0, 0, 0, 0],</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>weekStartDate: null,</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>lastPracticeDate: null,</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>mindfulDates: [],</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>moodLog: []</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>},</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>settings: { volume: 0.8 },</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>weather: { temp: null, icon: '⛅', city: null }</span></p>
-<p class="p1"><span class="s1">};</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">const audioEngine = new Audio();</span></p>
-<p class="p1"><span class="s1">let backupTimer = null;</span></p>
-<p class="p1"><span class="s1">let saveDebounce = null;</span></p>
-<p class="p1"><span class="s1">let lastBreathPhase = '';</span></p>
-<p class="p1"><span class="s1">let breathPhaseTimeout = null;</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">// DOM refs</span></p>
-<p class="p1"><span class="s1">const timerDisplay = document.getElementById('timerDisplay');</span></p>
-<p class="p1"><span class="s1">const currentTimeDisplay = document.getElementById('currentTimeDisplay');</span></p>
-<p class="p1"><span class="s1">const totalTimeDisplay = document.getElementById('totalTimeDisplay');</span></p>
-<p class="p1"><span class="s1">const progressFill = document.getElementById('progressFill');</span></p>
-<p class="p1"><span class="s1">const playBtn = document.getElementById('playBtn');</span></p>
-<p class="p1"><span class="s1">const breathRing = document.getElementById('breathRing');</span></p>
-<p class="p1"><span class="s1">const breathTxt = document.getElementById('breathTxt');</span></p>
-<p class="p1"><span class="s1">const volumeSlider = document.getElementById('volumeSlider');</span></p>
-<p class="p1"><span class="s1">const displayUsername = document.getElementById('displayUsername');</span></p>
-<p class="p1"><span class="s1">const authBtn = document.getElementById('authBtn');</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">// ========== Toast ==========</span></p>
-<p class="p1"><span class="s1">function showToast(msg, duration = 2000) {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const toast = document.getElementById('toast');</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>toast.innerText = msg;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>toast.classList.add('show');</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>clearTimeout(toast._t);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>toast._t = setTimeout(() =&gt; toast.classList.remove('show'), duration);</span></p>
-<p class="p1"><span class="s1">}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">// ========== 密碼雜湊 ==========</span></p>
-<p class="p1"><span class="s1">async function hashPassword(password, salt) {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const enc = new TextEncoder();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const key = await crypto.subtle.importKey('raw', enc.encode(password), 'PBKDF2', false, ['deriveBits']);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const bits = await crypto.subtle.deriveBits(</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>{ name: 'PBKDF2', salt: enc.encode(salt), iterations: 100000, hash: 'SHA-256' },</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>key, 256</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>return btoa(String.fromCharCode(...new Uint8Array(bits)));</span></p>
-<p class="p1"><span class="s1">}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">// ========== 週資料重置 ==========</span></p>
-<p class="p1"><span class="s1">function getWeekKey() {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const today = new Date();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const monday = new Date(today);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>monday.setDate(today.getDate() - ((today.getDay() + 6) % 7));</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>return monday.toISOString().slice(0, 10);</span></p>
-<p class="p1"><span class="s1">}</span></p>
-<p class="p1"><span class="s1">function ensureWeeklyReset() {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const weekKey = getWeekKey();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>if (appState.progress.weekStartDate !== weekKey) {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>appState.progress.weeklyData = [0, 0, 0, 0, 0, 0, 0];</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>appState.progress.weekStartDate = weekKey;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
-<p class="p1"><span class="s1">}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">// ========== Calm Score 真實計算 ==========</span></p>
-<p class="p1"><span class="s1">function calculateCalmScore() {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const streakScore = Math.min(40, appState.progress.streak * 4);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const weekMinutes = appState.progress.weeklyData.reduce((a, b) =&gt; a + b, 0);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const minutesScore = Math.min(30, weekMinutes);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const moodMap = { '😌': 100, '😊': 85, '😐': 60, '😔': 40, '😰': 20 };</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const recentMoods = appState.progress.moodLog.slice(-7);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const moodScore = recentMoods.length</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>? (recentMoods.reduce((a, m) =&gt; a + (moodMap[m.mood] || 60), 0) / recentMoods.length) * 0.3</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>: 15;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>return Math.round(Math.min(100, streakScore + minutesScore + moodScore));</span></p>
-<p class="p1"><span class="s1">}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">// ========== 記錄 Session ==========</span></p>
-<p class="p1"><span class="s1">function recordSession(minutes) {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const today = new Date().toISOString().slice(0, 10);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const last = appState.progress.lastPracticeDate;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const yesterday = new Date(Date.now() - 864e5).toISOString().slice(0, 10);</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>if (last === today) {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>// 同日，只加分鐘</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>} else if (last === yesterday) {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>appState.progress.streak += 1;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>} else {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>appState.progress.streak = 1;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>appState.progress.lastPracticeDate = today;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>appState.progress.totalSessions += 1;</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const days = new Set(appState.progress.mindfulDates || []);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>days.add(today);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>appState.progress.mindfulDates = [...days];</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>appState.progress.mindfulDays = days.size;</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>ensureWeeklyReset();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const dayIdx = (new Date().getDay() + 6) % 7;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>appState.progress.weeklyData[dayIdx] += minutes;</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>appState.progress.calmScore = calculateCalmScore();</span></p>
-<p class="p1"><span class="s1">}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">// ========== 天氣 (真實 API) ==========</span></p>
-<p class="p1"><span class="s1">async function refreshWeather() {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>if (!navigator.geolocation) {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>showToast("裝置不支援定位，天氣無法更新");</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>return;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>navigator.geolocation.getCurrentPosition(async (pos) =&gt; {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>try {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const { latitude, longitude } = pos.coords;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const res = await fetch(</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&amp;longitude=${longitude}&amp;current=temperature_2m,weather_code`</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const data = await res.json();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const temp = Math.round(data.current.temperature_2m);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const code = data.current.weather_code;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const icon = code === 0 ? '☀️' : code &lt; 4 ? '⛅' : code &lt; 70 ? '🌧️' : code &lt; 80 ? '❄️' : '⛈️';</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>appState.weather = { temp, icon };</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>document.getElementById('weatherIcon').innerText = icon;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>document.getElementById('weatherTemp').innerText = `${temp}°C`;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>// 冥想提示</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const tipEl = document.getElementById('dailyTipText');</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>if (icon === '☀️') tipEl.innerText = `今日 ${temp}°C 天晴 — 適合喺窗邊做 5 分鐘呼吸練習，感受陽光與空氣。`;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>else if (icon === '🌧️' || icon === '⛈️') tipEl.innerText = `今日 ${temp}°C 有雨 — 聆聽雨聲，做 10 分鐘靜觀冥想，讓心隨雨落。`;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>else tipEl.innerText = `今日 ${temp}°C — 適合做 3 分鐘深呼吸，為今日創造空間。`;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>} catch (e) {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>console.warn("天氣 API 失敗：", e);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}, () =&gt; {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>// 用戶拒絕權限，靜靜咁唔顯示</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>document.getElementById('weatherTemp').innerText = '--°C';</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}, { timeout: 5000 });</span></p>
-<p class="p1"><span class="s1">}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">// ========== 認證 ==========</span></p>
-<p class="p1"><span class="s1">async function fetchMongoDB(action, payload) {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>if (MONGODB_CONFIG.apiKey === "YOUR_ATLAS_DATA_API_KEY") return null;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>try {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const response = await fetch(`${MONGODB_CONFIG.endpoint}/${action}`, {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>method: 'POST',</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>headers: { 'Content-Type': 'application/json', 'api-key': MONGODB_CONFIG.apiKey },</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>body: JSON.stringify({ dataSource: MONGODB_CONFIG.dataSource, database: MONGODB_CONFIG.database, collection: MONGODB_CONFIG.collection, ...payload })</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>});</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>return await response.json();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>} catch (e) { return null; }</span></p>
-<p class="p1"><span class="s1">}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">async function syncWithCloud(actionType, additionalData = {}) {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>if (!appState.auth.isLoggedIn || !appState.auth.currentUser) return;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>if (CLOUD_CONFIG.WEB_APP_URL.includes("YOUR_ACTUAL_NEW_DEPLOY_ID")) return;</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const payloadObj = {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>action: actionType,</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>username: appState.auth.currentUser,</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>streak: appState.progress.streak,</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>totalSessions: appState.progress.totalSessions,</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>mindfulDays: appState.progress.mindfulDays,</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>calmScore: appState.progress.calmScore,</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>weeklyData: appState.progress.weeklyData,</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>weekStartDate: appState.progress.weekStartDate,</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>lastPracticeDate: appState.progress.lastPracticeDate,</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>mindfulDates: appState.progress.mindfulDates,</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>moodLog: appState.progress.moodLog.slice(-30),</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>...additionalData</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>};</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>fetch(CLOUD_CONFIG.WEB_APP_URL, {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>method: 'POST', mode: 'no-cors', body: JSON.stringify(payloadObj)</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}).catch(err =&gt; console.warn("網絡同步保留：", err));</span></p>
-<p class="p1"><span class="s1">}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">function saveUserStateToStorage() {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>clearTimeout(saveDebounce);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>saveDebounce = setTimeout(() =&gt; {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const key = appState.auth.isLoggedIn &amp;&amp; appState.auth.currentUser</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>? STORAGE_PREFIX + appState.auth.currentUser.toUpperCase()</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>: STORAGE_PREFIX + 'GUEST';</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>localStorage.setItem(key, JSON.stringify({ progress: appState.progress, settings: appState.settings }));</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>if (appState.auth.isLoggedIn) {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>localStorage.setItem(GLOBAL_CONFIG_KEY, JSON.stringify({ lastUser: appState.auth.currentUser }));</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>syncWithCloud('save_progress');</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}, 1000);</span></p>
-<p class="p1"><span class="s1">}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">function loadUserStateFromStorage(username) {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const key = username ? STORAGE_PREFIX + username.toUpperCase() : STORAGE_PREFIX + 'GUEST';</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const saved = localStorage.getItem(key);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>if (saved) {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>try {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const parsed = JSON.parse(saved);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>if (parsed.progress) {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>appState.progress = {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>...appState.progress,</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>...parsed.progress,</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>mindfulDates: parsed.progress.mindfulDates || [],</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>moodLog: parsed.progress.moodLog || []</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>};</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>if (parsed.settings) appState.settings = parsed.settings;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>} catch (e) {}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>} else {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>appState.progress = {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>streak: 0, totalSessions: 0, mindfulDays: 0, calmScore: 0,</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>weeklyData: [0, 0, 0, 0, 0, 0, 0], weekStartDate: getWeekKey(),</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>lastPracticeDate: null, mindfulDates: [], moodLog: []</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>};</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>ensureWeeklyReset();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>appState.progress.calmScore = calculateCalmScore();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>volumeSlider.value = appState.settings.volume;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>audioEngine.volume = appState.settings.volume;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>renderUserHeaderUI();</span></p>
-<p class="p1"><span class="s1">}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">// ========== CAPTCHA ==========</span></p>
-<p class="p1"><span class="s1">function generateCaptcha() {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const canvas = document.getElementById('captchaCanvas');</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>if (!canvas) return;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const ctx = canvas.getContext('2d');</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const chars = '23456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz';</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>let code = '';</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>for (let i = 0; i &lt; 4; i++) code += chars.charAt(Math.floor(Math.random() * chars.length));</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>appState.auth.captchaCode = code.toLowerCase();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>ctx.fillStyle = "#f3f4f6";</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>ctx.fillRect(0, 0, canvas.width, canvas.height);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>for (let i = 0; i &lt; 4; i++) {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>ctx.strokeStyle = `rgba(${Math.random()*255}, ${Math.random()*255}, ${Math.random()*255}, 0.3)`;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>ctx.beginPath();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>ctx.moveTo(Math.random() * canvas.width, Math.random() * canvas.height);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>ctx.lineTo(Math.random() * canvas.width, Math.random() * canvas.height);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>ctx.stroke();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>for (let i = 0; i &lt; code.length; i++) {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>ctx.save();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>ctx.font = "bold 22px Courier New";</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>ctx.fillStyle = `rgba(${Math.random()*140}, ${Math.random()*140}, ${Math.random()*140}, 0.9)`;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>ctx.translate(15 + i * 24, 28 + (Math.random() * 6 - 3));</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>ctx.rotate((Math.random() * 40 - 20) * Math.PI / 180);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>ctx.fillText(code[i], 0, 0);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>ctx.restore();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
-<p class="p1"><span class="s1">}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">function renderUserHeaderUI() {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const deleteSection = document.getElementById('deleteAccountSection');</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>if (appState.auth.isLoggedIn &amp;&amp; appState.auth.currentUser) {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>displayUsername.innerText = `Hello, ${appState.auth.currentUser}`;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>authBtn.innerText = "Logout";</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>authBtn.style.borderColor = "rgba(239, 68, 68, 0.4)";</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>if (deleteSection) deleteSection.style.display = "block";</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>} else {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>displayUsername.innerText = "Hello, Visitor";</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>authBtn.innerText = "Login";</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>authBtn.style.borderColor = "var(--card-border)";</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>if (deleteSection) deleteSection.style.display = "none";</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
-<p class="p1"><span class="s1">}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">function handleAuthAction() {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>if (appState.auth.isLoggedIn) {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>saveUserStateToStorage();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>appState.auth.isLoggedIn = false;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>appState.auth.currentUser = null;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>localStorage.removeItem(GLOBAL_CONFIG_KEY);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>loadUserStateFromStorage(null);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>showToast("已成功安全登出");</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>} else {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>switchPage('auth');</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>setTimeout(generateCaptcha, 50);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
-<p class="p1"><span class="s1">}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">function toggleAuthMode() {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>appState.auth.isSignUpMode = !appState.auth.isSignUpMode;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>document.getElementById('authPageTitle').innerText = appState.auth.isSignUpMode ? "Create Account" : "Welcome Space";</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>document.getElementById('authSwitchMode').innerText = appState.auth.isSignUpMode</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>? "Already have an account? Sign In"</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>: "Don't have an account? Sign Up";</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>generateCaptcha();</span></p>
-<p class="p1"><span class="s1">}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">async function submitAuthForm() {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const userIn = document.getElementById('authUsername').value.trim();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const passIn = document.getElementById('authPassword').value.trim();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const captchaIn = document.getElementById('authCaptchaInput').value.trim().toLowerCase();</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>if (!userIn || !passIn || !captchaIn) { showToast("請填寫完整欄位"); return; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>if (captchaIn !== appState.auth.captchaCode) { showToast("驗證碼錯誤"); generateCaptcha(); return; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>if (passIn.length &lt; 6) { showToast("密碼至少 6 個字元"); return; }</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const hashedKey = await hashPassword(passIn, userIn.toLowerCase());</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>if (appState.auth.isSignUpMode) {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const checkCloud = await fetchMongoDB('findOne', { filter: { username: userIn } });</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>if (checkCloud &amp;&amp; checkCloud.document) {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>showToast("此用戶名已被註冊"); generateCaptcha(); return;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>appState.auth.currentUser = userIn;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>appState.auth.isLoggedIn = true;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>await fetchMongoDB('insertOne', {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>document: {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>username: userIn,</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>passwordHash: hashedKey,</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>createdAt: new Date().toISOString(),</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>progress: appState.progress,</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>settings: appState.settings</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>});</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>showToast(`註冊成功！歡迎加入，${userIn}`);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>} else {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const result = await fetchMongoDB('findOne', { filter: { username: userIn } });</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>if (result &amp;&amp; result.document) {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>if (result.document.passwordHash !== hashedKey) {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>showToast("密碼錯誤"); generateCaptcha(); return;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>if (result.document.progress) {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>appState.progress = { ...appState.progress, ...result.document.progress };</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>appState.progress.mindfulDates = appState.progress.mindfulDates || [];</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>appState.progress.moodLog = appState.progress.moodLog || [];</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>} else if (MONGODB_CONFIG.apiKey !== "YOUR_ATLAS_DATA_API_KEY") {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>showToast("用戶不存在，請先註冊"); generateCaptcha(); return;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>appState.auth.currentUser = userIn;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>appState.auth.isLoggedIn = true;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>await loadUserStateFromStorage(userIn);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>await syncWithCloud('user_login');</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>document.getElementById('authUsername').value = '';</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>document.getElementById('authPassword').value = '';</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>document.getElementById('authCaptchaInput').value = '';</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>switchPage('home');</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>showToast(`驗證成功！歡迎回來 ${userIn}`);</span></p>
-<p class="p1"><span class="s1">}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">async function deleteAccount() {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>if (!appState.auth.isLoggedIn || !appState.auth.currentUser) return;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>if (!confirm("確定永久刪除帳號？所有雲端與本地進度將無法復原。")) return;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>if (!confirm("最後確認：確定要永久刪除所有資料嗎？")) return;</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>await fetchMongoDB('deleteOne', { filter: { username: appState.auth.currentUser } });</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>localStorage.removeItem(STORAGE_PREFIX + appState.auth.currentUser.toUpperCase());</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>localStorage.removeItem(GLOBAL_CONFIG_KEY);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>appState.auth = { currentUser: null, isLoggedIn: false, isSignUpMode: false, captchaCode: '' };</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>showToast("帳號與個人資料已永久刪除");</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>setTimeout(() =&gt; location.reload(), 1500);</span></p>
-<p class="p1"><span class="s1">}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">// ========== 音訊引擎 ==========</span></p>
-<p class="p1"><span class="s1">function initAudioEngine() {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>audioEngine.preload = 'auto';</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>audioEngine.addEventListener('error', () =&gt; {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>appState.session.isAudioLoaded = false;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>console.warn("音訊檔載入失敗，切換為靜音倒數模式。");</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>});</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>audioEngine.addEventListener('canplay', () =&gt; { appState.session.isAudioLoaded = true; });</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>audioEngine.addEventListener('loadedmetadata', () =&gt; {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>if (Number.isFinite(audioEngine.duration) &amp;&amp; audioEngine.duration &gt; 0) {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>appState.session.totalDuration = Math.floor(audioEngine.duration);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>appState.session.isAudioLoaded = true;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>syncDurationUI();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>updateMediaSessionPositionState();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>});</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>audioEngine.addEventListener('timeupdate', () =&gt; {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>if (appState.session.isAudioLoaded) {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>appState.session.currentTime = audioEngine.currentTime;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>updatePlaybackProgressUI();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>});</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>audioEngine.addEventListener('play', () =&gt; { handlePlayStartState(); });</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>audioEngine.addEventListener('pause', () =&gt; { handlePlayPauseState(); });</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>audioEngine.addEventListener('ended', () =&gt; { handlePlayEndState(); });</span></p>
-<p class="p1"><span class="s1">}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">function syncDurationUI() {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>totalTimeDisplay.innerText = formatMinutesSeconds(appState.session.totalDuration);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>updatePlaybackProgressUI();</span></p>
-<p class="p1"><span class="s1">}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">function updatePlaybackProgressUI() {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const current = Math.floor(appState.session.currentTime);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const validDuration = appState.session.totalDuration;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const timeLeft = Math.max(0, validDuration - current);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>timerDisplay.innerText = formatMinutesSeconds(timeLeft);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>currentTimeDisplay.innerText = formatMinutesSeconds(current);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>progressFill.style.width = (validDuration &gt; 0 ? (current / validDuration) * 100 : 0) + "%";</span></p>
-<p class="p1"><span class="s1">}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">function handlePlayStartState() {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>appState.session.isPlaying = true;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>playBtn.innerText = "⏸️";</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>if ('mediaSession' in navigator) { navigator.mediaSession.playbackState = "playing"; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>if (backupTimer) clearInterval(backupTimer);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>appState.session.endTime = Date.now() + ((appState.session.totalDuration - appState.session.currentTime) * 1000);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>backupTimer = setInterval(() =&gt; {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>if (appState.session.isPlaying) {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>if (!appState.session.isAudioLoaded) {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>const remaining = Math.max(0, Math.floor((appState.session.endTime - Date.now()) / 1000));</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>appState.session.currentTime = appState.session.totalDuration - remaining;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>updatePlaybackProgressUI();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>if (remaining === 0) handlePlayEndState();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>} else {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>appState.session.endTime = Date.now() + ((appState.session.totalDuration - audioEngine.currentTime) * 1000);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}, 250);</span></p>
-<p class="p1"><span class="s1">}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">function handlePlayPauseState() {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>appState.session.isPlaying = false;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>playBtn.innerText = "▶️";</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>if (backupTimer) clearInterval(backupTimer);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>if ('mediaSession' in navigator) { navigator.mediaSession.playbackState = "paused"; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>saveUserStateToStorage();</span></p>
-<p class="p1"><span class="s1">}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">function handlePlayEndState() {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>appState.session.isPlaying = false;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>playBtn.innerText = "▶️";</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>if (backupTimer) clearInterval(backupTimer);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const minutesDone = Math.max(1, Math.floor(appState.session.totalDuration / 60));</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>recordSession(minutesDone);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>syncWithCloud('save_progress', {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>trackId: appState.session.currentTrackId,</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>durationMinutes: minutesDone</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>});</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>appState.session.currentTime = 0;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>updatePlaybackProgressUI();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>saveUserStateToStorage();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>document.getElementById('moodModal').classList.add('active');</span></p>
-<p class="p1"><span class="s1">}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">function recordMood(emoji) {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>appState.progress.moodLog.push({ date: new Date().toISOString(), mood: emoji });</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>appState.progress.calmScore = calculateCalmScore();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>document.getElementById('moodModal').classList.remove('active');</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>saveUserStateToStorage();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>showToast(`✨ 感謝記錄，願平靜與你同行`);</span></p>
-<p class="p1"><span class="s1">}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">function setupTrackMetadataUI(trackId) {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const track = appState.session.tracks[trackId];</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>document.getElementById('sessionTitle').innerText = track.title;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>document.getElementById('sessionSubtitle').innerText = `${track.subtitle} • ${track.duration / 60} 分鐘`;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>appState.session.totalDuration = track.duration;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>appState.session.currentTime = 0;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>syncDurationUI();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>updateMediaSessionMetadata(trackId);</span></p>
-<p class="p1"><span class="s1">}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">// ========== 呼吸模式 ==========</span></p>
-<p class="p1"><span class="s1">function selectPattern(patternKey) {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>appState.session.breathingPattern = patternKey;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>document.querySelectorAll('.pattern-chip').forEach(el =&gt; {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>el.classList.toggle('active', el.dataset.pattern === patternKey);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>});</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>if (appState.session.isPlaying) {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>runBreathingCycle();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
-<p class="p1"><span class="s1">}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">function runBreathingCycle() {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>if (breathPhaseTimeout) clearTimeout(breathPhaseTimeout);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>if (!appState.session.isPlaying) return;</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const pattern = BREATHING_PATTERNS[appState.session.breathingPattern];</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const phases = [</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>{ name: 'Inhale', duration: pattern.inhale, scale: 1.23, vibrate: [35] },</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>{ name: 'Hold', <span class="Apple-converted-space">  </span>duration: pattern.hold, <span class="Apple-converted-space">  </span>scale: 1.23, vibrate: [15] },</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>{ name: 'Exhale', duration: pattern.exhale, scale: 1.0,<span class="Apple-converted-space">  </span>vibrate: [20, 60, 20] },</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>{ name: 'Hold', <span class="Apple-converted-space">  </span>duration: pattern.hold2,<span class="Apple-converted-space">  </span>scale: 1.0,<span class="Apple-converted-space">  </span>vibrate: [15] }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>].filter(p =&gt; p.duration &gt; 0);</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>let idx = 0;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>function step() {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>if (!appState.session.isPlaying) return;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const phase = phases[idx];</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>breathTxt.innerText = phase.name + ' ' + (phase.duration / 1000) + 's';</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>breathRing.style.transform = `scale(${phase.scale})`;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>if ('vibrate' in navigator &amp;&amp; phase.vibrate) navigator.vibrate(phase.vibrate);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>idx = (idx + 1) % phases.length;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>breathPhaseTimeout = setTimeout(step, phase.duration);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>step();</span></p>
-<p class="p1"><span class="s1">}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">function stopBreathingCycle() {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>if (breathPhaseTimeout) clearTimeout(breathPhaseTimeout);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>breathRing.style.transform = 'scale(1.0)';</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>if (appState.session.currentTime === 0) breathTxt.innerText = "Ready";</span></p>
-<p class="p1"><span class="s1">}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">// ========== 播放控制 ==========</span></p>
-<p class="p1"><span class="s1">async function selectTrack(trackId) {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>appState.session.currentTrackId = trackId;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>setupTrackMetadataUI(trackId);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>audioEngine.volume = appState.settings.volume || 0.8;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>audioEngine.src = appState.session.tracks[trackId].url;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>audioEngine.load();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>switchPage('session');</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>await togglePlayback();</span></p>
-<p class="p1"><span class="s1">}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">async function togglePlayback() {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>try {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>if (audioEngine.paused) {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>await audioEngine.play();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>handlePlayStartState();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>runBreathingCycle();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>} else {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>audioEngine.pause();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>handlePlayPauseState();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>stopBreathingCycle();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>} catch (err) {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>if (!appState.session.isPlaying) {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>handlePlayStartState();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>runBreathingCycle();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>} else {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>handlePlayPauseState();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>stopBreathingCycle();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
-<p class="p1"><span class="s1">}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">function handleSeek(event) {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const validDuration = appState.session.totalDuration;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>if (!validDuration) return;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const rect = document.getElementById('progressTrack').getBoundingClientRect();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const targetTime = Math.min(1, Math.max(0, (event.clientX - rect.left) / rect.width)) * validDuration;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>appState.session.currentTime = targetTime;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>if (appState.session.isAudioLoaded) {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>try { audioEngine.currentTime = targetTime; } catch (e) {}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>appState.session.endTime = Date.now() + ((validDuration - targetTime) * 1000);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>updatePlaybackProgressUI();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>updateMediaSessionPositionState();</span></p>
-<p class="p1"><span class="s1">}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">function handleVolumeChange(val) {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>audioEngine.volume = parseFloat(val);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>appState.settings.volume = parseFloat(val);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>saveUserStateToStorage();</span></p>
-<p class="p1"><span class="s1">}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">// ========== MediaSession ==========</span></p>
-<p class="p1"><span class="s1">function updateMediaSessionMetadata(trackId) {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>if ('mediaSession' in navigator) {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const track = appState.session.tracks[trackId];</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>navigator.mediaSession.metadata = new MediaMetadata({</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>title: track.title,</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>artist: "Mindful Space",</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>album: track.subtitle,</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>artwork: [{ src: './icon-192.png', sizes: '192x192', type: 'image/png' }]</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>});</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
-<p class="p1"><span class="s1">}</span></p>
-<p class="p1"><span class="s1">function updateMediaSessionPositionState() {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>if ('mediaSession' in navigator &amp;&amp; 'setPositionState' in navigator.mediaSession) {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>if (Number.isFinite(audioEngine.duration) &amp;&amp; audioEngine.duration &gt; 0) {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>navigator.mediaSession.setPositionState({</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>duration: audioEngine.duration,</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>playbackRate: audioEngine.playbackRate,</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>position: audioEngine.currentTime</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>});</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
-<p class="p1"><span class="s1">}</span></p>
-<p class="p1"><span class="s1">function initMediaSessionActionHandlers() {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>if ('mediaSession' in navigator) {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>navigator.mediaSession.setActionHandler('play', () =&gt; togglePlayback());</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>navigator.mediaSession.setActionHandler('pause', () =&gt; togglePlayback());</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
-<p class="p1"><span class="s1">}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">// ========== 工具 ==========</span></p>
-<p class="p1"><span class="s1">function formatMinutesSeconds(totalSeconds) {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>return `${String(Math.floor(totalSeconds / 60)).padStart(2, '0')}:${String(totalSeconds % 60).padStart(2, '0')}`;</span></p>
-<p class="p1"><span class="s1">}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">function switchPage(pageId) {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>document.querySelectorAll('.app-content').forEach(p =&gt; p.classList.remove('active'));</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>document.querySelectorAll('.nav-item').forEach(n =&gt; n.classList.remove('active'));</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const targetPage = document.getElementById(`${pageId}-page`);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>if (targetPage) targetPage.classList.add('active');</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const targetNav = document.getElementById(`nav-${pageId}`);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>if (pageId !== 'session' &amp;&amp; pageId !== 'auth' &amp;&amp; targetNav) { targetNav.classList.add('active'); }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>if (pageId === 'progress') { renderProgressMetricsAndCharts(); }</span></p>
-<p class="p1"><span class="s1">}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">function renderProgressMetricsAndCharts() {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>ensureWeeklyReset();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>appState.progress.calmScore = calculateCalmScore();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const p = appState.progress;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>document.getElementById('streakTxt').innerText = `${p.streak} Day Streak`;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>document.getElementById('streakMotivation').innerText = p.streak &gt; 0</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>? "You're building a beautiful practice. Keep going!"</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>: "Welcome to your fresh start! Let's begin.";</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const totalMinutes = p.weeklyData.reduce((a, b) =&gt; a + b, 0);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>document.getElementById('m-week').innerText = totalMinutes &gt; 0 ? `${totalMinutes}m` : "0m";</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>document.getElementById('m-sessions').innerText = p.totalSessions;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>document.getElementById('m-days').innerText = p.mindfulDays;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>document.getElementById('m-score').innerText = `${p.calmScore}%`;</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const chartContainer = document.getElementById('dynamicChart');</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>chartContainer.innerHTML = '';</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const maxVal = Math.max(...p.weeklyData, 1);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const maxIndex = p.weeklyData.indexOf(maxVal);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const dayNames = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>p.weeklyData.forEach((value, index) =&gt; {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const column = document.createElement('div');</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>column.className = 'chart-column';</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>column.title = `${dayNames[index]}: ${value} min`;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>column.onclick = () =&gt; showToast(`${dayNames[index]}: ${value} 分鐘`);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const bar = document.createElement('div');</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>bar.className = 'bar';</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>if (value &gt; 0 &amp;&amp; index === maxIndex) bar.className = 'bar highlight';</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>column.appendChild(bar);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const label = document.createElement('span');</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>label.className = 'day-lbl';</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>label.innerText = ["M", "T", "W", "T", "F", "S", "S"][index];</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>column.appendChild(label);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>chartContainer.appendChild(column);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>setTimeout(() =&gt; { bar.style.height = `${value &gt; 0 ? (value / maxVal) * 85 : 0}px`; }, 50);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>});</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>document.getElementById('chartSummary').innerText = totalMinutes &gt; 0</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>? `Your best day was ${dayNames[maxIndex]} with ${maxVal} minutes`</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>: "Your journey is ready. Complete any practice to see stats!";</span></p>
-<p class="p1"><span class="s1">}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">// ========== 生命週期 ==========</span></p>
-<p class="p1"><span class="s1">document.addEventListener('visibilitychange', () =&gt; {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>if (document.hidden &amp;&amp; appState.session.isPlaying) {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>audioEngine.pause();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>handlePlayPauseState();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>stopBreathingCycle();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
-<p class="p1"><span class="s1">});</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">document.addEventListener("DOMContentLoaded", () =&gt; {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>if ('serviceWorker' in navigator) {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>navigator.serviceWorker.register('./sw.js')</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>.then(reg =&gt; console.log('SW Registered:', reg.scope))</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>.catch(err =&gt; console.warn('SW Register Failed:', err));</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const globalCfg = localStorage.getItem(GLOBAL_CONFIG_KEY);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>if (globalCfg) {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>try {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const parsedCfg = JSON.parse(globalCfg);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>if (parsedCfg.lastUser) {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>appState.auth.currentUser = parsedCfg.lastUser;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>appState.auth.isLoggedIn = true;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>} catch (e) {}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>loadUserStateFromStorage(appState.auth.currentUser);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>initAudioEngine();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>initMediaSessionActionHandlers();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>setupTrackMetadataUI(appState.session.currentTrackId);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>refreshWeather();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>switchPage('home');</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>setInterval(() =&gt; {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const now = new Date();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>document.getElementById('statusBarTime').innerText =</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>`${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}, 1000);</span></p>
-<p class="p1"><span class="s1">});</span></p>
-<p class="p1"><span class="s1">&lt;/script&gt;</span></p>
-<p class="p1"><span class="s1">&lt;/body&gt;</span></p>
-<p class="p1"><span class="s1">&lt;/html&gt;</span></p>
+
+<div class="phone-mockup">
+    <div class="status-bar">
+        <span id="statusBarTime">00:00</span>
+        <div class="status-weather" onclick="refreshWeather()" role="button" aria-label="Refresh weather">
+            <span id="weatherIcon">⛅</span>
+            <span id="weatherTemp">--°C</span>
+        </div>
+    </div>
+
+    <div id="home-page" class="app-content">
+        <div class="user-header-zone">
+            <div class="user-welcome-title" id="displayUsername">Hello, Visitor</div>
+            <button class="auth-trigger-btn" id="authBtn" onclick="handleAuthAction()">Login</button>
+        </div>
+        <div class="glass-card daily-tip">
+            <h4>Daily Mindfulness</h4>
+            <p id="dailyTipText">Take three deep breaths before responding to any message today.</p>
+        </div>
+        <div class="section-title">Begin Your Practice</div>
+        <div class="practice-grid">
+            <div class="practice-btn btn-meditate" onclick="selectTrack('meditation')" role="button" aria-label="Start meditation">
+                <div class="icon">🧘</div>
+                <h3>Meditation</h3>
+                <p>Find stillness</p>
+            </div>
+            <div class="practice-btn btn-breathe" onclick="selectTrack('breathing')" role="button" aria-label="Start breathing exercise">
+                <div class="icon">💨</div>
+                <h3>Breathing</h3>
+                <p>Center yourself</p>
+            </div>
+        </div>
+        <div class="section-title">Quick Sessions</div>
+        <div class="glass-card quick-card" onclick="selectTrack('morning')">
+            <div class="quick-info"><h4>Morning Calm</h4><p>5 minutes • Energizing</p></div>
+            <div class="quick-play-icon">▶️</div>
+        </div>
+        <div class="glass-card quick-card" onclick="selectTrack('evening')">
+            <div class="quick-info"><h4>Evening Wind Down</h4><p>10 minutes • Relaxing</p></div>
+            <div class="quick-play-icon">▶️</div>
+        </div>
+    </div>
+
+    <div id="auth-page" class="app-content">
+        <div class="session-header">
+            <span onclick="switchPage('home')" role="button" aria-label="Close">✕</span>
+            <span></span>
+        </div>
+        <div class="journey-title" style="margin-top: 20px;">
+            <h2 id="authPageTitle">Welcome Space</h2>
+            <p>Sign in with verification to unlock cloud syncing.</p>
+        </div>
+        <div class="glass-card auth-form-container">
+            <input type="text" class="auth-input" id="authUsername" placeholder="Username (e.g., Sarah)" autocomplete="username">
+            <input type="password" class="auth-input" id="authPassword" placeholder="Password" autocomplete="current-password">
+            <div class="captcha-row">
+                <input type="text" class="auth-input" id="authCaptchaInput" placeholder="CAPTCHA" style="flex: 1;" autocomplete="off">
+                <canvas id="captchaCanvas" width="110" height="44" onclick="generateCaptcha()" role="button" aria-label="Refresh CAPTCHA"></canvas>
+            </div>
+            <button class="auth-submit-btn" onclick="submitAuthForm()">Confirm</button>
+            <div class="auth-switch-link" id="authSwitchMode" onclick="toggleAuthMode()">Don't have an account? Sign Up</div>
+            <div class="legal-link">
+                By continuing, you agree to our<br>
+                <a href="./privacy-policy.html">Privacy Policy</a> &amp; <a href="./terms.html">Terms of Service</a>
+            </div>
+        </div>
+    </div>
+
+    <div id="session-page" class="app-content">
+        <div class="session-header">
+            <span onclick="switchPage('home')" role="button" aria-label="Close">✕</span>
+            <span>⋯</span>
+        </div>
+        <div class="session-title-area">
+            <h2 id="sessionTitle">Deep Calm</h2>
+            <p id="sessionSubtitle">Guided Meditation</p>
+        </div>
+        <div class="pattern-picker" id="patternPicker">
+            <div class="pattern-chip active" data-pattern="calm" onclick="selectPattern('calm')">Calm 4-4</div>
+            <div class="pattern-chip" data-pattern="box" onclick="selectPattern('box')">Box 4-4-4-4</div>
+            <div class="pattern-chip" data-pattern="478" onclick="selectPattern('478')">Relax 4-7-8</div>
+        </div>
+        <div class="breathing-container">
+            <div class="breath-ring" id="breathRing">
+                <div class="breath-ring-inner"><span id="breathTxt">Ready</span></div>
+            </div>
+        </div>
+        <div class="session-timer" id="timerDisplay">00:00</div>
+        <div class="glass-card player-panel">
+            <div class="progress-bar-wrapper">
+                <span id="currentTimeDisplay">00:00</span>
+                <div class="progress-track" id="progressTrack" onclick="handleSeek(event)">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <span id="totalTimeDisplay">00:00</span>
+            </div>
+            <div class="volume-wrapper">
+                <span>🔈</span>
+                <input type="range" class="volume-slider" id="volumeSlider" min="0" max="1" step="0.05" oninput="handleVolumeChange(this.value)" aria-label="Volume">
+                <span>🔊</span>
+            </div>
+            <div class="player-controls">
+                <span class="control-icon" role="button" aria-label="Previous">⏮️</span>
+                <div class="play-btn" id="playBtn" onclick="togglePlayback()" role="button" aria-label="Play or pause">▶️</div>
+                <span class="control-icon" role="button" aria-label="Next">⏭️</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="progress-page" class="app-content">
+        <div class="journey-title">
+            <h2>Your Journey</h2>
+            <p>Celebrating your mindful moments</p>
+        </div>
+        <div class="glass-card streak-badge">
+            <div class="streak-fire">🔥</div>
+            <div class="streak-info">
+                <h3 id="streakTxt">0 Day Streak</h3>
+                <p id="streakMotivation">Let's begin the practice.</p>
+            </div>
+        </div>
+        <div class="metrics-grid">
+            <div class="metric-box"><div class="val" id="m-week">0m</div><div class="lbl">This Week</div></div>
+            <div class="metric-box"><div class="val" id="m-sessions">0</div><div class="lbl">Sessions</div></div>
+            <div class="metric-box"><div class="val" id="m-days">0</div><div class="lbl">Mindful Days</div></div>
+            <div class="metric-box"><div class="val" id="m-score">0%</div><div class="lbl">Calm Score</div></div>
+        </div>
+        <div class="section-title">Weekly Activity</div>
+        <div class="glass-card chart-card">
+            <h4>Minutes Meditated</h4>
+            <div class="bar-chart" id="dynamicChart"></div>
+            <div class="chart-summary" id="chartSummary">開始練習以啟動數據追蹤</div>
+        </div>
+        <div id="deleteAccountSection" style="display: none;">
+            <button class="danger-zone-btn" onclick="deleteAccount()">Delete My Account</button>
+        </div>
+    </div>
+
+    <div class="mood-modal" id="moodModal" role="dialog" aria-label="Mood feedback">
+        <h3>練習完成，現在感覺如何？</h3>
+        <div class="mood-row">
+            <button class="mood-btn" aria-label="Feeling calm" onclick="recordMood('😌')">😌</button>
+            <button class="mood-btn" aria-label="Feeling good" onclick="recordMood('😊')">😊</button>
+            <button class="mood-btn" aria-label="Feeling neutral" onclick="recordMood('😐')">😐</button>
+            <button class="mood-btn" aria-label="Feeling low" onclick="recordMood('😔')">😔</button>
+            <button class="mood-btn" aria-label="Feeling anxious" onclick="recordMood('😰')">😰</button>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <div class="bottom-nav">
+        <div class="nav-item" id="nav-home" onclick="switchPage('home')" role="button" aria-label="Home"><span class="icon">🏠</span><span>Home</span></div>
+        <div class="nav-item" id="nav-session" onclick="switchPage('session')" role="button" aria-label="Sessions"><span class="icon">🧘</span><span>Sessions</span></div>
+        <div class="nav-item" id="nav-progress" onclick="switchPage('progress')" role="button" aria-label="Progress"><span class="icon">📈</span><span>Progress</span></div>
+    </div>
+</div>
+
+<script>
+const CLOUD_CONFIG = {
+    WEB_APP_URL: 'https://script.google.com/macros/s/YOUR_ACTUAL_NEW_DEPLOY_ID/exec'
+};
+const MONGODB_CONFIG = {
+    endpoint: "https://data.mongodb-api.com/app/YOUR_APP_ID/endpoint/data/v1/action",
+    apiKey: "YOUR_ATLAS_DATA_API_KEY",
+    dataSource: "Cluster0",
+    database: "Object",
+    collection: "users"
+};
+const STORAGE_PREFIX = 'MINDFUL_USER_';
+const GLOBAL_CONFIG_KEY = 'MINDFUL_GLOBAL_CFG';
+
+const BREATHING_PATTERNS = {
+    calm: { inhale: 4000, hold: 0,    exhale: 4000, hold2: 0    },
+    box:  { inhale: 4000, hold: 4000, exhale: 4000, hold2: 4000 },
+    '478':{ inhale: 4000, hold: 7000, exhale: 8000, hold2: 0    }
+};
+
+const appState = {
+    auth: { currentUser: null, isLoggedIn: false, isSignUpMode: false, captchaCode: '' },
+    session: {
+        isPlaying: false, currentTrackId: 'meditation', currentTime: 0,
+        totalDuration: 900, endTime: null, isAudioLoaded: false,
+        breathingPattern: 'calm',
+        tracks: {
+            meditation: { title: "Deep Calm", subtitle: "Guided Meditation", duration: 900, url: "./audio/meditation.mp3" },
+            breathing:  { title: "Box Breathing", subtitle: "Center Yourself", duration: 300, url: "./audio/breathing.mp3" },
+            morning:    { title: "Morning Calm", subtitle: "Energizing Session", duration: 300, url: "./audio/morning.mp3" },
+            evening:    { title: "Evening Wind Down", subtitle: "Relaxing Practice", duration: 600, url: "./audio/evening.mp3" }
+        }
+    },
+    progress: {
+        streak: 0, totalSessions: 0, mindfulDays: 0, calmScore: 0,
+        weeklyData: [0, 0, 0, 0, 0, 0, 0],
+        weekStartDate: null,
+        lastPracticeDate: null,
+        mindfulDates: [],
+        moodLog: []
+    },
+    settings: { volume: 0.8 },
+    weather: { temp: null, icon: '⛅' }
+};
+
+const audioEngine = new Audio();
+let backupTimer = null;
+let saveDebounce = null;
+let breathPhaseTimeout = null;
+
+const timerDisplay = document.getElementById('timerDisplay');
+const currentTimeDisplay = document.getElementById('currentTimeDisplay');
+const totalTimeDisplay = document.getElementById('totalTimeDisplay');
+const progressFill = document.getElementById('progressFill');
+const playBtn = document.getElementById('playBtn');
+const breathRing = document.getElementById('breathRing');
+const breathTxt = document.getElementById('breathTxt');
+const volumeSlider = document.getElementById('volumeSlider');
+const displayUsername = document.getElementById('displayUsername');
+const authBtn = document.getElementById('authBtn');
+
+function showToast(msg, duration = 2000) {
+    const toast = document.getElementById('toast');
+    toast.innerText = msg;
+    toast.classList.add('show');
+    clearTimeout(toast._t);
+    toast._t = setTimeout(() => toast.classList.remove('show'), duration);
+}
+
+async function hashPassword(password, salt) {
+    const enc = new TextEncoder();
+    const key = await crypto.subtle.importKey('raw', enc.encode(password), 'PBKDF2', false, ['deriveBits']);
+    const bits = await crypto.subtle.deriveBits(
+        { name: 'PBKDF2', salt: enc.encode(salt), iterations: 100000, hash: 'SHA-256' },
+        key, 256
+    );
+    return btoa(String.fromCharCode(...new Uint8Array(bits)));
+}
+
+function getWeekKey() {
+    const today = new Date();
+    const monday = new Date(today);
+    monday.setDate(today.getDate() - ((today.getDay() + 6) % 7));
+    return monday.toISOString().slice(0, 10);
+}
+function ensureWeeklyReset() {
+    const weekKey = getWeekKey();
+    if (appState.progress.weekStartDate !== weekKey) {
+        appState.progress.weeklyData = [0, 0, 0, 0, 0, 0, 0];
+        appState.progress.weekStartDate = weekKey;
+    }
+}
+
+function calculateCalmScore() {
+    const streakScore = Math.min(40, appState.progress.streak * 4);
+    const weekMinutes = appState.progress.weeklyData.reduce((a, b) => a + b, 0);
+    const minutesScore = Math.min(30, weekMinutes);
+    const moodMap = { '😌': 100, '😊': 85, '😐': 60, '😔': 40, '😰': 20 };
+    const recentMoods = appState.progress.moodLog.slice(-7);
+    const moodScore = recentMoods.length
+        ? (recentMoods.reduce((a, m) => a + (moodMap[m.mood] || 60), 0) / recentMoods.length) * 0.3
+        : 15;
+    return Math.round(Math.min(100, streakScore + minutesScore + moodScore));
+}
+
+function recordSession(minutes) {
+    const today = new Date().toISOString().slice(0, 10);
+    const last = appState.progress.lastPracticeDate;
+    const yesterday = new Date(Date.now() - 864e5).toISOString().slice(0, 10);
+    if (last === today) {
+    } else if (last === yesterday) {
+        appState.progress.streak += 1;
+    } else {
+        appState.progress.streak = 1;
+    }
+    appState.progress.lastPracticeDate = today;
+    appState.progress.totalSessions += 1;
+    const days = new Set(appState.progress.mindfulDates || []);
+    days.add(today);
+    appState.progress.mindfulDates = [...days];
+    appState.progress.mindfulDays = days.size;
+    ensureWeeklyReset();
+    const dayIdx = (new Date().getDay() + 6) % 7;
+    appState.progress.weeklyData[dayIdx] += minutes;
+    appState.progress.calmScore = calculateCalmScore();
+}
+
+async function refreshWeather() {
+    if (!navigator.geolocation) {
+        showToast("裝置不支援定位");
+        return;
+    }
+    navigator.geolocation.getCurrentPosition(async (pos) => {
+        try {
+            const { latitude, longitude } = pos.coords;
+            const res = await fetch(
+                `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,weather_code`
+            );
+            const data = await res.json();
+            const temp = Math.round(data.current.temperature_2m);
+            const code = data.current.weather_code;
+            const icon = code === 0 ? '☀️' : code < 4 ? '⛅' : code < 70 ? '🌧️' : code < 80 ? '❄️' : '⛈️';
+            appState.weather = { temp, icon };
+            document.getElementById('weatherIcon').innerText = icon;
+            document.getElementById('weatherTemp').innerText = `${temp}°C`;
+            const tipEl = document.getElementById('dailyTipText');
+            if (icon === '☀️') tipEl.innerText = `今日 ${temp}°C 天晴 — 適合喺窗邊做 5 分鐘呼吸練習。`;
+            else if (icon === '🌧️' || icon === '⛈️') tipEl.innerText = `今日 ${temp}°C 有雨 — 聆聽雨聲，做 10 分鐘靜觀冥想。`;
+            else tipEl.innerText = `今日 ${temp}°C — 適合做 3 分鐘深呼吸。`;
+        } catch (e) {
+            console.warn("天氣 API 失敗：", e);
+        }
+    }, () => {
+        document.getElementById('weatherTemp').innerText = '--°C';
+    }, { timeout: 5000 });
+}
+
+async function fetchMongoDB(action, payload) {
+    if (MONGODB_CONFIG.apiKey === "YOUR_ATLAS_DATA_API_KEY") return null;
+    try {
+        const response = await fetch(`${MONGODB_CONFIG.endpoint}/${action}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'api-key': MONGODB_CONFIG.apiKey },
+            body: JSON.stringify({ dataSource: MONGODB_CONFIG.dataSource, database: MONGODB_CONFIG.database, collection: MONGODB_CONFIG.collection, ...payload })
+        });
+        return await response.json();
+    } catch (e) { return null; }
+}
+
+async function syncWithCloud(actionType, additionalData = {}) {
+    if (!appState.auth.isLoggedIn || !appState.auth.currentUser) return;
+    if (CLOUD_CONFIG.WEB_APP_URL.includes("YOUR_ACTUAL_NEW_DEPLOY_ID")) return;
+    const payloadObj = {
+        action: actionType,
+        username: appState.auth.currentUser,
+        streak: appState.progress.streak,
+        totalSessions: appState.progress.totalSessions,
+        mindfulDays: appState.progress.mindfulDays,
+        calmScore: appState.progress.calmScore,
+        weeklyData: appState.progress.weeklyData,
+        weekStartDate: appState.progress.weekStartDate,
+        lastPracticeDate: appState.progress.lastPracticeDate,
+        mindfulDates: appState.progress.mindfulDates,
+        moodLog: appState.progress.moodLog.slice(-30),
+        ...additionalData
+    };
+    fetch(CLOUD_CONFIG.WEB_APP_URL, {
+        method: 'POST', mode: 'no-cors', body: JSON.stringify(payloadObj)
+    }).catch(err => console.warn("網絡同步保留：", err));
+}
+
+function saveUserStateToStorage() {
+    clearTimeout(saveDebounce);
+    saveDebounce = setTimeout(() => {
+        const key = appState.auth.isLoggedIn && appState.auth.currentUser
+            ? STORAGE_PREFIX + appState.auth.currentUser.toUpperCase()
+            : STORAGE_PREFIX + 'GUEST';
+        localStorage.setItem(key, JSON.stringify({ progress: appState.progress, settings: appState.settings }));
+        if (appState.auth.isLoggedIn) {
+            localStorage.setItem(GLOBAL_CONFIG_KEY, JSON.stringify({ lastUser: appState.auth.currentUser }));
+            syncWithCloud('save_progress');
+        }
+    }, 1000);
+}
+
+function loadUserStateFromStorage(username) {
+    const key = username ? STORAGE_PREFIX + username.toUpperCase() : STORAGE_PREFIX + 'GUEST';
+    const saved = localStorage.getItem(key);
+    if (saved) {
+        try {
+            const parsed = JSON.parse(saved);
+            if (parsed.progress) {
+                appState.progress = {
+                    ...appState.progress,
+                    ...parsed.progress,
+                    mindfulDates: parsed.progress.mindfulDates || [],
+                    moodLog: parsed.progress.moodLog || []
+                };
+            }
+            if (parsed.settings) appState.settings = parsed.settings;
+        } catch (e) {}
+    } else {
+        appState.progress = {
+            streak: 0, totalSessions: 0, mindfulDays: 0, calmScore: 0,
+            weeklyData: [0, 0, 0, 0, 0, 0, 0], weekStartDate: getWeekKey(),
+            lastPracticeDate: null, mindfulDates: [], moodLog: []
+        };
+    }
+    ensureWeeklyReset();
+    appState.progress.calmScore = calculateCalmScore();
+    volumeSlider.value = appState.settings.volume;
+    audioEngine.volume = appState.settings.volume;
+    renderUserHeaderUI();
+}
+
+function generateCaptcha() {
+    const canvas = document.getElementById('captchaCanvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const chars = '23456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz';
+    let code = '';
+    for (let i = 0; i < 4; i++) code += chars.charAt(Math.floor(Math.random() * chars.length));
+    appState.auth.captchaCode = code.toLowerCase();
+    ctx.fillStyle = "#f3f4f6";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    for (let i = 0; i < 4; i++) {
+        ctx.strokeStyle = `rgba(${Math.random()*255}, ${Math.random()*255}, ${Math.random()*255}, 0.3)`;
+        ctx.beginPath();
+        ctx.moveTo(Math.random() * canvas.width, Math.random() * canvas.height);
+        ctx.lineTo(Math.random() * canvas.width, Math.random() * canvas.height);
+        ctx.stroke();
+    }
+    for (let i = 0; i < code.length; i++) {
+        ctx.save();
+        ctx.font = "bold 22px Courier New";
+        ctx.fillStyle = `rgba(${Math.random()*140}, ${Math.random()*140}, ${Math.random()*140}, 0.9)`;
+        ctx.translate(15 + i * 24, 28 + (Math.random() * 6 - 3));
+        ctx.rotate((Math.random() * 40 - 20) * Math.PI / 180);
+        ctx.fillText(code[i], 0, 0);
+        ctx.restore();
+    }
+}
+
+function renderUserHeaderUI() {
+    const deleteSection = document.getElementById('deleteAccountSection');
+    if (appState.auth.isLoggedIn && appState.auth.currentUser) {
+        displayUsername.innerText = `Hello, ${appState.auth.currentUser}`;
+        authBtn.innerText = "Logout";
+        authBtn.style.borderColor = "rgba(239, 68, 68, 0.4)";
+        if (deleteSection) deleteSection.style.display = "block";
+    } else {
+        displayUsername.innerText = "Hello, Visitor";
+        authBtn.innerText = "Login";
+        authBtn.style.borderColor = "var(--card-border)";
+        if (deleteSection) deleteSection.style.display = "none";
+    }
+}
+
+function handleAuthAction() {
+    if (appState.auth.isLoggedIn) {
+        saveUserStateToStorage();
+        appState.auth.isLoggedIn = false;
+        appState.auth.currentUser = null;
+        localStorage.removeItem(GLOBAL_CONFIG_KEY);
+        loadUserStateFromStorage(null);
+        showToast("已成功安全登出");
+    } else {
+        switchPage('auth');
+        setTimeout(generateCaptcha, 50);
+    }
+}
+
+function toggleAuthMode() {
+    appState.auth.isSignUpMode = !appState.auth.isSignUpMode;
+    document.getElementById('authPageTitle').innerText = appState.auth.isSignUpMode ? "Create Account" : "Welcome Space";
+    document.getElementById('authSwitchMode').innerText = appState.auth.isSignUpMode
+        ? "Already have an account? Sign In"
+        : "Don't have an account? Sign Up";
+    generateCaptcha();
+}
+
+async function submitAuthForm() {
+    const userIn = document.getElementById('authUsername').value.trim();
+    const passIn = document.getElementById('authPassword').value.trim();
+    const captchaIn = document.getElementById('authCaptchaInput').value.trim().toLowerCase();
+    if (!userIn || !passIn || !captchaIn) { showToast("請填寫完整欄位"); return; }
+    if (captchaIn !== appState.auth.captchaCode) { showToast("驗證碼錯誤"); generateCaptcha(); return; }
+    if (passIn.length < 6) { showToast("密碼至少 6 個字元"); return; }
+    const hashedKey = await hashPassword(passIn, userIn.toLowerCase());
+    if (appState.auth.isSignUpMode) {
+        const checkCloud = await fetchMongoDB('findOne', { filter: { username: userIn } });
+        if (checkCloud && checkCloud.document) {
+            showToast("此用戶名已被註冊"); generateCaptcha(); return;
+        }
+        appState.auth.currentUser = userIn;
+        appState.auth.isLoggedIn = true;
+        await fetchMongoDB('insertOne', {
+            document: {
+                username: userIn,
+                passwordHash: hashedKey,
+                createdAt: new Date().toISOString(),
+                progress: appState.progress,
+                settings: appState.settings
+            }
+        });
+        showToast(`註冊成功！歡迎加入，${userIn}`);
+    } else {
+        const result = await fetchMongoDB('findOne', { filter: { username: userIn } });
+        if (result && result.document) {
+            if (result.document.passwordHash !== hashedKey) {
+                showToast("密碼錯誤"); generateCaptcha(); return;
+            }
+            if (result.document.progress) {
+                appState.progress = { ...appState.progress, ...result.document.progress };
+                appState.progress.mindfulDates = appState.progress.mindfulDates || [];
+                appState.progress.moodLog = appState.progress.moodLog || [];
+            }
+        } else if (MONGODB_CONFIG.apiKey !== "YOUR_ATLAS_DATA_API_KEY") {
+            showToast("用戶不存在，請先註冊"); generateCaptcha(); return;
+        }
+        appState.auth.currentUser = userIn;
+        appState.auth.isLoggedIn = true;
+        await loadUserStateFromStorage(userIn);
+    }
+    await syncWithCloud('user_login');
+    document.getElementById('authUsername').value = '';
+    document.getElementById('authPassword').value = '';
+    document.getElementById('authCaptchaInput').value = '';
+    switchPage('home');
+    showToast(`驗證成功！歡迎回來 ${userIn}`);
+}
+
+async function deleteAccount() {
+    if (!appState.auth.isLoggedIn || !appState.auth.currentUser) return;
+    if (!confirm("確定永久刪除帳號？所有雲端與本地進度將無法復原。")) return;
+    if (!confirm("最後確認：確定要永久刪除所有資料嗎？")) return;
+    await fetchMongoDB('deleteOne', { filter: { username: appState.auth.currentUser } });
+    localStorage.removeItem(STORAGE_PREFIX + appState.auth.currentUser.toUpperCase());
+    localStorage.removeItem(GLOBAL_CONFIG_KEY);
+    appState.auth = { currentUser: null, isLoggedIn: false, isSignUpMode: false, captchaCode: '' };
+    showToast("帳號與個人資料已永久刪除");
+    setTimeout(() => location.reload(), 1500);
+}
+
+function initAudioEngine() {
+    audioEngine.preload = 'auto';
+    audioEngine.addEventListener('error', () => {
+        appState.session.isAudioLoaded = false;
+        console.warn("音訊檔載入失敗，切換為靜音倒數模式。");
+    });
+    audioEngine.addEventListener('canplay', () => { appState.session.isAudioLoaded = true; });
+    audioEngine.addEventListener('loadedmetadata', () => {
+        if (Number.isFinite(audioEngine.duration) && audioEngine.duration > 0) {
+            appState.session.totalDuration = Math.floor(audioEngine.duration);
+            appState.session.isAudioLoaded = true;
+        }
+        syncDurationUI();
+        updateMediaSessionPositionState();
+    });
+    audioEngine.addEventListener('timeupdate', () => {
+        if (appState.session.isAudioLoaded) {
+            appState.session.currentTime = audioEngine.currentTime;
+            updatePlaybackProgressUI();
+        }
+    });
+    audioEngine.addEventListener('play', () => { handlePlayStartState(); });
+    audioEngine.addEventListener('pause', () => { handlePlayPauseState(); });
+    audioEngine.addEventListener('ended', () => { handlePlayEndState(); });
+}
+
+function syncDurationUI() {
+    totalTimeDisplay.innerText = formatMinutesSeconds(appState.session.totalDuration);
+    updatePlaybackProgressUI();
+}
+
+function updatePlaybackProgressUI() {
+    const current = Math.floor(appState.session.currentTime);
+    const validDuration = appState.session.totalDuration;
+    const timeLeft = Math.max(0, validDuration - current);
+    timerDisplay.innerText = formatMinutesSeconds(timeLeft);
+    currentTimeDisplay.innerText = formatMinutesSeconds(current);
+    progressFill.style.width = (validDuration > 0 ? (current / validDuration) * 100 : 0) + "%";
+}
+
+function handlePlayStartState() {
+    appState.session.isPlaying = true;
+    playBtn.innerText = "⏸️";
+    if ('mediaSession' in navigator) { navigator.mediaSession.playbackState = "playing"; }
+    if (backupTimer) clearInterval(backupTimer);
+    appState.session.endTime = Date.now() + ((appState.session.totalDuration - appState.session.currentTime) * 1000);
+    backupTimer = setInterval(() => {
+        if (appState.session.isPlaying) {
+            if (!appState.session.isAudioLoaded) {
+                const remaining = Math.max(0, Math.floor((appState.session.endTime - Date.now()) / 1000));
+                appState.session.currentTime = appState.session.totalDuration - remaining;
+                updatePlaybackProgressUI();
+                if (remaining === 0) handlePlayEndState();
+            } else {
+                appState.session.endTime = Date.now() + ((appState.session.totalDuration - audioEngine.currentTime) * 1000);
+            }
+        }
+    }, 250);
+}
+
+function handlePlayPauseState() {
+    appState.session.isPlaying = false;
+    playBtn.innerText = "▶️";
+    if (backupTimer) clearInterval(backupTimer);
+    if ('mediaSession' in navigator) { navigator.mediaSession.playbackState = "paused"; }
+    saveUserStateToStorage();
+}
+
+function handlePlayEndState() {
+    appState.session.isPlaying = false;
+    playBtn.innerText = "▶️";
+    if (backupTimer) clearInterval(backupTimer);
+    const minutesDone = Math.max(1, Math.floor(appState.session.totalDuration / 60));
+    recordSession(minutesDone);
+    syncWithCloud('save_progress', {
+        trackId: appState.session.currentTrackId,
+        durationMinutes: minutesDone
+    });
+    appState.session.currentTime = 0;
+    updatePlaybackProgressUI();
+    saveUserStateToStorage();
+    document.getElementById('moodModal').classList.add('active');
+}
+
+function recordMood(emoji) {
+    appState.progress.moodLog.push({ date: new Date().toISOString(), mood: emoji });
+    appState.progress.calmScore = calculateCalmScore();
+    document.getElementById('moodModal').classList.remove('active');
+    saveUserStateToStorage();
+    showToast(`✨ 感謝記錄，願平靜與你同行`);
+}
+
+function setupTrackMetadataUI(trackId) {
+    const track = appState.session.tracks[trackId];
+    document.getElementById('sessionTitle').innerText = track.title;
+    document.getElementById('sessionSubtitle').innerText = `${track.subtitle} • ${track.duration / 60} 分鐘`;
+    appState.session.totalDuration = track.duration;
+    appState.session.currentTime = 0;
+    syncDurationUI();
+    updateMediaSessionMetadata(trackId);
+}
+
+function selectPattern(patternKey) {
+    appState.session.breathingPattern = patternKey;
+    document.querySelectorAll('.pattern-chip').forEach(el => {
+        el.classList.toggle('active', el.dataset.pattern === patternKey);
+    });
+    if (appState.session.isPlaying) {
+        runBreathingCycle();
+    }
+}
+
+function runBreathingCycle() {
+    if (breathPhaseTimeout) clearTimeout(breathPhaseTimeout);
+    if (!appState.session.isPlaying) return;
+    const pattern = BREATHING_PATTERNS[appState.session.breathingPattern];
+    const phases = [
+        { name: 'Inhale', duration: pattern.inhale, scale: 1.23, vibrate: [35] },
+        { name: 'Hold',   duration: pattern.hold,   scale: 1.23, vibrate: [15] },
+        { name: 'Exhale', duration: pattern.exhale, scale: 1.0,  vibrate: [20, 60, 20] },
+        { name: 'Hold',   duration: pattern.hold2,  scale: 1.0,  vibrate: [15] }
+    ].filter(p => p.duration > 0);
+    let idx = 0;
+    function step() {
+        if (!appState.session.isPlaying) return;
+        const phase = phases[idx];
+        breathTxt.innerText = phase.name + ' ' + (phase.duration / 1000) + 's';
+        breathRing.style.transform = `scale(${phase.scale})`;
+        if ('vibrate' in navigator && phase.vibrate) navigator.vibrate(phase.vibrate);
+        idx = (idx + 1) % phases.length;
+        breathPhaseTimeout = setTimeout(step, phase.duration);
+    }
+    step();
+}
+
+function stopBreathingCycle() {
+    if (breathPhaseTimeout) clearTimeout(breathPhaseTimeout);
+    breathRing.style.transform = 'scale(1.0)';
+    if (appState.session.currentTime === 0) breathTxt.innerText = "Ready";
+}
+
+async function selectTrack(trackId) {
+    appState.session.currentTrackId = trackId;
+    setupTrackMetadataUI(trackId);
+    audioEngine.volume = appState.settings.volume || 0.8;
+    audioEngine.src = appState.session.tracks[trackId].url;
+    audioEngine.load();
+    switchPage('session');
+    await togglePlayback();
+}
+
+async function togglePlayback() {
+    try {
+        if (audioEngine.paused) {
+            await audioEngine.play();
+            handlePlayStartState();
+            runBreathingCycle();
+        } else {
+            audioEngine.pause();
+            handlePlayPauseState();
+            stopBreathingCycle();
+        }
+    } catch (err) {
+        if (!appState.session.isPlaying) {
+            handlePlayStartState();
+            runBreathingCycle();
+        } else {
+            handlePlayPauseState();
+            stopBreathingCycle();
+        }
+    }
+}
+
+function handleSeek(event) {
+    const validDuration = appState.session.totalDuration;
+    if (!validDuration) return;
+    const rect = document.getElementById('progressTrack').getBoundingClientRect();
+    const targetTime = Math.min(1, Math.max(0, (event.clientX - rect.left) / rect.width)) * validDuration;
+    appState.session.currentTime = targetTime;
+    if (appState.session.isAudioLoaded) {
+        try { audioEngine.currentTime = targetTime; } catch (e) {}
+    }
+    appState.session.endTime = Date.now() + ((validDuration - targetTime) * 1000);
+    updatePlaybackProgressUI();
+    updateMediaSessionPositionState();
+}
+
+function handleVolumeChange(val) {
+    audioEngine.volume = parseFloat(val);
+    appState.settings.volume = parseFloat(val);
+    saveUserStateToStorage();
+}
+
+function updateMediaSessionMetadata(trackId) {
+    if ('mediaSession' in navigator) {
+        const track = appState.session.tracks[trackId];
+        navigator.mediaSession.metadata = new MediaMetadata({
+            title: track.title,
+            artist: "Mindful Space",
+            album: track.subtitle,
+            artwork: [{ src: './icon-192.png', sizes: '192x192', type: 'image/png' }]
+        });
+    }
+}
+function updateMediaSessionPositionState() {
+    if ('mediaSession' in navigator && 'setPositionState' in navigator.mediaSession) {
+        if (Number.isFinite(audioEngine.duration) && audioEngine.duration > 0) {
+            navigator.mediaSession.setPositionState({
+                duration: audioEngine.duration,
+                playbackRate: audioEngine.playbackRate,
+                position: audioEngine.currentTime
+            });
+        }
+    }
+}
+function initMediaSessionActionHandlers() {
+    if ('mediaSession' in navigator) {
+        navigator.mediaSession.setActionHandler('play', () => togglePlayback());
+        navigator.mediaSession.setActionHandler('pause', () => togglePlayback());
+    }
+}
+
+function formatMinutesSeconds(totalSeconds) {
+    return `${String(Math.floor(totalSeconds / 60)).padStart(2, '0')}:${String(totalSeconds % 60).padStart(2, '0')}`;
+}
+
+function switchPage(pageId) {
+    document.querySelectorAll('.app-content').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    const targetPage = document.getElementById(`${pageId}-page`);
+    if (targetPage) targetPage.classList.add('active');
+    const targetNav = document.getElementById(`nav-${pageId}`);
+    if (pageId !== 'session' && pageId !== 'auth' && targetNav) { targetNav.classList.add('active'); }
+    if (pageId === 'progress') { renderProgressMetricsAndCharts(); }
+}
+
+function renderProgressMetricsAndCharts() {
+    ensureWeeklyReset();
+    appState.progress.calmScore = calculateCalmScore();
+    const p = appState.progress;
+    document.getElementById('streakTxt').innerText = `${p.streak} Day Streak`;
+    document.getElementById('streakMotivation').innerText = p.streak > 0
+        ? "You're building a beautiful practice. Keep going!"
+        : "Welcome to your fresh start! Let's begin.";
+    const totalMinutes = p.weeklyData.reduce((a, b) => a + b, 0);
+    document.getElementById('m-week').innerText = totalMinutes > 0 ? `${totalMinutes}m` : "0m";
+    document.getElementById('m-sessions').innerText = p.totalSessions;
+    document.getElementById('m-days').innerText = p.mindfulDays;
+    document.getElementById('m-score').innerText = `${p.calmScore}%`;
+    const chartContainer = document.getElementById('dynamicChart');
+    chartContainer.innerHTML = '';
+    const maxVal = Math.max(...p.weeklyData, 1);
+    const maxIndex = p.weeklyData.indexOf(maxVal);
+    const dayNames = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+    p.weeklyData.forEach((value, index) => {
+        const column = document.createElement('div');
+        column.className = 'chart-column';
+        column.title = `${dayNames[index]}: ${value} min`;
+        column.onclick = () => showToast(`${dayNames[index]}: ${value} 分鐘`);
+        const bar = document.createElement('div');
+        bar.className = 'bar';
+        if (value > 0 && index === maxIndex) bar.className = 'bar highlight';
+        column.appendChild(bar);
+        const label = document.createElement('span');
+        label.className = 'day-lbl';
+        label.innerText = ["M", "T", "W", "T", "F", "S", "S"][index];
+        column.appendChild(label);
+        chartContainer.appendChild(column);
+        setTimeout(() => { bar.style.height = `${value > 0 ? (value / maxVal) * 85 : 0}px`; }, 50);
+    });
+    document.getElementById('chartSummary').innerText = totalMinutes > 0
+        ? `Your best day was ${dayNames[maxIndex]} with ${maxVal} minutes`
+        : "Your journey is ready. Complete any practice to see stats!";
+}
+
+document.addEventListener('visibilitychange', () => {
+    if (document.hidden && appState.session.isPlaying) {
+        audioEngine.pause();
+        handlePlayPauseState();
+        stopBreathingCycle();
+    }
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('./sw.js')
+            .then(reg => console.log('SW Registered:', reg.scope))
+            .catch(err => console.warn('SW Register Failed:', err));
+    }
+    const globalCfg = localStorage.getItem(GLOBAL_CONFIG_KEY);
+    if (globalCfg) {
+        try {
+            const parsedCfg = JSON.parse(globalCfg);
+            if (parsedCfg.lastUser) {
+                appState.auth.currentUser = parsedCfg.lastUser;
+                appState.auth.isLoggedIn = true;
+            }
+        } catch (e) {}
+    }
+    loadUserStateFromStorage(appState.auth.currentUser);
+    initAudioEngine();
+    initMediaSessionActionHandlers();
+    setupTrackMetadataUI(appState.session.currentTrackId);
+    refreshWeather();
+    switchPage('home');
+    setInterval(() => {
+        const now = new Date();
+        document.getElementById('statusBarTime').innerText =
+            `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+    }, 1000);
+});
+</script>
 </body>
 </html>
