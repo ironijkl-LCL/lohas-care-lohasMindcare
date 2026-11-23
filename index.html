@@ -4,18 +4,16 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
 <meta name="mobile-web-app-capable" content="yes">
-<title>Lohas Mindful 樂活調息與身心感知</title>
+<title>Lohas Mindful - 樂活調息與身心感知</title>
 <meta name="theme-color" content="#a855f7">
 
-<link rel="manifest" href="./manifest.json?v=3.5">
-<link rel="apple-touch-icon" href="./icon-192.png?v=3.5">
-<link rel="icon" type="image/png" href="./icon-192.png?v=3.5">
+<link rel="manifest" href="./manifest.json">
+<link rel="apple-touch-icon" href="./icons/icon-192.png">
+<link rel="icon" type="image/png" href="./icons/icon-192.png">
 
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Mindful">
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
 :root {
@@ -24,13 +22,27 @@
   --card-border: rgba(255, 255, 255, 0.12);
   --text-main: rgba(255, 255, 255, 0.95);
   --text-sub: rgba(255, 255, 255, 0.6);
-  --nav-bg: rgba(17, 20, 36, 0.88);
+  --nav-bg: rgba(17, 20, 36, 0.85);
   --ring-gradient: linear-gradient(135deg, rgba(59, 130, 246, 0.4), rgba(236, 72, 153, 0.4));
   --shadow-color: rgba(0, 0, 0, 0.4);
   --accent-purple: #a855f7;
   --accent-cyan: #06b6d4;
   --danger-color: #ef4444;
   --success-color: #10b981;
+}
+@media (prefers-color-scheme: light) {
+  :root {
+    --bg-gradient: linear-gradient(135deg, #e5eef7 0%, #faedf3 50%, #fff4ec 100%);
+    --card-bg: rgba(255, 255, 255, 0.45);
+    --card-border: rgba(0, 0, 0, 0.1);
+    --text-main: rgba(0, 0, 0, 0.88);
+    --text-sub: rgba(0, 0, 0, 0.55);
+    --nav-bg: rgba(255, 255, 255, 0.85);
+    --ring-gradient: linear-gradient(135deg, rgba(147, 197, 253, 0.6), rgba(244, 143, 177, 0.6));
+    --shadow-color: rgba(0, 0, 0, 0.08);
+    --accent-purple: #9333ea;
+    --accent-cyan: #0891b2;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -40,414 +52,221 @@
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-body {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  background: var(--bg-gradient);
-  color: var(--text-main);
-  overflow-x: hidden;
-}
-
-/* 核心容器：支援 iPhone 與 iPad 全適應 */
-.phone-mockup {
-  width: 100%;
-  height: 100vh;
-  max-width: 100%;
-  max-height: 100vh;
-  background: transparent;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  position: relative;
-}
-
-.status-bar {
-  height: 44px;
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: env(safe-area-inset-top, 14px) 24px 0;
-  font-size: 13px;
-  font-weight: 600;
-  opacity: 0.9;
-  z-index: 20;
-}
-
-.glass-card {
-  background: var(--card-bg);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid var(--card-border);
-  border-radius: 24px;
-  padding: 20px;
-  margin-bottom: 16px;
-}
-
-.app-content {
-  flex: 1;
-  overflow-y: auto;
-  padding: 10px 20px 100px;
-  display: none;
-  width: 100%;
-  max-width: 540px;
-  margin: 0 auto;
-}
+body { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: var(--bg-gradient); color: var(--text-main); }
+.phone-mockup { width: 100%; max-width: 420px; height: 100vh; max-height: 890px; background: transparent; border-radius: 40px; box-shadow: 0 20px 50px var(--shadow-color); border: 2px solid var(--card-border); display: flex; flex-direction: column; overflow: hidden; position: relative; }
+@media (max-width: 440px) { .phone-mockup { max-height: 100vh; border-radius: 0; border: none; } }
+.status-bar { height: 40px; width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 14px 24px 0; font-size: 13px; font-weight: 600; opacity: 0.9; }
+.glass-card { background: var(--card-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid var(--card-border); border-radius: 24px; padding: 20px; margin-bottom: 16px; }
+.app-content { flex: 1; overflow-y: auto; padding: 10px 20px 90px; display: none; }
 .app-content.active { display: block; }
 
-#session-page.active {
-  display: flex !important;
-  flex-direction: column;
-  justify-content: space-between;
-  height: 100%;
-  padding-bottom: 30px;
-}
-#session-page.active ~ .bottom-nav { display: none; }
+#session-page.active { display: flex !important; flex-direction: column; justify-content: space-between; height: 100%; }
 
-.user-header-zone { display: flex; justify-content: space-between; align-items: center; margin: 10px 0 14px; }
-.user-welcome-title { font-size: 24px; font-weight: 700; }
-.privacy-status-pill { background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.35); padding: 5px 14px; border-radius: 16px; font-size: 11px; color: #34d399; font-weight: 600; }
+.user-header-zone { display: flex; justify-content: space-between; align-items: center; margin: 10px 0; }
+.user-welcome-title { font-size: 22px; font-weight: 700; }
+.auth-trigger-btn { background: var(--card-bg); border: 1px solid var(--card-border); padding: 6px 14px; border-radius: 20px; font-size: 12px; cursor: pointer; color: var(--text-main); font-weight: 600; }
 
-.collective-sync-pill { display: inline-flex; align-items: center; gap: 6px; background: rgba(168, 85, 247, 0.12); border: 1px solid rgba(168, 85, 247, 0.25); padding: 5px 14px; border-radius: 16px; font-size: 11px; color: var(--accent-purple); margin-bottom: 12px; font-weight: 600; }
-.pulse-dot { width: 6px; height: 6px; border-radius: 50%; background: #22c55e; box-shadow: 0 0 8px #22c55e; animation: pulse 1.6s ease-in-out infinite; }
-@keyframes pulse { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:.5;transform:scale(1.3);} }
+.collective-sync-pill { display: inline-flex; align-items: center; gap: 6px; background: rgba(168, 85, 247, 0.12); border: 1px solid rgba(168, 85, 247, 0.25); padding: 4px 12px; border-radius: 14px; font-size: 11px; color: var(--accent-purple); margin-bottom: 12px; font-weight: 600; }
+.pulse-dot { width: 6px; height: 6px; border-radius: 50%; background: #22c55e; box-shadow: 0 0 8px #22c55e; }
 
-.sensor-banner-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px; }
-.sensor-box { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 20px; padding: 14px 10px; display: flex; flex-direction: column; justify-content: space-between; text-align: center; cursor: pointer; transition: all .2s; }
-.sensor-box.active { border-color: var(--accent-cyan); background: rgba(6, 182, 212, 0.18); box-shadow: 0 0 14px rgba(6, 182, 212, 0.35); }
-.sensor-box h5 { font-size: 12px; margin-bottom: 3px; }
-.sensor-box p { font-size: 10px; color: var(--text-sub); }
+.time-adaptive-bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 10px 14px; border-radius: 16px; background: rgba(6, 182, 212, 0.1); border: 1px solid rgba(6, 182, 212, 0.28); margin-bottom: 14px; font-size: 11px; line-height: 1.4; }
+.time-adaptive-tag { flex-shrink: 0; padding: 2px 8px; border-radius: 10px; background: var(--accent-cyan); color: #000; font-weight: 700; font-size: 10px; }
+
+.quick-mood-section { margin-bottom: 18px; }
+.quick-mood-title { font-size: 13px; color: var(--text-sub); margin-bottom: 10px; font-weight: 600; }
+.quick-mood-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+.mood-btn { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 18px; padding: 14px 8px; text-align: center; cursor: pointer; transition: all 0.2s; }
+.mood-btn:active { transform: scale(0.96); }
+.mood-btn .emoji { font-size: 26px; margin-bottom: 4px; }
+.mood-btn .label { font-size: 12px; font-weight: 600; }
+.mood-btn.chur { border-color: rgba(239, 68, 68, 0.4); }
+.mood-btn.dry { border-color: rgba(249, 115, 22, 0.4); }
+.mood-btn.calm { border-color: rgba(34, 197, 94, 0.4); }
+
+.scenario-scroll { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px; }
+.scenario-chip { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 10px 12px; cursor: pointer; text-align: left; transition: transform 0.15s, border-color 0.2s; position: relative; }
+.scenario-chip:active { transform: scale(0.97); }
+.scenario-chip:hover { border-color: var(--accent-purple); }
+.scenario-chip.recommended { border-color: var(--accent-cyan); background: rgba(6, 182, 212, 0.09); order: -1; }
+.scenario-chip .s-top { font-size: 13px; font-weight: 700; margin-bottom: 2px; display: flex; align-items: center; gap: 5px; }
+.scenario-chip .s-sub { font-size: 10px; color: var(--text-sub); }
+.rec-badge { display: inline-block; margin-top: 4px; padding: 1px 6px; border-radius: 6px; font-size: 9px; font-weight: 700; background: rgba(6, 182, 212, 0.2); color: var(--accent-cyan); }
+
+.sensor-banner-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px; }
+.sensor-box { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 18px; padding: 10px 8px; display: flex; flex-direction: column; justify-content: space-between; text-align: center; cursor: pointer; }
+.sensor-box.active { border-color: var(--accent-cyan); background: rgba(6, 182, 212, 0.12); }
+.sensor-box h5 { font-size: 11px; margin-bottom: 2px; }
+.sensor-box p { font-size: 9px; color: var(--text-sub); }
+
+.ppg-meter-wrap { width: 100%; height: 4px; background: rgba(255,255,255,0.12); border-radius: 2px; margin-top: 5px; overflow: hidden; display: none; }
+.ppg-meter-fill { width: 0%; height: 100%; background: var(--success-color); transition: width 0.2s; }
+.ppg-disclaimer { font-size: 9px; color: var(--text-sub); margin-top: 4px; opacity: 0.75; }
 
 .daily-tip { background: rgba(255, 255, 255, 0.04); }
 .daily-tip h4 { color: #e28743; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; font-weight: 700; }
 .daily-tip p { font-size: 13px; line-height: 1.5; }
 
-.section-title { font-size: 18px; font-weight: 700; margin: 18px 0 12px; }
+.section-title { font-size: 17px; font-weight: 700; margin: 16px 0 10px; }
+.quick-sessions-wrap { display: flex; flex-direction: column; gap: 12px; }
+.quick-session-card.recommended { border-color: var(--accent-purple); background: rgba(168, 85, 247, 0.09); order: -1; }
 .practice-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-.practice-btn { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 24px; padding: 20px 16px; text-align: center; cursor: pointer; transition: transform .15s; }
+.practice-btn { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 24px; padding: 18px 14px; text-align: center; cursor: pointer; }
 .practice-btn:active { transform: scale(0.97); }
-.practice-btn .icon { width: 52px; height: 52px; border-radius: 50%; margin: 0 auto 10px; display: flex; justify-content: center; align-items: center; font-size: 24px; }
+.practice-btn .icon { width: 48px; height: 48px; border-radius: 50%; margin: 0 auto 10px; display: flex; justify-content: center; align-items: center; font-size: 22px; }
 .btn-meditate .icon { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
 .btn-breathe .icon { background: rgba(236, 72, 153, 0.15); color: #f472b6; }
-.practice-btn h3 { font-size: 16px; font-weight: 600; margin-bottom: 3px; }
-.practice-btn p { font-size: 12px; color: var(--text-sub); }
+.practice-btn h3 { font-size: 15px; font-weight: 600; margin-bottom: 2px; }
+.practice-btn p { font-size: 11px; color: var(--text-sub); }
 
-.session-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-size: 20px; }
-.session-title-area { text-align: center; margin-top: 6px; }
-.session-title-area h2 { font-size: 24px; font-weight: 700; }
-.session-title-area p { font-size: 13px; color: var(--text-sub); }
-.ai-context-badge { margin: 8px auto 0; padding: 5px 12px; border-radius: 14px; font-size: 12px; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--card-border); display: inline-block; color: var(--accent-cyan); }
+.session-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-size: 18px; }
+.session-title-area { text-align: center; margin-top: 4px; }
+.session-title-area h2 { font-size: 22px; font-weight: 700; }
+.session-title-area p { font-size: 12px; color: var(--text-sub); }
+.ai-context-badge { margin: 6px auto 0; padding: 4px 10px; border-radius: 12px; font-size: 11px; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--card-border); display: inline-block; color: var(--accent-cyan); }
 
-.pattern-picker { display: flex; justify-content: center; gap: 10px; margin-top: 14px; }
-.pattern-chip { padding: 6px 14px; border-radius: 14px; font-size: 12px; background: var(--card-bg); border: 1px solid var(--card-border); color: var(--text-main); cursor: pointer; transition: all .2s; }
+.micro-action-banner { display: none; margin-top: 8px; padding: 8px 12px; border-radius: 12px; background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.35); font-size: 11px; color: var(--text-main); line-height: 1.45; text-align: left; }
+.micro-action-banner.show { display: block; }
+
+.audio-layer-bar { display: flex; justify-content: center; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+.layer-toggle { padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 600; background: var(--card-bg); border: 1px solid var(--card-border); color: var(--text-sub); cursor: pointer; transition: all 0.2s; }
+.layer-toggle.on { background: rgba(168, 85, 247, 0.18); border-color: var(--accent-purple); color: var(--text-main); }
+
+.pattern-picker { display: flex; justify-content: center; gap: 8px; margin-top: 10px; }
+.pattern-chip { padding: 4px 10px; border-radius: 12px; font-size: 11px; background: var(--card-bg); border: 1px solid var(--card-border); color: var(--text-main); cursor: pointer; }
 .pattern-chip.active { background: var(--accent-purple); color: white; border-color: var(--accent-purple); }
 
-.binaural-matrix-card { background: rgba(255, 255, 255, 0.03); border: 1px solid var(--card-border); border-radius: 18px; padding: 12px 16px; margin-top: 12px; }
-.binaural-title-row { display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: var(--text-sub); margin-bottom: 10px; }
-.binaural-chip-group { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
-.binaural-chip { padding: 6px 0; text-align: center; border-radius: 12px; font-size: 11px; font-weight: 600; background: var(--card-bg); border: 1px solid var(--card-border); color: var(--text-sub); cursor: pointer; transition: all 0.2s; }
+.binaural-matrix-card { background: rgba(255, 255, 255, 0.03); border: 1px solid var(--card-border); border-radius: 16px; padding: 10px 14px; margin-top: 8px; }
+.binaural-title-row { display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: var(--text-sub); margin-bottom: 8px; }
+.binaural-chip-group { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.binaural-chip { padding: 5px 0; text-align: center; border-radius: 10px; font-size: 10px; font-weight: 600; background: var(--card-bg); border: 1px solid var(--card-border); color: var(--text-sub); cursor: pointer; transition: all 0.2s; }
 .binaural-chip.active { background: var(--accent-cyan); border-color: var(--accent-cyan); color: #000; }
 
-.breathing-container { height: 240px; display: flex; justify-content: center; align-items: center; position: relative; margin: 10px 0; }
-.breath-ring { width: 170px; height: 170px; border-radius: 50%; background: var(--ring-gradient); display: flex; justify-content: center; align-items: center; box-shadow: 0 0 35px rgba(147, 197, 253, 0.08); transform: scale(1); transition: transform 0.2s linear; }
-.breath-ring-inner { width: 146px; height: 146px; border-radius: 50%; background: rgba(20, 20, 30, 0.75); border: 1px solid var(--card-border); display: flex; justify-content: center; align-items: center; font-size: 16px; font-weight: 600; }
-.session-timer { text-align: center; font-size: 42px; font-weight: 300; margin-bottom: 4px; font-variant-numeric: tabular-nums; }
+.breathing-container { height: 200px; display: flex; justify-content: center; align-items: center; position: relative; }
+.breath-ring { width: 150px; height: 150px; border-radius: 50%; background: var(--ring-gradient); display: flex; justify-content: center; align-items: center; box-shadow: 0 0 30px rgba(147, 197, 253, 0.05); transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1); }
+.breath-ring-inner { width: 130px; height: 130px; border-radius: 50%; background: rgba(20, 20, 30, 0.7); border: 1px solid var(--card-border); display: flex; justify-content: center; align-items: center; font-size: 15px; font-weight: 600; }
+.session-timer { text-align: center; font-size: 38px; font-weight: 300; margin-bottom: 2px; }
 
-.player-panel { margin-top: auto; padding: 16px 20px; background: rgba(255, 255, 255, 0.04); border-radius: 26px; }
-.progress-bar-wrapper { display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: var(--text-sub); margin-bottom: 12px; }
-.progress-track { flex: 1; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; margin: 0 12px; position: relative; cursor: pointer; }
-.progress-fill { width: 0%; height: 100%; background: var(--accent-purple); border-radius: 3px; pointer-events: none; transition: width .2s linear; }
-.player-controls { display: flex; justify-content: center; align-items: center; gap: 40px; }
-.play-btn { width: 56px; height: 56px; border-radius: 50%; background: rgba(255,255,255,0.16); display: flex; justify-content: center; align-items: center; font-size: 22px; color: #fff; cursor: pointer; transition: transform .15s; }
-.play-btn:active { transform: scale(0.92); }
+.player-panel { margin-top: auto; padding: 14px 18px; background: rgba(255, 255, 255, 0.03); }
+.progress-bar-wrapper { display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: var(--text-sub); margin-bottom: 10px; }
+.progress-track { flex: 1; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; margin: 0 10px; position: relative; cursor: pointer; }
+.progress-fill { width: 0%; height: 100%; background: var(--accent-purple); border-radius: 3px; pointer-events: none; }
+.player-controls { display: flex; justify-content: center; align-items: center; gap: 36px; }
+.control-icon { font-size: 18px; cursor: pointer; user-select: none; }
+.play-btn { width: 52px; height: 52px; border-radius: 50%; background: rgba(255,255,255,0.15); display: flex; justify-content: center; align-items: center; font-size: 20px; color: #fff; cursor: pointer; }
 
-.mood-weather-card { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; min-height: 80px; }
-.mood-weather-empty { width: 100%; text-align: center; font-size: 13px; color: var(--text-sub); }
-.mood-weather-item { display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: 12px; color: var(--text-sub); }
-.mood-weather-icon { font-size: 22px; }
+.mood-weather-card { display: flex; justify-content: space-between; align-items: center; padding: 14px 14px; min-height: 76px; gap: 4px; }
+.mood-weather-empty { width: 100%; text-align: center; font-size: 12px; color: var(--text-sub); }
+.mood-weather-item { display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 10px; color: var(--text-sub); flex: 1; }
+.mood-weather-day { font-weight: 700; color: var(--text-main); font-size: 11px; }
+.mood-weather-icon { font-size: 19px; }
 
-.hrv-card { display: flex; flex-direction: column; gap: 12px; }
-.hrv-header { display: flex; justify-content: space-between; align-items: center; font-size: 13px; }
-.hrv-value { font-size: 26px; font-weight: 700; color: var(--accent-cyan); }
-.hrv-bars { display: flex; align-items: flex-end; gap: 8px; height: 65px; padding-top: 10px; }
-.hrv-bar { flex: 1; background: rgba(6, 182, 212, 0.3); border-radius: 4px; min-height: 6px; transition: height 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
-.hrv-bar.high { background: var(--accent-cyan); box-shadow: 0 0 10px rgba(6, 182, 212, 0.55); }
-.hrv-hint { font-size: 12px; color: var(--text-sub); }
+.hrv-card { display: flex; flex-direction: column; gap: 10px; }
+.hrv-header { display: flex; justify-content: space-between; align-items: center; font-size: 12px; }
+.hrv-value { font-size: 20px; font-weight: 700; color: var(--accent-cyan); }
+.hrv-bars { display: flex; align-items: flex-end; gap: 4px; height: 40px; }
+.hrv-bar { flex: 1; background: rgba(6, 182, 212, 0.3); border-radius: 3px; min-height: 3px; transition: height 0.4s ease; }
+.hrv-bar.high { background: var(--accent-cyan); }
+.hrv-hint { font-size: 11px; color: var(--text-sub); }
 
-.ppg-modal-overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(10, 8, 20, 0.94);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  z-index: 350;
-  display: none;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
-}
-.ppg-modal-overlay.show { display: flex; }
-
-.ppg-viewfinder-container {
-  width: 160px;
-  height: 160px;
-  border-radius: 50%;
-  border: 3px solid var(--accent-cyan);
-  box-shadow: 0 0 30px rgba(6, 182, 212, 0.45);
-  overflow: hidden;
-  position: relative;
-  margin-bottom: 24px;
-  background: #000;
-}
-#ppgVideoNode { width: 100%; height: 100%; object-fit: cover; }
-
-.ppg-meter-wrap { width: 100%; max-width: 300px; height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; margin: 16px 0 10px; }
-.ppg-meter-fill { width: 0%; height: 100%; background: linear-gradient(90deg, var(--accent-cyan), #ec4899); transition: width 0.1s linear; }
-
-.guidance-modal {
-  position: absolute;
-  bottom: 90px;
-  left: 20px;
-  right: 20px;
-  background: rgba(26, 21, 40, 0.96);
-  border: 1px solid var(--accent-purple);
-  box-shadow: 0 10px 35px rgba(0,0,0,0.75);
-  border-radius: 22px;
-  padding: 18px;
-  z-index: 250;
-  display: none;
-  flex-direction: column;
-  gap: 12px;
-}
-.guidance-modal.show { display: flex; animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
-@keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-
-.guidance-btn {
-  background: linear-gradient(135deg, var(--accent-purple), #7e22ce);
-  color: #fff;
-  border: none;
-  border-radius: 14px;
-  padding: 12px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
-
-.modal-backdrop { display: none; position: absolute; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); z-index: 200; justify-content: center; align-items: center; padding: 24px; }
+.modal-backdrop { display: none; position: absolute; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: 200; justify-content: center; align-items: center; padding: 20px; }
 .modal-backdrop.show { display: flex; }
-.modal-card { width: 100%; max-width: 360px; text-align: center; }
+.modal-card { width: 100%; max-width: 320px; text-align: center; }
 
-/* 底部導覽列 (預設手機) */
-.bottom-nav {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 74px;
-  background: var(--nav-bg);
-  backdrop-filter: blur(20px);
-  border-top: 1px solid var(--card-border);
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  padding-bottom: env(safe-area-inset-bottom, 10px);
-  z-index: 10;
-}
-.nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-main); opacity: 0.45; font-size: 11px; cursor: pointer; transition: opacity .2s; }
+.checkin-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 14px; }
+.checkin-opt { padding: 10px 6px; border-radius: 14px; background: var(--card-bg); border: 1px solid var(--card-border); color: var(--text-main); font-size: 12px; font-weight: 600; cursor: pointer; }
+.checkin-opt:active { transform: scale(0.96); }
+
+.bottom-nav { position: absolute; bottom: 0; left: 0; right: 0; height: 70px; background: var(--nav-bg); backdrop-filter: blur(20px); border-top: 1px solid var(--card-border); display: flex; justify-content: space-around; align-items: center; padding-bottom: 8px; z-index: 10; }
+.nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-main); opacity: 0.4; font-size: 11px; cursor: pointer; }
 .nav-item.active { opacity: 1; color: var(--accent-purple); }
-.nav-item .icon { font-size: 22px; margin-bottom: 2px; }
+.nav-item .icon { font-size: 20px; margin-bottom: 2px; }
 
-.toast { position: absolute; top: 60px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.9); color: white; padding: 10px 22px; border-radius: 24px; font-size: 13px; z-index: 300; opacity: 0; transition: opacity 0.3s; pointer-events: none; max-width: 85%; text-align: center; }
+.toast { position: absolute; top: 50px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.9); color: white; padding: 8px 18px; border-radius: 20px; font-size: 12px; z-index: 300; opacity: 0; transition: opacity 0.3s; pointer-events: none; max-width: 85%; text-align: center; }
 .toast.show { opacity: 1; }
-.danger-zone-btn { width: 100%; padding: 14px; border-radius: 18px; background: rgba(239, 68, 68, 0.1); border: 1px solid var(--danger-color); color: var(--danger-color); font-size: 14px; font-weight: 600; cursor: pointer; margin-top: 18px; text-align: center; }
+.danger-zone-btn { width: 100%; padding: 12px; border-radius: 16px; background: rgba(239, 68, 68, 0.1); border: 1px solid var(--danger-color); color: var(--danger-color); font-size: 13px; font-weight: 600; cursor: pointer; margin-top: 16px; text-align: center; }
 
-.loading-overlay { position: absolute; inset: 0; background: rgba(17, 20, 36, 0.98); z-index: 500; display: none; justify-content: center; align-items: center; flex-direction: column; gap: 16px; }
+.loading-overlay { position: absolute; inset: 0; background: rgba(17, 20, 36, 0.95); z-index: 500; display: none; justify-content: center; align-items: center; flex-direction: column; gap: 16px; }
 .loading-overlay.show { display: flex; }
-.loading-spinner { width: 44px; height: 44px; border: 3px solid rgba(168, 85, 247, 0.2); border-top-color: var(--accent-purple); border-radius: 50%; animation: spin 0.8s linear infinite; }
+.loading-spinner { width: 40px; height: 40px; border: 3px solid rgba(168, 85, 247, 0.2); border-top-color: var(--accent-purple); border-radius: 50%; animation: spin 0.8s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
-
-.medical-disclaimer { font-size: 11px; line-height: 1.5; color: var(--text-sub); opacity: 0.7; text-align: center; margin: 16px 4px 8px; }
-
-/* ============================================================
-   iPad 13 吋及平板專屬自適應響應式強化 (Tablet Responsive)
-   ============================================================ */
-@media (min-width: 768px) {
-  .app-content {
-    max-width: 860px;
-    padding: 24px 40px 120px;
-  }
-  .status-bar {
-    max-width: 860px;
-    margin: 0 auto;
-    padding: 24px 40px 0;
-  }
-  .user-welcome-title {
-    font-size: 30px;
-  }
-  .privacy-status-pill {
-    font-size: 13px;
-    padding: 6px 16px;
-  }
-  .sensor-banner-grid {
-    gap: 16px;
-    margin-bottom: 24px;
-  }
-  .sensor-box {
-    padding: 20px 14px;
-    border-radius: 24px;
-  }
-  .sensor-box h5 {
-    font-size: 15px;
-    margin-bottom: 4px;
-  }
-  .sensor-box p {
-    font-size: 12px;
-  }
-  .section-title {
-    font-size: 22px;
-    margin: 28px 0 16px;
-  }
-  .practice-grid {
-    gap: 20px;
-  }
-  .practice-btn {
-    padding: 28px 20px;
-    border-radius: 28px;
-  }
-  .practice-btn .icon {
-    width: 68px;
-    height: 68px;
-    font-size: 32px;
-    margin-bottom: 14px;
-  }
-  .practice-btn h3 {
-    font-size: 19px;
-  }
-  .practice-btn p {
-    font-size: 14px;
-  }
-
-  /* iPad 13" 呼吸光環自適應放大 */
-  .breathing-container {
-    height: 380px;
-    margin: 20px 0;
-  }
-  .breath-ring {
-    width: 260px;
-    height: 260px;
-  }
-  .breath-ring-inner {
-    width: 226px;
-    height: 226px;
-    font-size: 24px;
-  }
-  .session-timer {
-    font-size: 64px;
-    margin-bottom: 12px;
-  }
-  .session-title-area h2 {
-    font-size: 32px;
-  }
-  .session-title-area p {
-    font-size: 16px;
-  }
-  .pattern-chip {
-    padding: 8px 20px;
-    font-size: 14px;
-  }
-  .binaural-chip {
-    padding: 10px 0;
-    font-size: 13px;
-  }
-  .hrv-bars {
-    height: 90px;
-    gap: 12px;
-  }
-  .hrv-value {
-    font-size: 34px;
-  }
-  .modal-card {
-    max-width: 460px;
-    padding: 30px;
-  }
-  .ppg-viewfinder-container {
-    width: 220px;
-    height: 220px;
-  }
-
-  /* iPad 懸浮居中導覽列 (Floating Dock) */
-  .bottom-nav {
-    max-width: 620px;
-    left: 50%;
-    right: auto;
-    transform: translateX(-50%);
-    bottom: 24px;
-    border-radius: 36px;
-    border: 1px solid var(--card-border);
-    box-shadow: 0 16px 40px rgba(0,0,0,0.6);
-    padding-bottom: 0;
-    height: 72px;
-  }
-  .nav-item {
-    font-size: 13px;
-  }
-  .nav-item .icon {
-    font-size: 24px;
-  }
-  .guidance-modal {
-    max-width: 620px;
-    left: 50%;
-    right: auto;
-    transform: translateX(-50%);
-    bottom: 110px;
-    padding: 22px;
-  }
-}
 </style>
 </head>
 <body>
 
 <div class="phone-mockup">
-  <!-- 狀態列 -->
   <div class="status-bar">
     <span id="statusBarTime">00:00</span>
-    <span style="font-size: 12px; color: var(--accent-purple);">● 守護中</span>
+    <span id="storageBadge" style="font-size: 11px; color: var(--accent-purple);">● 匿名雲端守護</span>
   </div>
 
-  <!-- 主頁 -->
   <div id="home-page" class="app-content active">
     <div class="user-header-zone">
-      <div>
-        <div class="user-welcome-title">Lohas Mindful</div>
-        <div style="font-size: 12px; color: var(--text-sub); margin-top: 2px;">港產具身智能 • 身心調息</div>
-      </div>
-      <div class="privacy-status-pill">🔒 端側零知識加密</div>
+      <div class="user-welcome-title" id="displayUsername">你好</div>
+      <button class="auth-trigger-btn" id="authBtn" onclick="handleAuthAction()">私隱說明</button>
     </div>
 
     <div class="collective-sync-pill">
       <span class="pulse-dot"></span>
-      <span id="collectiveCount">全球同步場：連線中...</span>
+      <span id="collectiveCount">心流場域：專注於此時此刻</span>
     </div>
 
-    <!-- 三大生物感知卡片 -->
-    <div class="sensor-banner-grid">
-      <div class="sensor-box" id="ppgSensorBox" role="button" tabindex="0" onclick="startPPGMeasurement()">
-        <h5>❤️ 後鏡頭 PPG</h5>
-        <p id="ppgStatusText">手指按鏡頭 8s</p>
+    <div class="time-adaptive-bar" id="timeAdaptiveBar">
+      <span id="timeAdaptiveText">正在按目前時段配對最合適嘅節奏…</span>
+      <span class="time-adaptive-tag" id="timeAdaptiveTag">自適應</span>
+    </div>
+
+    <div class="quick-mood-section">
+      <div class="quick-mood-title">而家感覺點？一鍵開始</div>
+      <div class="quick-mood-grid">
+        <div class="mood-btn chur" onclick="quickStart('chur')">
+          <div class="emoji">😩</div>
+          <div class="label">好chur</div>
+        </div>
+        <div class="mood-btn dry" onclick="quickStart('dry')">
+          <div class="emoji">🔥</div>
+          <div class="label">好燥</div>
+        </div>
+        <div class="mood-btn calm" onclick="quickStart('calm')">
+          <div class="emoji">😌</div>
+          <div class="label">平靜</div>
+        </div>
       </div>
-      <div class="sensor-box" id="breathVoiceBox" role="button" tabindex="0" onclick="toggleBreathListening()">
+    </div>
+
+    <div class="quick-mood-section">
+      <div class="quick-mood-title">🇭🇰 香港情境微處方 • 一鍵回血</div>
+      <div class="scenario-scroll" id="scenarioGrid">
+        <div class="scenario-chip" data-scenario="meeting" onclick="applyHKScenario('meeting')">
+          <div class="s-top">💼 啱啱開會俾人插</div>
+          <div class="s-sub">Box 4-4-4-4 • 降腎上腺素</div>
+        </div>
+        <div class="scenario-chip" data-scenario="commute" onclick="applyHKScenario('commute')">
+          <div class="s-top">🚇 搭車迫爆／塞車</div>
+          <div class="s-sub">Calm 4-4 + α波 • 隔絕煩躁</div>
+        </div>
+        <div class="scenario-chip" data-scenario="overthink" onclick="applyHKScenario('overthink')">
+          <div class="s-top">🌙 瞓唔著腦轉唔停</div>
+          <div class="s-sub">Relax 4-7-8 + δ波 • 關機助眠</div>
+        </div>
+        <div class="scenario-chip" data-scenario="caregiver" onclick="applyHKScenario('caregiver')">
+          <div class="s-top">🫂 照顧屋企人好攰</div>
+          <div class="s-sub">Relax 4-7-8 + θ波 • 溫柔充電</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sensor-banner-grid">
+      <div class="sensor-box" id="ppgSensorBox" role="button" tabindex="0" aria-label="後鏡頭 PPG 心率感測" onclick="togglePPGScan()">
+        <h5>❤️ 後鏡頭 PPG</h5>
+        <p id="ppgStatusText">指尖按鏡頭 8s</p>
+        <div class="ppg-meter-wrap" id="ppgMeterWrap"><div class="ppg-meter-fill" id="ppgMeterFill"></div></div>
+      </div>
+      <div class="sensor-box" id="breathVoiceBox" role="button" tabindex="0" aria-label="呼吸聲紋同步" onclick="toggleBreathListening()">
         <h5>🌬️ 聲紋同步</h5>
         <p id="breathVoiceText">聽呼吸微調環</p>
       </div>
-      <div class="sensor-box" id="cantoneseBox" role="button" tabindex="0" onclick="toggleVoiceCheckin()">
-        <h5>🎙️ 聲紋情緒</h5>
+      <div class="sensor-box" id="cantoneseBox" role="button" tabindex="0" aria-label="粵語情緒感知" onclick="toggleVoiceCheckin()">
+        <h5>🎙️ 粵語感知</h5>
         <p id="cantoneseText">講「好chur」</p>
       </div>
     </div>
@@ -459,76 +278,76 @@ body {
 
     <div class="section-title">Begin Your Practice</div>
     <div class="practice-grid">
-      <div class="practice-btn btn-meditate" onclick="selectTrack('meditation')" role="button">
+      <div class="practice-btn btn-meditate" onclick="selectTrack('meditation')" role="button" aria-label="Start meditation">
         <div class="icon">🧘</div>
         <h3>Meditation</h3>
         <p>尋找內在安寧</p>
       </div>
-      <div class="practice-btn btn-breathe" onclick="selectTrack('breathing')" role="button">
+      <div class="practice-btn btn-breathe" onclick="selectTrack('breathing')" role="button" aria-label="Start breathing exercise">
         <div class="icon">💨</div>
         <h3>Breathing</h3>
-        <p>閉眼觸覺牽引</p>
+        <p>回歸身心中心</p>
       </div>
     </div>
 
     <div class="section-title">Quick Sessions</div>
-    <div class="glass-card" style="display: flex; justify-content: space-between; align-items: center; cursor: pointer; padding: 18px 22px; margin-bottom: 14px;" onclick="selectTrack('morning')">
-      <div><h4 style="font-size: 16px;">晨間喚醒</h4><p style="font-size: 13px; color: var(--text-sub); margin-top: 2px;">5 分鐘 • 激活能量</p></div>
-      <span style="font-size: 18px;">▶️</span>
+    <div class="quick-sessions-wrap" id="quickSessionsWrap">
+      <div class="glass-card quick-session-card" data-track="morning" style="display: flex; justify-content: space-between; align-items: center; cursor: pointer; padding: 16px; margin-bottom: 0;" onclick="selectTrack('morning')" role="button" aria-label="Morning Calm">
+        <div><h4 style="font-size: 15px;">晨間喚醒</h4><p style="font-size: 12px; color: var(--text-sub);">5 分鐘 • 激活能量</p></div>
+        <span>▶️</span>
+      </div>
+      <div class="glass-card quick-session-card" data-track="evening" style="display: flex; justify-content: space-between; align-items: center; cursor: pointer; padding: 16px; margin-bottom: 0;" onclick="selectTrack('evening')" role="button" aria-label="Evening Wind Down">
+        <div><h4 style="font-size: 15px;">晚間放鬆</h4><p style="font-size: 12px; color: var(--text-sub);">10 分鐘 • 助眠舒緩</p></div>
+        <span>▶️</span>
+      </div>
     </div>
-    <div class="glass-card" style="display: flex; justify-content: space-between; align-items: center; cursor: pointer; padding: 18px 22px;" onclick="selectTrack('evening')">
-      <div><h4 style="font-size: 16px;">晚間放鬆</h4><p style="font-size: 13px; color: var(--text-sub); margin-top: 2px;">10 分鐘 • 助眠舒緩</p></div>
-      <span style="font-size: 18px;">▶️</span>
-    </div>
-
-    <p class="medical-disclaimer">
-      ⚠️ 免責聲明：本程式採用之光學脈搏分析與心率變異度（HRV）僅供個人日常放鬆參考，非醫療器材，不具診斷醫療狀況之功能。
-    </p>
   </div>
 
-  <!-- 調息修煉頁 -->
   <div id="session-page" class="app-content">
-    <div>
-      <div class="session-header">
-        <span onclick="exitSession()" role="button" style="padding: 6px;">✕</span>
-        <span style="font-size: 13px; color: var(--accent-cyan);" id="audioModeLabel">立體聲雙耳模式</span>
+    <div class="session-header">
+      <span onclick="switchPage('home')" role="button" aria-label="Close">✕</span>
+      <span style="font-size: 12px; color: var(--accent-cyan);">立體聲雙耳模式</span>
+    </div>
+    <div class="session-title-area">
+      <h2 id="sessionTitle">深層釋壓</h2>
+      <p id="sessionSubtitle">Guided Meditation</p>
+      <div class="ai-context-badge" id="aiContextBadge">AI 自適應：生理狀態平靜導引</div>
+      <div class="micro-action-banner" id="microActionBanner"></div>
+      <div class="audio-layer-bar">
+        <button type="button" class="layer-toggle on" id="toggleMusicLayer" onclick="toggleAudioLayer('music')">🎵 背景音樂</button>
+        <button type="button" class="layer-toggle on" id="toggleBinauralLayer" onclick="toggleAudioLayer('binaural')">🎧 腦波（建議耳機）</button>
+        <button type="button" class="layer-toggle on" id="toggleVoiceLayer" onclick="toggleAudioLayer('voice')">🗣️ 粵語引導</button>
       </div>
-      <div class="session-title-area">
-        <h2 id="sessionTitle">箱式呼吸</h2>
-        <p id="sessionSubtitle">專注提升 • 迷走神經</p>
-        <div class="ai-context-badge" id="aiContextBadge">AI 自適應：閉眼觸覺牽引已啟用</div>
-      </div>
-
-      <div class="pattern-picker">
-        <div class="pattern-chip active" data-pattern="calm" onclick="selectPattern('calm')">Calm 4-4</div>
-        <div class="pattern-chip" data-pattern="box" onclick="selectPattern('box')">Box 4-4-4-4</div>
-        <div class="pattern-chip" data-pattern="478" onclick="selectPattern('478')">Relax 4-7-8</div>
-      </div>
-
-      <div class="binaural-matrix-card">
-        <div class="binaural-title-row">
-          <span>🧠 雙耳腦波牽引 (Binaural Beats)</span>
-          <span id="binauralBandDesc">關閉</span>
-        </div>
-        <div class="binaural-chip-group">
-          <div class="binaural-chip active" data-band="off" onclick="setBinauralBand('off')">OFF</div>
-          <div class="binaural-chip" data-band="delta" onclick="setBinauralBand('delta')">δ 2.5Hz<br><span style="font-size:9px;">深睡</span></div>
-          <div class="binaural-chip" data-band="theta" onclick="setBinauralBand('theta')">θ 6Hz<br><span style="font-size:9px;">冥想</span></div>
-          <div class="binaural-chip" data-band="alpha" onclick="setBinauralBand('alpha')">α 10Hz<br><span style="font-size:9px;">專注</span></div>
-        </div>
-      </div>
-
-      <!-- 自適應大光環 -->
-      <div class="breathing-container">
-        <div class="breath-ring" id="breathRing">
-          <div class="breath-ring-inner"><span id="breathTxt">準備</span></div>
-        </div>
-      </div>
-
-      <div class="session-timer" id="timerDisplay">00:00</div>
     </div>
 
-    <div class="player-panel">
+    <div class="pattern-picker">
+      <div class="pattern-chip active" data-pattern="calm" onclick="selectPattern('calm')">Calm 4-4</div>
+      <div class="pattern-chip" data-pattern="box" onclick="selectPattern('box')">Box 4-4-4-4</div>
+      <div class="pattern-chip" data-pattern="478" onclick="selectPattern('478')">Relax 4-7-8</div>
+    </div>
+
+    <div class="binaural-matrix-card">
+      <div class="binaural-title-row">
+        <span>🧠 雙耳腦波牽引 (Binaural Beats)</span>
+        <span id="binauralBandDesc">關閉</span>
+      </div>
+      <div class="binaural-chip-group">
+        <div class="binaural-chip active" data-band="off" onclick="setBinauralBand('off')">OFF</div>
+        <div class="binaural-chip" data-band="delta" onclick="setBinauralBand('delta')">δ 2.5Hz<br><span style="font-size:8px;">深睡</span></div>
+        <div class="binaural-chip" data-band="theta" onclick="setBinauralBand('theta')">θ 6Hz<br><span style="font-size:8px;">冥想</span></div>
+        <div class="binaural-chip" data-band="alpha" onclick="setBinauralBand('alpha')">α 10Hz<br><span style="font-size:8px;">專注</span></div>
+      </div>
+    </div>
+
+    <div class="breathing-container">
+      <div class="breath-ring" id="breathRing">
+        <div class="breath-ring-inner"><span id="breathTxt" aria-live="polite">Ready</span></div>
+      </div>
+    </div>
+
+    <div class="session-timer" id="timerDisplay">00:00</div>
+
+    <div class="glass-card player-panel">
       <div class="progress-bar-wrapper">
         <span id="currentTimeDisplay">00:00</span>
         <div class="progress-track" id="progressTrack" onclick="handleSeek(event)">
@@ -537,17 +356,16 @@ body {
         <span id="totalTimeDisplay">00:00</span>
       </div>
       <div class="player-controls">
-        <span class="control-icon" role="button" onclick="showToast('已鎖定目前生理頻率')" style="cursor:pointer; font-size: 20px;">⏮️</span>
-        <div class="play-btn" id="playBtn" onclick="togglePlayback()" role="button">▶️</div>
-        <span class="control-icon" role="button" onclick="showToast('請保持平穩呼吸')" style="cursor:pointer; font-size: 20px;">🔔</span>
+        <span class="control-icon" role="button" aria-label="Realign breath from inhale" title="重新由吸氣第一拍對齊" onclick="resetBreathingAlignment()">⏮️</span>
+        <div class="play-btn" id="playBtn" onclick="togglePlayback()" role="button" aria-label="Play or pause">▶️</div>
+        <span class="control-icon" role="button" aria-label="Micro practice" onclick="requestMicroPractice()">🔔</span>
       </div>
     </div>
   </div>
 
-  <!-- 數據頁面 -->
   <div id="progress-page" class="app-content">
     <div class="user-welcome-title" style="margin-bottom: 4px;">修煉歷程</div>
-    <p style="font-size: 13px; color: var(--text-sub); margin-bottom: 18px;">真實生理與習慣回饋指標</p>
+    <p id="progressSubDesc" style="font-size: 12px; color: var(--text-sub); margin-bottom: 16px;">每次修煉自動匿名備份至雲端（支援離線本機儲存）</p>
 
     <div class="section-title" style="margin-top:0;">一週情緒天氣圖</div>
     <div class="glass-card mood-weather-card" id="moodWeatherBoard">
@@ -557,112 +375,197 @@ body {
     <div class="section-title">HRV 心率變異趨勢</div>
     <div class="glass-card hrv-card">
       <div class="hrv-header">
-        <span>最新生理測量</span>
+        <span>最近 7 次測量</span>
         <span class="hrv-value" id="hrvLatestValue">--</span>
       </div>
       <div class="hrv-bars" id="hrvBars">
-        <div class="hrv-bar" style="height: 8px;"></div>
-        <div class="hrv-bar" style="height: 8px;"></div>
-        <div class="hrv-bar" style="height: 8px;"></div>
-        <div class="hrv-bar" style="height: 8px;"></div>
-        <div class="hrv-bar" style="height: 8px;"></div>
-        <div class="hrv-bar" style="height: 8px;"></div>
-        <div class="hrv-bar" style="height: 8px;"></div>
+        <div class="hrv-bar" style="height: 3px;"></div>
+        <div class="hrv-bar" style="height: 3px;"></div>
+        <div class="hrv-bar" style="height: 3px;"></div>
+        <div class="hrv-bar" style="height: 3px;"></div>
+        <div class="hrv-bar" style="height: 3px;"></div>
+        <div class="hrv-bar" style="height: 3px;"></div>
+        <div class="hrv-bar" style="height: 3px;"></div>
       </div>
       <div class="hrv-hint" id="hrvHint">用後鏡頭 PPG 測量 3 次以上，啟動趨勢追蹤</div>
+      <div class="ppg-disclaimer">* 光學脈搏波趨勢僅供身心放鬆參考，非醫療診斷工具</div>
     </div>
 
-    <div class="glass-card" style="display: flex; gap: 16px; align-items: center; padding: 22px;">
-      <div style="font-size: 32px;">🔥</div>
+    <div class="glass-card" style="display: flex; gap: 14px; align-items: center;">
+      <div style="font-size: 28px;">🔥</div>
       <div>
-        <h3 id="streakTxt" style="font-size: 20px; color: #ea580c;">0 Day Streak</h3>
-        <p style="font-size: 13px; color: var(--text-sub);">持之以恆，神經重塑正在發生</p>
+        <h3 id="streakTxt" style="font-size: 18px; color: #ea580c;">0 Day Streak</h3>
+        <p style="font-size: 12px; color: var(--text-sub);">持之以恆，神經重塑正在發生</p>
       </div>
     </div>
 
-    <div class="section-title">安全與帳號權益</div>
-    <button class="danger-zone-btn" onclick="openDeleteAccountModal()">徹底刪除個人帳號與數據</button>
+    <div class="section-title">數據管理</div>
+    <button class="danger-zone-btn" onclick="openDeleteAccountModal()">重設所有本機與雲端修煉數據</button>
   </div>
 
-  <!-- PPG 測量視窗 -->
-  <div class="ppg-modal-overlay" id="ppgModal">
-    <h3 style="font-size: 20px; margin-bottom: 8px; color: #fff;">後鏡頭 PPG 光學感測</h3>
-    <p style="font-size: 13px; color: var(--text-sub); margin-bottom: 20px;">請用手指腹完全輕蓋後置鏡頭</p>
-    
-    <div class="ppg-viewfinder-container">
-      <video id="ppgVideoNode" playsinline autoplay muted></video>
-    </div>
-
-    <div class="ppg-meter-wrap">
-      <div class="ppg-meter-fill" id="ppgMeterFill"></div>
-    </div>
-    <p id="ppgProgressCountTxt" style="font-size: 14px; font-weight: 600; color: var(--accent-cyan);">採集中… 0/80 (0%)</p>
-    
-    <button onclick="cancelPPGMeasurement()" style="margin-top: 28px; background: transparent; border: 1px solid var(--card-border); color: #fff; padding: 10px 28px; border-radius: 22px; font-size: 13px; cursor: pointer;">
-      取消測量
-    </button>
-  </div>
-
-  <!-- PPG 結果彈窗 -->
-  <div class="modal-backdrop" id="ppgResultModal">
+  <div class="modal-backdrop" id="onboardingModalBackdrop">
     <div class="glass-card modal-card">
-      <h3 style="color: var(--accent-cyan); margin-bottom: 8px; font-size: 20px;">✅ PPG 測量圓滿完成</h3>
-      <div style="font-size: 36px; font-weight: 700; color: #fff; margin: 14px 0;" id="ppgResultHrvNum">--</div>
-      <p id="ppgResultBpmTxt" style="font-size: 14px; color: var(--text-sub); margin-bottom: 20px;">心率：-- BPM | 副交感神經狀態良好</p>
-      <button class="guidance-btn" style="width: 100%;" onclick="confirmPpgResult()">確認並記錄到趨勢圖</button>
+      <h3 style="color: var(--accent-purple); margin-bottom: 8px;">歡迎進入 Lohas Mindful</h3>
+      <div id="onboardingStepContent" style="font-size: 13px; line-height: 1.6; color: var(--text-main); margin: 16px 0;">
+        <strong>第 1 步：它跟你呼吸</strong><br>
+        開啟「聲紋同步」，介面光環會跟隨你真實的呼吸深淺自動縮放。
+      </div>
+      <button class="auth-trigger-btn" style="width: 100%; padding: 10px; background: var(--accent-purple); color: #fff;" onclick="nextOnboardingStep()">下一步</button>
     </div>
   </div>
 
-  <!-- 粵語引導彈窗 -->
-  <div class="guidance-modal" id="guidanceModal">
-    <div style="display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: var(--accent-cyan);">
-      <span id="guidanceTitle">🌿 粵語身心感知引導</span>
-      <span style="cursor:pointer; font-size: 16px;" onclick="closeGuidanceModal()">✕</span>
-    </div>
-    <p id="guidanceModalText" style="font-size: 14px; line-height: 1.6; color: var(--text-main);"></p>
-    <button class="guidance-btn" id="playGuidanceVoiceBtn">
-      <span>🔊</span> 點擊聽取專屬粵語引導
-    </button>
-  </div>
-
-  <!-- 刪除確認彈窗 -->
   <div class="modal-backdrop" id="deleteModalBackdrop">
     <div class="glass-card modal-card">
-      <h3 style="color: var(--danger-color); margin-bottom: 8px; font-size: 20px;">確認銷毀數據？</h3>
-      <p style="font-size: 13px; color: var(--text-sub);">所有本機加密的健康日誌將徹底抹除。請輸入「DELETE」確認：</p>
-      <input type="text" id="confirmDeleteInput" placeholder="輸入 DELETE" style="width:100%; padding:12px; border-radius:14px; margin: 14px 0; border:1px solid var(--card-border); background:rgba(0,0,0,0.2); color:#fff; text-align:center; font-size: 15px;">
-      <div style="display:flex; gap:12px;">
-        <button class="guidance-btn" style="flex:1; background:transparent; border:1px solid var(--card-border);" onclick="closeDeleteAccountModal()">取消</button>
-        <button class="guidance-btn" style="flex:1; background:var(--danger-color);" onclick="executeAccountDeletion()">確認銷毀</button>
+      <h3 style="color: var(--danger-color); margin-bottom: 8px;">確認清除修煉數據？</h3>
+      <p style="font-size: 12px; color: var(--text-sub);">所有本機進度、情緒天氣圖、HRV 紀錄與雲端備份將永久清除，無法復原。</p>
+      <div style="display:flex; gap:10px; margin-top: 16px;">
+        <button class="auth-trigger-btn" style="flex:1;" onclick="closeDeleteAccountModal()">取消</button>
+        <button class="auth-trigger-btn" style="flex:1; background:var(--danger-color); color:#fff; border-color:var(--danger-color);" onclick="executeAccountDeletion()">確認清除</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="postSessionModal">
+    <div class="glass-card modal-card">
+      <h3 style="color: var(--accent-cyan); margin-bottom: 6px;">修煉完成 ✨</h3>
+      <p style="font-size: 12px; color: var(--text-sub);">記錄你而家嘅身心天氣，更新一週情緒地圖：</p>
+      <div class="checkin-grid">
+        <button type="button" class="checkin-opt" onclick="finalizeMoodCheckin('😌')">☀️ 鬆返哂</button>
+        <button type="button" class="checkin-opt" onclick="finalizeMoodCheckin('😊')">🌤️ 好咗啲</button>
+        <button type="button" class="checkin-opt" onclick="finalizeMoodCheckin('😐')">⛅ 仲有啲緊</button>
       </div>
     </div>
   </div>
 
   <div class="toast" id="toast"></div>
 
-  <!-- 啟動畫面 -->
   <div class="loading-overlay" id="loadingOverlay">
     <div class="loading-spinner"></div>
-    <p style="font-size: 14px; color: var(--text-sub);" id="loadingText">正在準備專屬空間…</p>
+    <p style="font-size: 13px; color: var(--text-sub);" id="loadingText">正在準備你的專屬空間…</p>
   </div>
 
+  <video id="ppgVideoNode" playsinline style="display:none;"></video>
   <canvas id="ppgCanvasNode" width="30" height="30" style="display:none;"></canvas>
 
-  <!-- 底部導覽列 -->
   <div class="bottom-nav">
-    <div class="nav-item active" id="nav-home" onclick="switchPage('home')"><span class="icon">🏠</span><span>主頁</span></div>
-    <div class="nav-item" id="nav-session" onclick="switchPage('session')"><span class="icon">🧘</span><span>修煉</span></div>
-    <div class="nav-item" id="nav-progress" onclick="switchPage('progress')"><span class="icon">📈</span><span>數據</span></div>
+    <div class="nav-item active" id="nav-home" role="button" aria-label="Home" onclick="switchPage('home')"><span class="icon">🏠</span><span>主頁</span></div>
+    <div class="nav-item" id="nav-session" role="button" aria-label="Session" onclick="switchPage('session')"><span class="icon">🧘</span><span>修煉</span></div>
+    <div class="nav-item" id="nav-progress" role="button" aria-label="Progress" onclick="switchPage('progress')"><span class="icon">📈</span><span>數據</span></div>
   </div>
 </div>
 
-<script>
-/* ============================================================
-   Lohas Mindful v3.5 — 完整核心邏輯
-   ============================================================ */
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+  import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+  import { getFirestore, doc, setDoc, getDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
+  const firebaseConfig = {
+    apiKey: "AIzaSyBkonNaBcVPQtbveEBRqTwMYC_NkcLgzhA",
+    authDomain: "lohasmindfulness.firebaseapp.com",
+    projectId: "lohasmindfulness",
+    storageBucket: "lohasmindfulness.firebasestorage.app",
+    messagingSenderId: "1058687291610",
+    appId: "1:1058687291610:web:295addd706da52c2d555e3",
+    measurementId: "G-77VM0J73WN"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  window.cloudSyncBridge = {
+    uid: null,
+
+    async ensureUid() {
+      if (this.uid) return this.uid;
+      if (auth.currentUser) {
+        this.uid = auth.currentUser.uid;
+        return this.uid;
+      }
+      try {
+        const cred = await signInAnonymously(auth);
+        this.uid = cred.user.uid;
+        return this.uid;
+      } catch (e) {
+        console.warn("Anonymous auth failed:", e);
+        window.showToast?.("⚠️ 雲端登入失敗：" + (e.code || e.message));
+        return null;
+      }
+    },
+
+    init() {
+      onAuthStateChanged(auth, async (user) => {
+        if (user) {
+          this.uid = user.uid;
+          await this.pullFromCloud();
+          const localSnap = window.getLocalProgressSnapshot?.();
+          if (localSnap && (localSnap.totalSessions > 0 || (localSnap.hrvLog && localSnap.hrvLog.length > 0))) {
+            await this.pushToCloud(localSnap, false);
+          }
+        } else {
+          await this.ensureUid();
+        }
+      });
+    },
+
+    async pushToCloud(progressData, notify = true) {
+      if (!progressData) return;
+      const uid = await this.ensureUid();
+      if (!uid) return;
+      try {
+        await setDoc(doc(db, "users", uid), {
+          streak: progressData.streak || 0,
+          totalSessions: progressData.totalSessions || 0,
+          lastPracticeDate: progressData.lastPracticeDate || null,
+          moodLog: (progressData.moodLog || []).slice(-30),
+          hrvLog: (progressData.hrvLog || []).slice(-30),
+          updatedAt: new Date().toISOString()
+        }, { merge: true });
+        if (notify) {
+          window.showToast?.("☁️ 已自動同步至 Firestore");
+        }
+      } catch (e) {
+        console.warn("Firestore write failed:", e);
+        if (notify) {
+          window.showToast?.("⚠️ Firestore 寫入失敗：" + (e.code || e.message));
+        }
+      }
+    },
+
+    async pullFromCloud() {
+      const uid = await this.ensureUid();
+      if (!uid) return;
+      try {
+        const snap = await getDoc(doc(db, "users", uid));
+        if (snap.exists() && window.mergeCloudProgress) {
+          window.mergeCloudProgress(snap.data());
+        }
+      } catch (e) {
+        console.warn("Firestore pull skipped:", e);
+      }
+    },
+
+    async purgeCloudData() {
+      const uid = await this.ensureUid();
+      if (!uid) return;
+      try {
+        await deleteDoc(doc(db, "users", uid));
+      } catch (e) {
+        console.warn("Firestore delete skipped:", e);
+      }
+    }
+  };
+
+  if (document.readyState === "loading") {
+    window.addEventListener("DOMContentLoaded", () => window.cloudSyncBridge.init());
+  } else {
+    window.cloudSyncBridge.init();
+  }
+</script>
+
+<script>
 const STORAGE_PREFIX = 'MINDFUL_USER_SECURE_';
-const AUDIO_BASE = './audio/';
+const ONBOARDING_KEY = 'MINDFUL_ONBOARDED_V4';
 
 const BREATHING_PATTERNS = {
   calm: { inhale: 4000, hold: 0,    exhale: 4000, hold2: 0    },
@@ -671,86 +574,173 @@ const BREATHING_PATTERNS = {
 };
 
 const BINAURAL_PRESETS = {
-  off:   { diff: 0,    desc: "關閉" },
+  off:   { diff: 0,   desc: "關閉" },
   delta: { diff: 2.5, desc: "δ 2.5Hz 深度身心重置" },
   theta: { diff: 6.0, desc: "θ 6.0Hz 禪定與冥想心流" },
   alpha: { diff: 10.0,desc: "α 10.0Hz 澄明專注" }
 };
 
+const audioLayers = { music: true, binaural: true, voice: true };
+let currentStartMood = '😌';
+
+const HK_SCENARIOS = {
+  meeting: {
+    startMood: '🔥',
+    pattern: 'box',
+    band: 'alpha',
+    track: 'breathing',
+    badge: '處方：會議壓力卸載 → Box 4-4-4-4 + α波',
+    voice: '辛苦哂，啱啱嘅對話已經過去。先做四拍箱式呼吸，將控制權攞返喺自己手度。',
+    microAction: '💡 60秒微動作：雙肩用力向上縮緊 3 秒，然後一口氣徹底放鬆跌低，順便鬆開咬緊嘅牙關。',
+    toast: '💼 會議卸壓模式已啟動'
+  },
+  commute: {
+    startMood: '😐',
+    pattern: 'calm',
+    band: 'alpha',
+    track: 'breathing',
+    badge: '處方：通勤氣泡結界 → Calm 4-4 + α波',
+    voice: '外面好迫好嘈唔緊要，戴上耳機，跟我做勻速呼吸，喺人海入面劃出你嘅安靜空間。',
+    microAction: '💡 60秒微動作：視線離開手機螢幕，望向車廂遠處一點，感受雙腳穩穩踩實地面。',
+    toast: '🚇 通勤靜心結界已開啟'
+  },
+  overthink: {
+    startMood: '😩',
+    pattern: '478',
+    band: 'delta',
+    track: 'evening',
+    badge: '處方：深夜大腦關機 → Relax 4-7-8 + δ波',
+    voice: '今日所有未完嘅事，聽日先算。跟住 4-7-8 節奏慢慢吐氣，畀神經系統知道可以安全休息。',
+    microAction: '💡 60秒微動作：舌尖輕輕頂住上顎門牙後方，每次吐氣時想像額頭同眼皮慢慢變重。',
+    toast: '🌙 深夜關機助眠模式已啟動'
+  },
+  caregiver: {
+    startMood: '😩',
+    pattern: '478',
+    band: 'theta',
+    track: 'meditation',
+    badge: '處方：照顧者能量回充 → Relax 4-7-8 + θ波',
+    voice: '你一直照顧身邊人，辛苦你啦。呢幾分鐘完全屬於你自己，唔使做任何決定，淨係呼吸就夠。',
+    microAction: '💡 60秒微動作：一隻手放喺胸口、一隻手放喺肚臍，感受自己每一次吸氣都係為自己叉電。',
+    toast: '🫂 照顧者溫柔回血模式已啟動'
+  }
+};
+
 const appState = {
+  auth: { currentUser: null, isLoggedIn: false },
   session: {
-    isPlaying: false, currentTrackId: 'breathing', currentTime: 0,
-    totalDuration: 300, isAudioLoaded: false, usingVirtualClock: false,
-    breathingPattern: 'calm', binauralBand: 'off', currentPhase: 'idle',
+    isPlaying: false, currentTrackId: 'meditation', currentTime: 0,
+    totalDuration: 900, isAudioLoaded: false,
+    breathingPattern: 'calm',
+    binauralBand: 'off',
     tracks: {
-      meditation: { title: "深層釋壓", subtitle: "靜觀引導 • 雙耳頻率", duration: 900, url: AUDIO_BASE + "meditation.mp3" },
-      breathing:  { title: "箱式呼吸", subtitle: "專注提升 • 迷走神經", duration: 300, url: AUDIO_BASE + "breathing.mp3" },
-      morning:    { title: "晨間喚醒", subtitle: "能量甦醒",         duration: 300, url: AUDIO_BASE + "morning.mp3" },
-      evening:    { title: "晚間放鬆", subtitle: "舒緩入睡 • δ 波",   duration: 600, url: AUDIO_BASE + "evening.mp3" }
+      meditation: { title: "深層釋壓", subtitle: "靜觀引導 • 雙耳頻率", duration: 900, url: "./audio/meditation.mp3" },
+      breathing:  { title: "箱式呼吸", subtitle: "專注提升 • 迷走神經", duration: 300, url: "./audio/breathing.mp3" },
+      morning:    { title: "晨間喚醒", subtitle: "能量甦醒", duration: 300, url: "./audio/morning.mp3" },
+      evening:    { title: "晚間放鬆", subtitle: "舒緩入睡 • δ 波", duration: 600, url: "./audio/evening.mp3" }
     }
   },
-  progress: { streak: 1, totalSessions: 3, lastPracticeDate: null, moodLog: [], hrvLog: [] },
-  biometrics: { isPpgActive: false, isBreathListening: false, lastCalculatedHRV: 58 }
+  progress: {
+    streak: 0, totalSessions: 0,
+    moodLog: [],
+    hrvLog: [],
+    lastPracticeDate: null
+  },
+  biometrics: { isPpgActive: false, isBreathListening: false }
 };
 
-// ============ 觸覺驅動 (Taptic Engine) ============
-const HapticEngine = {
-  vibrate(ms) {
-    if (window.Capacitor?.Plugins?.Haptics) {
-      window.Capacitor.Plugins.Haptics.impact({ style: ms > 35 ? 'MEDIUM' : 'LIGHT' }).catch(() => {});
-    } else if ('vibrate' in navigator) {
-      try { navigator.vibrate(ms); } catch (e) {}
+let lastAdaptivePeriod = null;
+function applyTimeAdaptiveHome() {
+  const hour = new Date().getHours();
+  let period = 'day';
+  let tag = '日間節奏';
+  let msg = '日間工作時段：推介「開會卸壓」或「通勤結界」，快速降壓。';
+  let recScenario = 'meeting';
+  let recQuickTrack = null;
+
+  if (hour >= 6 && hour < 12) {
+    period = 'morning';
+    tag = '晨間喚醒';
+    msg = '早晨時段：先用「晨間喚醒」激活能量，再按需要開「通勤結界」。';
+    recScenario = 'commute';
+    recQuickTrack = 'morning';
+  } else if (hour >= 21 || hour < 6) {
+    period = 'night';
+    tag = '晚間關機';
+    msg = '晚間／深宵時段：推介「晚間放鬆」或「瞓唔著腦轉唔停」，幫大腦慢落嚟。';
+    recScenario = 'overthink';
+    recQuickTrack = 'evening';
+  }
+
+  if (period === lastAdaptivePeriod) return;
+  lastAdaptivePeriod = period;
+
+  const textEl = document.getElementById('timeAdaptiveText');
+  const tagEl = document.getElementById('timeAdaptiveTag');
+  if (textEl) textEl.innerText = msg;
+  if (tagEl) tagEl.innerText = tag;
+
+  document.querySelectorAll('#scenarioGrid .scenario-chip').forEach((chip) => {
+    const isRec = chip.dataset.scenario === recScenario;
+    chip.classList.toggle('recommended', isRec);
+    const oldBadge = chip.querySelector('.rec-badge');
+    if (oldBadge) oldBadge.remove();
+    if (isRec) {
+      const b = document.createElement('span');
+      b.className = 'rec-badge';
+      b.innerText = '此時推介';
+      chip.appendChild(b);
     }
-  },
-  startInhale() { this.vibrate(30); },
-  startHold() { this.vibrate(45); },
-  startExhale() { this.vibrate(20); },
-  stop() {}
-};
+  });
 
-// ============ 加密儲存 ============
-const cryptoStore = {
-  async save(key, obj) {
-    localStorage.setItem(STORAGE_PREFIX + key, JSON.stringify(obj));
-  },
-  async load(key) {
-    const raw = localStorage.getItem(STORAGE_PREFIX + key);
-    return raw ? JSON.parse(raw) : null;
-  },
-  async wipeAll() {
-    Object.keys(localStorage).forEach(k => { if (k.startsWith(STORAGE_PREFIX)) localStorage.removeItem(k); });
+  document.querySelectorAll('#quickSessionsWrap .quick-session-card').forEach((card) => {
+    card.classList.toggle('recommended', Boolean(recQuickTrack && card.dataset.track === recQuickTrack));
+  });
+}
+
+function loadProgress() {
+  try {
+    const raw = localStorage.getItem(STORAGE_PREFIX + 'PROGRESS');
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      Object.assign(appState.progress, parsed);
+      appState.progress.moodLog = appState.progress.moodLog || [];
+      appState.progress.hrvLog = appState.progress.hrvLog || [];
+    }
+  } catch (e) { console.warn('load progress failed', e); }
+}
+
+function saveProgress() {
+  try {
+    localStorage.setItem(STORAGE_PREFIX + 'PROGRESS', JSON.stringify(appState.progress));
+    window.cloudSyncBridge?.pushToCloud(appState.progress, true);
+  } catch (e) { console.warn('save progress failed', e); }
+}
+
+window.getLocalProgressSnapshot = () => appState.progress;
+
+window.mergeCloudProgress = (cloudData) => {
+  if (!cloudData) return;
+  if ((cloudData.totalSessions || 0) > appState.progress.totalSessions) {
+    appState.progress.streak = Math.max(appState.progress.streak, cloudData.streak || 0);
+    appState.progress.totalSessions = cloudData.totalSessions;
+    appState.progress.lastPracticeDate = cloudData.lastPracticeDate || appState.progress.lastPracticeDate;
+    appState.progress.moodLog = cloudData.moodLog || appState.progress.moodLog;
+    appState.progress.hrvLog = cloudData.hrvLog || appState.progress.hrvLog;
+    localStorage.setItem(STORAGE_PREFIX + 'PROGRESS', JSON.stringify(appState.progress));
+    renderMoodWeather();
+    renderHRVTrend();
+    updateStreakUI();
   }
 };
 
-async function loadProgress() {
-  const parsed = await cryptoStore.load('PROGRESS');
-  if (parsed) {
-    Object.assign(appState.progress, parsed);
-  } else {
-    appState.progress.hrvLog = [
-      { date: new Date(Date.now()-86400000*3).toISOString(), hrv: 48, bpm: 75 },
-      { date: new Date(Date.now()-86400000*2).toISOString(), hrv: 52, bpm: 72 },
-      { date: new Date(Date.now()-86400000*1).toISOString(), hrv: 55, bpm: 70 }
-    ];
-  }
-}
-function saveProgress() { cryptoStore.save('PROGRESS', appState.progress); }
-
-function showToast(msg, duration = 2200) {
-  const toast = document.getElementById('toast');
-  toast.innerText = msg;
-  toast.classList.add('show');
-  clearTimeout(toast._t);
-  toast._t = setTimeout(() => toast.classList.remove('show'), duration);
-}
-
-// ============ 音訊引擎 ============
 const audioEngine = new Audio();
 let audioCtx = null;
-let oscLeft = null, oscRight = null, binauralGain = null;
-let virtualClock = null;
-let breathAnimFrame = null;
-let breathCycleStart = 0;
+let oscLeft = null;
+let oscRight = null;
+let binauralGain = null;
+let breathPhaseTimeout = null;
+let sessionTimerInterval = null;
 
 const timerDisplay = document.getElementById('timerDisplay');
 const currentTimeDisplay = document.getElementById('currentTimeDisplay');
@@ -760,48 +750,110 @@ const playBtn = document.getElementById('playBtn');
 const breathRing = document.getElementById('breathRing');
 const breathTxt = document.getElementById('breathTxt');
 
-function ensureAudioContext() {
-  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  if (audioCtx.state === 'suspended') audioCtx.resume();
-  return audioCtx;
-}
-
-function initAudioEngine() {
-  audioEngine.crossOrigin = 'anonymous';
-  audioEngine.preload = 'metadata';
-  audioEngine.addEventListener('loadedmetadata', () => {
-    if (Number.isFinite(audioEngine.duration) && audioEngine.duration > 0) {
-      appState.session.totalDuration = Math.floor(audioEngine.duration);
-    }
-    syncDurationUI();
-  });
-  audioEngine.addEventListener('timeupdate', () => {
-    if (!appState.session.usingVirtualClock && !audioEngine.paused) {
-      appState.session.currentTime = audioEngine.currentTime;
+function startSessionClock() {
+  stopSessionClock();
+  sessionTimerInterval = setInterval(() => {
+    if (!appState.session.isPlaying) return;
+    if (!appState.session.isAudioLoaded) {
+      appState.session.currentTime += 1;
+      if (appState.session.currentTime >= appState.session.totalDuration) {
+        appState.session.currentTime = appState.session.totalDuration;
+        handleSessionComplete();
+        return;
+      }
       updatePlaybackProgressUI();
     }
-  });
-  audioEngine.addEventListener('ended', handleSessionComplete);
+  }, 1000);
 }
 
-function startVirtualClock() {
-  stopVirtualClock();
-  appState.session.usingVirtualClock = true;
-  const startTime = performance.now() - appState.session.currentTime * 1000;
-  virtualClock = setInterval(() => {
-    if (!appState.session.isPlaying) return;
-    appState.session.currentTime = (performance.now() - startTime) / 1000;
-    if (appState.session.currentTime >= appState.session.totalDuration) {
-      stopVirtualClock();
-      handleSessionComplete();
-      return;
-    }
-    updatePlaybackProgressUI();
-  }, 200);
+function stopSessionClock() {
+  if (sessionTimerInterval) {
+    clearInterval(sessionTimerInterval);
+    sessionTimerInterval = null;
+  }
 }
-function stopVirtualClock() {
-  if (virtualClock) { clearInterval(virtualClock); virtualClock = null; }
-  appState.session.usingVirtualClock = false;
+
+function showToast(msg, duration = 2600) {
+  const toast = document.getElementById('toast');
+  toast.innerText = msg;
+  toast.classList.add('show');
+  clearTimeout(toast._t);
+  toast._t = setTimeout(() => toast.classList.remove('show'), duration);
+}
+window.showToast = showToast;
+
+function applyHKScenario(key) {
+  const sc = HK_SCENARIOS[key];
+  if (!sc) return;
+  currentStartMood = sc.startMood;
+  selectPattern(sc.pattern);
+  setBinauralBand(sc.band);
+
+  document.getElementById('aiContextBadge').innerText = sc.badge;
+  const banner = document.getElementById('microActionBanner');
+  banner.innerText = sc.microAction;
+  banner.classList.add('show');
+
+  showToast(sc.toast);
+  selectTrack(sc.track);
+  if (audioLayers.voice) {
+    setTimeout(() => speakCantoneseGuidance(sc.voice), 400);
+  }
+}
+
+function toggleAudioLayer(layer) {
+  audioLayers[layer] = !audioLayers[layer];
+  const btnMap = {
+    music: 'toggleMusicLayer',
+    binaural: 'toggleBinauralLayer',
+    voice: 'toggleVoiceLayer'
+  };
+  const el = document.getElementById(btnMap[layer]);
+  if (el) el.classList.toggle('on', audioLayers[layer]);
+
+  if (layer === 'music') {
+    audioEngine.muted = !audioLayers.music;
+    showToast(audioLayers.music ? '🎵 已開啟背景音樂' : '🔇 已靜音背景音樂（保留呼吸引導）');
+  } else if (layer === 'binaural') {
+    if (!audioLayers.binaural) {
+      stopBinauralEngine();
+      showToast('🎧 已關閉雙耳腦波');
+    } else if (appState.session.isPlaying && appState.session.binauralBand !== 'off') {
+      startBinauralEngine(BINAURAL_PRESETS[appState.session.binauralBand].diff);
+      showToast('🎧 已開啟雙耳腦波（建議佩戴立體聲耳機）');
+    }
+  } else if (layer === 'voice') {
+    if (!audioLayers.voice && 'speechSynthesis' in window) window.speechSynthesis.cancel();
+    showToast(audioLayers.voice ? '🗣️ 已開啟粵語語音引導' : '🤫 已切換為純靜音引導');
+  }
+}
+
+function quickStart(type) {
+  if (type === 'chur') {
+    currentStartMood = '😩';
+    selectPattern('478');
+    setBinauralBand('theta');
+    document.getElementById('aiContextBadge').innerText = 'AI 自適應：偵測到身心透支 → 4-7-8 + θ波';
+    speakCantoneseGuidance('偵測到你身心透支。我哋而家做 4-7-8 呼吸，慢慢嚟。');
+    showToast('😩 好chur模式：啟動 4-7-8 迷走神經重置 + θ波');
+    selectTrack('meditation');
+  } else if (type === 'dry') {
+    currentStartMood = '🔥';
+    selectPattern('box');
+    setBinauralBand('delta');
+    document.getElementById('aiContextBadge').innerText = 'AI 自適應：偵測到情緒浮躁 → Box + δ波';
+    speakCantoneseGuidance('情緒有啲浮躁。我哋用箱式呼吸，慢慢穩定落嚟。');
+    showToast('🔥 好燥模式：啟動 Box 4-4-4-4 + δ波');
+    selectTrack('breathing');
+  } else {
+    currentStartMood = '😌';
+    selectPattern('calm');
+    setBinauralBand('alpha');
+    document.getElementById('aiContextBadge').innerText = 'AI 自適應：平靜狀態 → Calm 4-4 + α波';
+    speakCantoneseGuidance('保持平靜。我哋用勻速 4-4 呼吸，繼續專注。');
+    showToast('😌 平靜模式：維持 Calm 4-4 + α波');
+    selectTrack('meditation');
+  }
 }
 
 function setBinauralBand(bandKey) {
@@ -809,32 +861,44 @@ function setBinauralBand(bandKey) {
   document.querySelectorAll('.binaural-chip').forEach(el => {
     el.classList.toggle('active', el.dataset.band === bandKey);
   });
-  document.getElementById('binauralBandDesc').innerText = BINAURAL_PRESETS[bandKey].desc;
-  if (bandKey === 'off') stopBinauralEngine();
-  else if (appState.session.isPlaying) startBinauralEngine(BINAURAL_PRESETS[bandKey].diff);
+  const preset = BINAURAL_PRESETS[bandKey];
+  document.getElementById('binauralBandDesc').innerText = preset.desc;
+
+  if (bandKey === 'off') {
+    stopBinauralEngine();
+  } else if (appState.session.isPlaying) {
+    startBinauralEngine(preset.diff);
+  }
 }
 
 function startBinauralEngine(diffFreq) {
+  if (!audioLayers.binaural) return;
   stopBinauralEngine();
-  try {
-    const ctx = ensureAudioContext();
-    const baseFreq = 210;
-    const merger = ctx.createChannelMerger(2);
-    binauralGain = ctx.createGain();
-    binauralGain.gain.setValueAtTime(0.035, ctx.currentTime);
-    oscLeft = ctx.createOscillator();
-    oscLeft.type = 'sine';
-    oscLeft.frequency.setValueAtTime(baseFreq, ctx.currentTime);
-    oscRight = ctx.createOscillator();
-    oscRight.type = 'sine';
-    oscRight.frequency.setValueAtTime(baseFreq + diffFreq, ctx.currentTime);
-    oscLeft.connect(merger, 0, 0);
-    oscRight.connect(merger, 0, 1);
-    merger.connect(binauralGain);
-    binauralGain.connect(ctx.destination);
-    oscLeft.start(); oscRight.start();
-  } catch (e) {}
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+
+  const baseFreq = 210;
+  const merger = audioCtx.createChannelMerger(2);
+  binauralGain = audioCtx.createGain();
+  binauralGain.gain.setValueAtTime(0.035, audioCtx.currentTime);
+
+  oscLeft = audioCtx.createOscillator();
+  oscLeft.type = 'sine';
+  oscLeft.frequency.setValueAtTime(baseFreq, audioCtx.currentTime);
+
+  oscRight = audioCtx.createOscillator();
+  oscRight.type = 'sine';
+  oscRight.frequency.setValueAtTime(baseFreq + diffFreq, audioCtx.currentTime);
+
+  oscLeft.connect(merger, 0, 0);
+  oscRight.connect(merger, 0, 1);
+  merger.connect(binauralGain);
+  binauralGain.connect(audioCtx.destination);
+
+  oscLeft.start();
+  oscRight.start();
 }
+
 function stopBinauralEngine() {
   try {
     if (oscLeft) { oscLeft.stop(); oscLeft.disconnect(); oscLeft = null; }
@@ -842,368 +906,623 @@ function stopBinauralEngine() {
   } catch (e) {}
 }
 
-// ============ 粵語語音合成 (TTS) ============
-let cachedHkVoice = null;
-let currentGuidancePending = "";
+let activeRecog = null;
 
-function initVoices() {
-  if (!('speechSynthesis' in window)) return;
-  const voices = window.speechSynthesis.getVoices();
-  cachedHkVoice = voices.find(v => v.lang === 'zh-HK' || v.lang === 'yue-HK' || v.name.includes('Sinji') || v.name.includes('Aasing'))
-               || voices.find(v => v.lang.startsWith('zh'))
-               || voices[0];
+function toggleVoiceCheckin() {
+  if (activeRecog) {
+    try { activeRecog.abort(); } catch (e) {}
+    activeRecog = null;
+    showToast("語音感知已結束");
+    return;
+  }
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) {
+    showToast("瀏覽器未支援語音，已轉為平靜模式");
+    return;
+  }
+  activeRecog = new SpeechRecognition();
+  activeRecog.lang = 'zh-HK';
+  activeRecog.continuous = false;
+  showToast("🎙️ 正在聆聽... 請講出感受（例如好chur、好燥）");
+
+  activeRecog.onresult = (e) => {
+    const text = e.results[0][0].transcript;
+    analyzeCantoneseSentiment(text);
+  };
+  activeRecog.onerror = () => { activeRecog = null; };
+  activeRecog.onend = () => { activeRecog = null; };
+  try { activeRecog.start(); } catch (e) { activeRecog = null; }
 }
-if ('speechSynthesis' in window) {
-  window.speechSynthesis.onvoiceschanged = initVoices;
-  initVoices();
+
+function analyzeCantoneseSentiment(text) {
+  const dict = {
+    burnout: ['攰', '好攰', 'chur', '好chur', '虛脫', '眼訓', '身心俱疲', '無力', '謝哂', '頂唔住'],
+    tension: ['頂唔順', '焦慮', '心跳好快', '失眠', '緊張', '恐慌', '好亂', '壓迫'],
+    agitation: ['好燥', '燥底', '火滾', '好煩', '激死', '發脾氣', '火起']
+  };
+
+  if (dict.burnout.some(w => text.includes(w))) {
+    currentStartMood = '😩';
+    selectPattern('478');
+    setBinauralBand('theta');
+    speakCantoneseGuidance('偵測到你身心透支。我哋而家做 4-7-8 呼吸，慢慢嚟。');
+    showToast('🧠 偵測到身心透支：啟動 4-7-8 + θ波');
+  } else if (dict.tension.some(w => text.includes(w))) {
+    currentStartMood = '😐';
+    selectPattern('box');
+    setBinauralBand('delta');
+    speakCantoneseGuidance('你嘅緊張指數偏高。跟我做箱式呼吸，四拍吸、四拍停。');
+    showToast('🌿 偵測到高度緊張：啟動 Box + δ波');
+  } else if (dict.agitation.some(w => text.includes(w))) {
+    currentStartMood = '🔥';
+    selectPattern('calm');
+    setBinauralBand('alpha');
+    speakCantoneseGuidance('情緒有啲浮躁。我哋用平靜 4-4 呼吸，慢慢穩定落嚟。');
+    showToast('🌊 偵測到情緒浮躁：匹配 Calm 4-4 + α波');
+  } else {
+    currentStartMood = '😌';
+    selectPattern('calm');
+    showToast('✨ 心境安穩：維持經典平靜呼吸');
+  }
+}
+
+function initSpeechSynthesis() {
+  if (!('speechSynthesis' in window)) return;
+  window.speechSynthesis.getVoices();
+  window.speechSynthesis.onvoiceschanged = () => {};
 }
 
 function speakCantoneseGuidance(text) {
+  if (!audioLayers.voice) return;
   if (!('speechSynthesis' in window)) return;
   try {
     window.speechSynthesis.cancel();
-    if (window.speechSynthesis.paused) window.speechSynthesis.resume();
     const utter = new SpeechSynthesisUtterance(text);
     utter.lang = 'zh-HK';
     utter.rate = 0.85;
     utter.pitch = 0.95;
-    utter.volume = 1.0;
-    if (!cachedHkVoice) initVoices();
-    if (cachedHkVoice) utter.voice = cachedHkVoice;
+    utter.volume = 0.8;
+    const voices = window.speechSynthesis.getVoices();
+    const hk = voices.find(v => v.lang === 'zh-HK' || v.lang === 'yue-HK')
+            || voices.find(v => v.lang.startsWith('zh'))
+            || voices[0];
+    if (hk) utter.voice = hk;
     window.speechSynthesis.speak(utter);
-  } catch (e) {}
+  } catch (e) { console.warn('TTS failed', e); }
 }
 
-function promptGuidanceInteraction(title, text) {
-  currentGuidancePending = text;
-  document.getElementById('guidanceTitle').innerText = title;
-  document.getElementById('guidanceModalText').innerText = text;
-  document.getElementById('guidanceModal').classList.add('show');
-}
-function closeGuidanceModal() {
-  document.getElementById('guidanceModal').classList.remove('show');
-}
-document.getElementById('playGuidanceVoiceBtn').addEventListener('click', () => {
-  if (currentGuidancePending) speakCantoneseGuidance(currentGuidancePending);
-  closeGuidanceModal();
-});
+let micAudioContext = null;
+let micAnalyser = null;
+let micSource = null;
+let breathMonitorAnim = null;
 
-function toggleVoiceCheckin() {
-  const box = document.getElementById('cantoneseBox');
-  box.classList.add('active');
-  showToast("🎙️ 正在感知廣東話聲紋微表情…");
-  
-  setTimeout(() => {
-    box.classList.remove('active');
-    const prompt = "知你今日返工好 chur 好攰。放低電話，唔好諗覆 Email 住，同我一齊做 4-7-8 調息，放鬆肩膀。";
-    promptGuidanceInteraction("🎙️ 粵語身心感知（好chur）", prompt);
-  }, 1400);
-}
-
-function toggleBreathListening() {
+async function toggleBreathListening() {
   const box = document.getElementById('breathVoiceBox');
   const txt = document.getElementById('breathVoiceText');
   if (appState.biometrics.isBreathListening) {
+    if (micAudioContext) { try { micAudioContext.close(); } catch (e) {} }
+    micAudioContext = null; micAnalyser = null; micSource = null;
+    if (breathMonitorAnim) cancelAnimationFrame(breathMonitorAnim);
     appState.biometrics.isBreathListening = false;
     box.classList.remove('active');
     txt.innerText = "聽呼吸微調環";
-  } else {
+    return;
+  }
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    micAudioContext = new (window.AudioContext || window.webkitAudioContext)();
+    micAnalyser = micAudioContext.createAnalyser();
+    micSource = micAudioContext.createMediaStreamSource(stream);
+    micSource.connect(micAnalyser);
+    micAnalyser.fftSize = 256;
+
     appState.biometrics.isBreathListening = true;
     box.classList.add('active');
     txt.innerText = "聲紋同步中";
-    showToast("🌬️ 已啟動聲紋同步，光環將隨呼吸微調");
+    monitorBreathAudioLevel();
+  } catch (e) {
+    showToast("麥克風無法啟用");
   }
 }
 
-// ============ PPG 實體後鏡頭測量 ============
+function monitorBreathAudioLevel() {
+  if (!appState.biometrics.isBreathListening || !micAnalyser) return;
+  const data = new Uint8Array(micAnalyser.frequencyBinCount);
+  micAnalyser.getByteFrequencyData(data);
+  let average = data.reduce((a, b) => a + b, 0) / data.length;
+
+  if (average > 30 && appState.session.isPlaying) {
+    breathRing.style.transform = `scale(${1.1 + (average / 255) * 0.25})`;
+  }
+  breathMonitorAnim = requestAnimationFrame(monitorBreathAudioLevel);
+}
+
 let ppgStream = null;
-let ppgTimer = null;
-let ppgCount = 0;
+let ppgAnim = null;
+let redRecords = [];
+let validRedSamples = [];
 
-async function startPPGMeasurement() {
-  const modal = document.getElementById('ppgModal');
-  const meter = document.getElementById('ppgMeterFill');
-  const countTxt = document.getElementById('ppgProgressCountTxt');
-  const video = document.getElementById('ppgVideoNode');
-
-  ppgCount = 0;
-  meter.style.width = '0%';
-  countTxt.innerText = "採集中… 0/80 (0%)";
-  modal.classList.add('show');
-
+async function togglePPGScan() {
+  if (appState.biometrics.isPpgActive) {
+    stopPPGScan();
+    return;
+  }
   try {
     ppgStream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: { ideal: 'environment' }, width: { ideal: 320 }, height: { ideal: 240 } }
+      video: { facingMode: { ideal: 'environment' }, width: 64, height: 64 }
     });
+    const video = document.getElementById('ppgVideoNode');
     video.srcObject = ppgStream;
     await video.play();
-  } catch (err) {
-    console.warn("Camera fallback active:", err);
+    appState.biometrics.isPpgActive = true;
+    validRedSamples = [];
+    document.getElementById('ppgSensorBox').classList.add('active');
+    document.getElementById('ppgStatusText').innerText = "手指貼緊後鏡頭";
+    const meterWrap = document.getElementById('ppgMeterWrap');
+    const meterFill = document.getElementById('ppgMeterFill');
+    if (meterWrap) meterWrap.style.display = 'block';
+    if (meterFill) meterFill.style.width = '0%';
+    samplePPG();
+  } catch (e) {
+    showToast("無法啟用後置鏡頭進行 PPG 測量");
+  }
+}
+
+function samplePPG() {
+  if (!appState.biometrics.isPpgActive) return;
+  const canvas = document.getElementById('ppgCanvasNode');
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(document.getElementById('ppgVideoNode'), 0, 0, 30, 30);
+  const data = ctx.getImageData(0, 0, 30, 30).data;
+
+  let rSum = 0, gSum = 0;
+  for (let i = 0; i < data.length; i += 4) {
+    rSum += data[i];
+    gSum += data[i + 1];
+  }
+  const pixels = data.length / 4;
+  const avgRed = rSum / pixels;
+  const avgGreen = gSum / pixels;
+
+  const meterWrap = document.getElementById('ppgMeterWrap');
+  const meterFill = document.getElementById('ppgMeterFill');
+  if (meterWrap) meterWrap.style.display = 'block';
+
+  const isFingerCovered = avgRed > 80 && avgRed > avgGreen * 1.45;
+  if (isFingerCovered) {
+    validRedSamples.push(avgRed);
+    document.getElementById('ppgStatusText').innerText = `採樣中 ${Math.min(100, Math.round((validRedSamples.length / 180) * 100))}%`;
+    if (meterFill) meterFill.style.width = `${Math.min(100, (validRedSamples.length / 180) * 100)}%`;
+  } else {
+    document.getElementById('ppgStatusText').innerText = '請將指腹完全遮蓋鏡頭';
   }
 
-  ppgTimer = setInterval(() => {
-    ppgCount++;
-    const pct = Math.round((ppgCount / 80) * 100);
-    meter.style.width = pct + '%';
-    countTxt.innerText = `採集中… ${ppgCount}/80 (${pct}%)`;
-
-    if (ppgCount >= 80) {
-      clearInterval(ppgTimer);
-      ppgTimer = null;
-      finishPPGMeasurement();
-    }
-  }, 100);
-}
-
-function cancelPPGMeasurement() {
-  if (ppgTimer) { clearInterval(ppgTimer); ppgTimer = null; }
-  if (ppgStream) {
-    ppgStream.getTracks().forEach(t => t.stop());
-    ppgStream = null;
+  if (validRedSamples.length >= 180) {
+    redRecords = [...validRedSamples];
+    validRedSamples = [];
+    if (meterWrap) meterWrap.style.display = 'none';
+    evaluatePPGResult();
+    stopPPGScan();
+    return;
   }
-  document.getElementById('ppgModal').classList.remove('show');
+  ppgAnim = requestAnimationFrame(samplePPG);
 }
 
-let latestTempHrv = 58;
-let latestTempBpm = 72;
-
-function finishPPGMeasurement() {
-  cancelPPGMeasurement();
-  latestTempHrv = 58 + Math.floor(Math.random() * 8) - 4;
-  latestTempBpm = 72 + Math.floor(Math.random() * 6) - 3;
-  appState.biometrics.lastCalculatedHRV = latestTempHrv;
-
-  document.getElementById('ppgResultHrvNum').innerText = `❤️ HRV ${latestTempHrv}`;
-  document.getElementById('ppgResultBpmTxt').innerText = `脈搏心率：${latestTempBpm} BPM | 自律神經平衡度：優良`;
-  document.getElementById('ppgResultModal').classList.add('show');
+function stopPPGScan() {
+  appState.biometrics.isPpgActive = false;
+  validRedSamples = [];
+  if (ppgStream) { ppgStream.getTracks().forEach(t => t.stop()); ppgStream = null; }
+  if (ppgAnim) cancelAnimationFrame(ppgAnim);
+  const meterWrap = document.getElementById('ppgMeterWrap');
+  const meterFill = document.getElementById('ppgMeterFill');
+  if (meterWrap) meterWrap.style.display = 'none';
+  if (meterFill) meterFill.style.width = '0%';
+  document.getElementById('ppgSensorBox').classList.remove('active');
+  document.getElementById('ppgStatusText').innerText = "指尖按鏡頭 8s";
 }
 
-function confirmPpgResult() {
-  document.getElementById('ppgResultModal').classList.remove('show');
-  appState.progress.hrvLog.push({
-    date: new Date().toISOString(),
-    hrv: latestTempHrv,
-    bpm: latestTempBpm
-  });
-  if (appState.progress.hrvLog.length > 7) appState.progress.hrvLog.shift();
+function evaluatePPGResult() {
+  const avg = redRecords.reduce((a,b)=>a+b, 0) / redRecords.length;
+  const variance = redRecords.reduce((a,b)=>a+Math.pow(b-avg, 2), 0) / redRecords.length;
+  const hrv = Math.min(100, Math.round(variance * 5));
+
+  appState.progress.hrvLog.push({ date: new Date().toISOString(), hrv, variance });
+  if (appState.progress.hrvLog.length > 30) appState.progress.hrvLog.shift();
   saveProgress();
   renderHRVTrend();
-  showToast(`已成功記錄 HRV ${latestTempHrv} 至修煉數據`);
+
+  if (variance > 7.5) {
+    selectPattern('478');
+    setBinauralBand('theta');
+    showToast(`❤️ 生理回饋（參考）：波動較大（HRV ${hrv}），已自動儲存`);
+  } else {
+    selectPattern('calm');
+    showToast(`❤️ 生理回饋（參考）：波動平穩（HRV ${hrv}），已自動儲存`);
+  }
+}
+
+function renderMoodWeather() {
+  const board = document.getElementById('moodWeatherBoard');
+  if (!appState.progress.moodLog || appState.progress.moodLog.length === 0) {
+    board.innerHTML = '<div class="mood-weather-empty">完成首次練習後自動生成情緒天氣圖</div>';
+    return;
+  }
+  board.innerHTML = '';
+  const weekdayLabels = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+  appState.progress.moodLog.slice(-7).forEach((m) => {
+    const div = document.createElement('div');
+    div.className = 'mood-weather-item';
+    const icon = m.mood === '😌' ? '☀️' : m.mood === '😊' ? '🌤️' : m.mood === '😐' ? '⛅' : '🌧️';
+    const d = new Date(m.date);
+    const dayName = weekdayLabels[d.getDay()];
+    const moodPair = m.before ? `${m.before}→${m.mood}` : m.mood;
+    div.innerHTML = `<span class="mood-weather-day">${dayName}</span><span class="mood-weather-icon">${icon}</span><span>${moodPair}</span>`;
+    board.appendChild(div);
+  });
 }
 
 function renderHRVTrend() {
   const bars = document.getElementById('hrvBars').children;
-  const log = appState.progress.hrvLog;
-  const latestEl = document.getElementById('hrvLatestValue');
-  const hintEl = document.getElementById('hrvHint');
+  const log = appState.progress.hrvLog.slice(-7);
+  const latest = document.getElementById('hrvLatestValue');
+  const hint = document.getElementById('hrvHint');
 
   if (log.length === 0) {
-    latestEl.innerText = '--';
-    for (const b of bars) b.style.height = '8px';
+    latest.innerText = '--';
+    hint.innerText = '用後鏡頭 PPG 測量 3 次以上，啟動趨勢追蹤';
+    for (const b of bars) b.style.height = '3px';
     return;
   }
 
-  const latestRecord = log[log.length - 1];
-  latestEl.innerText = `${latestRecord.hrv} ms`;
-  hintEl.innerText = `最近平均 HRV：${Math.round(log.reduce((a,b)=>a+b.hrv,0)/log.length)} ms | 記錄數：${log.length}`;
+  const maxHRV = Math.max(...log.map(x => x.hrv), 1);
+  latest.innerText = log[log.length - 1].hrv;
+  hint.innerText = log.length >= 3
+    ? `最近 ${log.length} 次平均 HRV：${Math.round(log.reduce((a,b)=>a+b.hrv,0)/log.length)}`
+    : `已記錄 ${log.length} 次，再測 ${3 - log.length} 次啟動趨勢`;
 
-  const maxHrv = Math.max(...log.map(x => x.hrv), 70);
   for (let i = 0; i < 7; i++) {
-    const item = log[i];
-    if (item) {
-      const pct = Math.max(12, (item.hrv / maxHrv) * 100);
+    const entry = log[i];
+    if (entry) {
+      const pct = Math.max(8, (entry.hrv / maxHRV) * 100);
       bars[i].style.height = pct + '%';
-      bars[i].className = 'hrv-bar' + (i === log.length - 1 ? ' high' : '');
+      bars[i].className = 'hrv-bar' + (entry.hrv === maxHRV ? ' high' : '');
     } else {
-      bars[i].style.height = '8px';
+      bars[i].style.height = '3px';
       bars[i].className = 'hrv-bar';
     }
   }
 }
 
-// ============ 呼吸引擎 ============
-function selectPattern(key) {
-  appState.session.breathingPattern = key;
-  document.querySelectorAll('.pattern-chip').forEach(el => {
-    el.classList.toggle('active', el.dataset.pattern === key);
+function initAudioEngine() {
+  audioEngine.preload = 'auto';
+  audioEngine.muted = !audioLayers.music;
+  audioEngine.addEventListener('loadedmetadata', () => {
+    if (Number.isFinite(audioEngine.duration) && audioEngine.duration > 0) {
+      appState.session.totalDuration = Math.floor(audioEngine.duration);
+      appState.session.isAudioLoaded = true;
+    }
+    syncDurationUI();
   });
-  if (appState.session.isPlaying) startBreathingCycle();
-}
-
-function startBreathingCycle() {
-  stopBreathingCycle();
-  const pattern = BREATHING_PATTERNS[appState.session.breathingPattern];
-  const phases = [
-    { name: '吸氣', key: 'inhale', duration: pattern.inhale },
-    { name: '屏息', key: 'hold',   duration: pattern.hold   },
-    { name: '吐氣', key: 'exhale', duration: pattern.exhale },
-    { name: '靜止', key: 'hold2',  duration: pattern.hold2  }
-  ].filter(p => p.duration > 0);
-  const cycleDuration = phases.reduce((a, p) => a + p.duration, 0);
-  breathCycleStart = performance.now();
-  let lastKey = '';
-
-  function frame() {
-    if (!appState.session.isPlaying) return;
-    const elapsed = (performance.now() - breathCycleStart) % cycleDuration;
-    let acc = 0, current = phases[0];
-    for (const p of phases) {
-      if (elapsed < acc + p.duration) { current = p; break; }
-      acc += p.duration;
+  audioEngine.addEventListener('timeupdate', () => {
+    if (appState.session.isAudioLoaded) {
+      appState.session.currentTime = audioEngine.currentTime;
+      updatePlaybackProgressUI();
     }
-
-    if (current.key !== lastKey) {
-      lastKey = current.key;
-      if (current.key === 'inhale') HapticEngine.startInhale();
-      else if (current.key === 'hold') HapticEngine.startHold();
-      else if (current.key === 'exhale') HapticEngine.startExhale();
-    }
-
-    const phaseElapsed = elapsed - acc;
-    const progress = Math.min(1, phaseElapsed / current.duration);
-    let scale = 1.0;
-    if (current.name === '吸氣') scale = 1.0 + 0.3 * progress;
-    else if (current.name === '屏息') scale = 1.3;
-    else if (current.name === '吐氣') scale = 1.3 - 0.3 * progress;
-
-    breathRing.style.transform = `scale(${scale})`;
-    breathTxt.innerText = `${current.name} ${(current.duration/1000).toFixed(0)}s`;
-    breathAnimFrame = requestAnimationFrame(frame);
-  }
-  frame();
-}
-
-function stopBreathingCycle() {
-  if (breathAnimFrame) cancelAnimationFrame(breathAnimFrame);
-  breathAnimFrame = null;
-  breathRing.style.transform = 'scale(1.0)';
-  breathTxt.innerText = "準備";
-}
-
-function selectTrack(id) {
-  const track = appState.session.tracks[id];
-  appState.session.currentTrackId = id;
-  appState.session.currentTime = 0;
-  appState.session.totalDuration = track.duration;
-
-  document.getElementById('sessionTitle').innerText = track.title;
-  document.getElementById('sessionSubtitle').innerText = track.subtitle;
-  playBtn.innerText = "⏸️";
-  switchPage('session');
-  syncDurationUI();
-
-  appState.session.isPlaying = true;
-  startVirtualClock();
-  startBreathingCycle();
-}
-
-function togglePlayback() {
-  if (appState.session.isPlaying) {
-    appState.session.isPlaying = false;
-    playBtn.innerText = "▶️";
-    stopVirtualClock();
-    stopBreathingCycle();
-    stopBinauralEngine();
-  } else {
+  });
+  audioEngine.addEventListener('play', () => {
     appState.session.isPlaying = true;
     playBtn.innerText = "⏸️";
-    startVirtualClock();
-    startBreathingCycle();
-    if (appState.session.binauralBand !== 'off') {
+    startSessionClock();
+    if ('mediaSession' in navigator) {
+      navigator.mediaSession.playbackState = "playing";
+      const track = appState.session.tracks[appState.session.currentTrackId];
+      navigator.mediaSession.metadata = new MediaMetadata({
+        title: track.title,
+        artist: "Lohas Mindful",
+        album: "樂活調息與身心感知",
+        artwork: [{ src: './icons/icon-192.png', sizes: '192x192', type: 'image/png' }]
+      });
+    }
+    if (audioLayers.binaural && appState.session.binauralBand !== 'off') {
       startBinauralEngine(BINAURAL_PRESETS[appState.session.binauralBand].diff);
     }
-  }
-}
-
-function exitSession() {
-  appState.session.isPlaying = false;
-  stopVirtualClock();
-  stopBreathingCycle();
-  stopBinauralEngine();
-  switchPage('home');
+  });
+  audioEngine.addEventListener('pause', () => {
+    appState.session.isPlaying = false;
+    playBtn.innerText = "▶️";
+    stopSessionClock();
+    if ('mediaSession' in navigator) navigator.mediaSession.playbackState = "paused";
+    stopBinauralEngine();
+  });
+  audioEngine.addEventListener('ended', () => {
+    handleSessionComplete();
+  });
 }
 
 function handleSessionComplete() {
   appState.session.isPlaying = false;
   playBtn.innerText = "▶️";
+  stopSessionClock();
   stopBreathingCycle();
   stopBinauralEngine();
-  stopVirtualClock();
-  showToast("✨ 修煉完成，數據已加密寫入");
+
+  const today = new Date().toISOString().slice(0, 10);
+  const lastDate = appState.progress.lastPracticeDate;
+  const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+
+  if (lastDate !== today) {
+    appState.progress.streak = (lastDate === yesterday) ? appState.progress.streak + 1 : 1;
+  }
+  appState.progress.lastPracticeDate = today;
+  appState.progress.totalSessions += 1;
+  saveProgress();
+  updateStreakUI();
+
+  document.getElementById('postSessionModal').classList.add('show');
+}
+
+function finalizeMoodCheckin(afterMood) {
+  appState.progress.moodLog.push({
+    date: new Date().toISOString(),
+    before: currentStartMood,
+    mood: afterMood
+  });
+  if (appState.progress.moodLog.length > 30) appState.progress.moodLog.shift();
+  saveProgress();
+  renderMoodWeather();
+  renderHRVTrend();
+  document.getElementById('postSessionModal').classList.remove('show');
+}
+
+function updateStreakUI() {
+  const el = document.getElementById('streakTxt');
+  if (el) el.innerText = `${appState.progress.streak} Day Streak`;
 }
 
 function syncDurationUI() {
-  totalTimeDisplay.innerText = formatTime(appState.session.totalDuration);
+  totalTimeDisplay.innerText = formatMinutesSeconds(appState.session.totalDuration);
   updatePlaybackProgressUI();
 }
+
 function updatePlaybackProgressUI() {
-  const cur = Math.floor(appState.session.currentTime);
-  const tot = appState.session.totalDuration;
-  timerDisplay.innerText = formatTime(Math.max(0, tot - cur));
-  currentTimeDisplay.innerText = formatTime(cur);
-  progressFill.style.width = (tot > 0 ? (cur / tot) * 100 : 0) + "%";
+  const current = Math.floor(appState.session.currentTime);
+  const total = appState.session.totalDuration;
+  timerDisplay.innerText = formatMinutesSeconds(Math.max(0, total - current));
+  currentTimeDisplay.innerText = formatMinutesSeconds(current);
+  progressFill.style.width = (total > 0 ? (current / total) * 100 : 0) + "%";
 }
-function handleSeek(e) {
-  const rect = document.getElementById('progressTrack').getBoundingClientRect();
-  const pct = Math.min(1, Math.max(0, (e.clientX - rect.left) / rect.width));
-  appState.session.currentTime = pct * appState.session.totalDuration;
-  if (appState.session.usingVirtualClock) {
-    stopVirtualClock();
-    startVirtualClock();
+
+function selectPattern(key) {
+  appState.session.breathingPattern = key;
+  document.querySelectorAll('.pattern-chip').forEach(el => {
+    el.classList.toggle('active', el.dataset.pattern === key);
+  });
+  if (appState.session.isPlaying) runBreathingCycle();
+}
+
+function runBreathingCycle() {
+  if (breathPhaseTimeout) clearTimeout(breathPhaseTimeout);
+  if (!appState.session.isPlaying) return;
+  const pattern = BREATHING_PATTERNS[appState.session.breathingPattern];
+  const phases = [
+    { name: '吸氣', duration: pattern.inhale, scale: 1.25 },
+    { name: '屏息', duration: pattern.hold,   scale: 1.25 },
+    { name: '吐氣', duration: pattern.exhale, scale: 1.0  },
+    { name: '靜止', duration: pattern.hold2,  scale: 1.0  }
+  ].filter(p => p.duration > 0);
+
+  let idx = 0;
+  function step() {
+    if (!appState.session.isPlaying) return;
+    const phase = phases[idx];
+    breathTxt.innerText = `${phase.name} ${phase.duration/1000}s`;
+    breathRing.style.transition = `transform ${phase.name.includes('屏') ? 0.2 : phase.duration/1000}s cubic-bezier(0.4, 0, 0.2, 1)`;
+    breathRing.style.transform = `scale(${phase.scale})`;
+
+    idx = (idx + 1) % phases.length;
+    breathPhaseTimeout = setTimeout(step, phase.duration);
   }
+  step();
+}
+
+function resetBreathingAlignment() {
+  if (breathPhaseTimeout) clearTimeout(breathPhaseTimeout);
+  breathRing.style.transition = 'transform 0.25s ease-out';
+  breathRing.style.transform = 'scale(1.0)';
+  breathTxt.innerText = '吸氣對齊中…';
+
+  if (!appState.session.isPlaying) {
+    appState.session.isPlaying = true;
+    playBtn.innerText = '⏸️';
+    startSessionClock();
+    if (audioEngine.src && audioEngine.paused) {
+      audioEngine.play().catch(() => {});
+    }
+    if (audioLayers.binaural && appState.session.binauralBand !== 'off') {
+      startBinauralEngine(BINAURAL_PRESETS[appState.session.binauralBand].diff);
+    }
+  }
+
+  setTimeout(() => {
+    if (appState.session.isPlaying) runBreathingCycle();
+  }, 150);
+
+  showToast('⏮️ 已由「吸氣」第一拍重新對齊');
+}
+
+function stopBreathingCycle() {
+  stopSessionClock();
+  if (breathPhaseTimeout) clearTimeout(breathPhaseTimeout);
+  breathRing.style.transition = 'transform 0.4s ease-out';
+  breathRing.style.transform = 'scale(1.0)';
+  breathTxt.innerText = "準備";
+}
+
+function selectTrack(id) {
+  if (!appState.session.tracks[id]) return;
+  appState.session.currentTrackId = id;
+  const track = appState.session.tracks[id];
+  appState.session.currentTime = 0;
+  appState.session.isAudioLoaded = false;
+  appState.session.totalDuration = track.duration || 300;
+  syncDurationUI();
+  document.getElementById('sessionTitle').innerText = track.title;
+  document.getElementById('sessionSubtitle').innerText = track.subtitle;
+  audioEngine.src = track.url;
+  audioEngine.muted = !audioLayers.music;
+  audioEngine.load();
+  switchPage('session');
+
+  appState.session.isPlaying = true;
+  playBtn.innerText = "⏸️";
+  startSessionClock();
+  runBreathingCycle();
+
+  const playPromise = audioEngine.play();
+  if (playPromise !== undefined) {
+    playPromise.catch(() => {});
+  }
+}
+
+function togglePlayback() {
+  if (!appState.session.isPlaying) {
+    appState.session.isPlaying = true;
+    playBtn.innerText = "⏸️";
+    startSessionClock();
+    runBreathingCycle();
+    if (audioLayers.binaural && appState.session.binauralBand !== 'off') {
+      startBinauralEngine(BINAURAL_PRESETS[appState.session.binauralBand].diff);
+    }
+    if (audioEngine.src) audioEngine.play().catch(() => {});
+  } else {
+    appState.session.isPlaying = false;
+    playBtn.innerText = "▶️";
+    stopSessionClock();
+    stopBreathingCycle();
+    stopBinauralEngine();
+    if (audioEngine.src && !audioEngine.paused) audioEngine.pause();
+  }
+}
+
+function handleSeek(event) {
+  const rect = document.getElementById('progressTrack').getBoundingClientRect();
+  const pct = Math.min(1, Math.max(0, (event.clientX - rect.left) / rect.width));
+  const target = pct * appState.session.totalDuration;
+  appState.session.currentTime = target;
+  if (appState.session.isAudioLoaded) audioEngine.currentTime = target;
   updatePlaybackProgressUI();
 }
-function formatTime(s) {
-  s = Math.max(0, Math.floor(s));
-  return `${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
+
+function formatMinutesSeconds(sec) {
+  return `${String(Math.floor(sec/60)).padStart(2,'0')}:${String(sec%60).padStart(2,'0')}`;
 }
 
 function switchPage(pageId) {
   document.querySelectorAll('.app-content').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  document.getElementById(`${pageId}-page`).classList.add('active');
-  document.getElementById(`nav-${pageId}`).classList.add('active');
-  if (pageId === 'progress') renderHRVTrend();
+  const target = document.getElementById(pageId + '-page');
+  if (target) target.classList.add('active');
+  const nav = document.getElementById('nav-' + pageId);
+  if (nav && pageId !== 'session') nav.classList.add('active');
+  if (pageId === 'home') applyTimeAdaptiveHome();
+  if (pageId === 'progress') {
+    renderMoodWeather();
+    renderHRVTrend();
+    updateStreakUI();
+  }
 }
 
-function openDeleteAccountModal() {
-  document.getElementById('deleteModalBackdrop').classList.add('show');
-}
-function closeDeleteAccountModal() {
-  document.getElementById('deleteModalBackdrop').classList.remove('show');
-  document.getElementById('confirmDeleteInput').value = '';
-}
-async function executeAccountDeletion() {
-  if (document.getElementById('confirmDeleteInput').value.trim() !== 'DELETE') {
-    showToast("請輸入完整「DELETE」");
+async function requestMicroPractice() {
+  if (!('Notification' in window)) {
+    showToast("此瀏覽器環境未支援推播通知");
     return;
   }
-  await cryptoStore.wipeAll();
-  showToast("已銷毀本機全部健康紀錄");
+  const res = await Notification.requestPermission();
+  if (res !== 'granted') {
+    showToast("請允許通知以接收微練習提醒");
+    return;
+  }
+  showToast("已安排 30 秒後進行微練習提醒");
+  setTimeout(() => {
+    try {
+      new Notification('Lohas Mindful • 微練習', {
+        body: '給自己 30 秒。停下手中工作，專注一次深長吐氣。',
+        icon: './icons/icon-192.png'
+      });
+    } catch (err) {
+      console.warn('Notification failed', err);
+    }
+  }, 30000);
+}
+
+let onboardingStep = 1;
+function checkOnboarding() {
+  if (!localStorage.getItem(ONBOARDING_KEY)) {
+    document.getElementById('onboardingModalBackdrop').classList.add('show');
+  }
+}
+
+function nextOnboardingStep() {
+  onboardingStep++;
+  const content = document.getElementById('onboardingStepContent');
+  if (onboardingStep === 2) {
+    content.innerHTML = "<strong>第 2 步：它懂你情緒</strong><br>點擊「粵語感知」、情緒掣或香港情境卡，即時調控呼吸與腦波。";
+  } else if (onboardingStep === 3) {
+    content.innerHTML = "<strong>第 3 步：腦波同步牽引</strong><br>戴上耳機，選擇 6Hz Theta 雙耳節律，隨時進入深層專注與放鬆狀態。";
+  } else {
+    localStorage.setItem(ONBOARDING_KEY, 'true');
+    document.getElementById('onboardingModalBackdrop').classList.remove('show');
+    showToast("歡迎進入專屬修煉空間");
+  }
+}
+
+function openDeleteAccountModal() { document.getElementById('deleteModalBackdrop').classList.add('show'); }
+function closeDeleteAccountModal() { document.getElementById('deleteModalBackdrop').classList.remove('show'); }
+async function executeAccountDeletion() {
+  await window.cloudSyncBridge?.purgeCloudData();
+  localStorage.clear();
+  showToast("所有本機與雲端修煉數據已清除");
   closeDeleteAccountModal();
   setTimeout(() => location.reload(), 1200);
 }
 
-document.addEventListener("DOMContentLoaded", async () => {
-  await loadProgress();
+function handleAuthAction() {
+  showToast("不收集姓名或電郵；每次修煉自動以匿名 ID 備份至雲端，可隨時一鍵清除。");
+}
+
+function showLoading(text) {
+  document.getElementById('loadingText').innerText = text || '正在準備你的專屬空間…';
+  document.getElementById('loadingOverlay').classList.add('show');
+}
+function hideLoading() {
+  document.getElementById('loadingOverlay').classList.remove('show');
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  loadProgress();
+  applyTimeAdaptiveHome();
+  syncDurationUI();
+  initSpeechSynthesis();
   initAudioEngine();
-  renderHRVTrend();
-
-  let simulatedUsers = 142;
-  setInterval(() => {
-    simulatedUsers += Math.floor(Math.random() * 3) - 1;
-    document.getElementById('collectiveCount').innerText = `全球共修場：${simulatedUsers} 人一同調息`;
-  }, 3500);
+  checkOnboarding();
 
   setInterval(() => {
-    const d = new Date();
+    const now = new Date();
     document.getElementById('statusBarTime').innerText =
-      `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+      `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+    applyTimeAdaptiveHome();
   }, 1000);
 
-  setTimeout(() => {
-    document.getElementById('loadingOverlay').classList.remove('show');
-  }, 600);
+  setTimeout(hideLoading, 600);
+});
+
+window.addEventListener('beforeunload', () => {
+  stopSessionClock();
+  if (micAudioContext) { try { micAudioContext.close(); } catch (e) {} }
+  if (ppgStream) { ppgStream.getTracks().forEach(t => t.stop()); }
+  stopBinauralEngine();
+  if (activeRecog) { try { activeRecog.abort(); } catch (e) {} }
+  if ('speechSynthesis' in window) window.speechSynthesis.cancel();
 });
 </script>
 </body>
